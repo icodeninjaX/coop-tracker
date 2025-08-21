@@ -1,4 +1,4 @@
-import { supabase } from "./supabaseClient";
+import { getSupabaseClient } from "./supabaseClient";
 import type { CoopState } from "@/types";
 
 const TABLE = "coop_state";
@@ -6,6 +6,8 @@ const TABLE = "coop_state";
 export async function loadRemoteState(
   userId?: string
 ): Promise<CoopState | null> {
+  const supabase = getSupabaseClient();
+  
   if (!supabase || !userId) {
     console.log("loadRemoteState: No supabase client or userId", {
       supabase: !!supabase,
@@ -44,6 +46,8 @@ export async function saveRemoteState(
   state: CoopState,
   userId?: string
 ): Promise<void> {
+  const supabase = getSupabaseClient();
+  
   if (!supabase || !userId) {
     console.log("saveRemoteState: No supabase client or userId", {
       supabase: !!supabase,
