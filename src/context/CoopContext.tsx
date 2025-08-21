@@ -16,6 +16,7 @@ import {
   Penalty,
 } from "../types";
 import { loadRemoteState, saveRemoteState } from "@/lib/remoteState";
+import { useAuth } from "./AuthContext";
 
 // ---- Schedule utilities (module scope for stable references) ----
 // Utilities to compute due schedules
@@ -490,29 +491,49 @@ const CoopContext = createContext<
 
 export function CoopProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(coopReducer, initialState);
+  const { user } = useAuth();
 
   useEffect(() => {
+    if (!user) {
+      console.log("CoopContext: No user, skipping load");
+      return; // Don't load state if no user
+    }
+
+    console.log("CoopContext: Loading state for user", user.id);
+
     // Load state from Supabase if configured, else localStorage
     const init = async () => {
-      const remote = await loadRemoteState();
-      if (remote) {
-        dispatch({ type: "LOAD_STATE", payload: remote });
-        return;
-      }
-      const savedState =
-        typeof window !== "undefined"
-          ? localStorage.getItem("coopState")
-          : null;
-      if (savedState) {
-        dispatch({ type: "LOAD_STATE", payload: JSON.parse(savedState) });
+      try {
+        const remote = await loadRemoteState(user.id);
+        if (remote) {
+          console.log("CoopContext: Loaded remote state", remote);
+          dispatch({ type: "LOAD_STATE", payload: remote });
+          return;
+        }
+
+        const savedState =
+          typeof window !== "undefined"
+            ? localStorage.getItem(`coopState_${user.id}`)
+            : null;
+        if (savedState) {
+          console.log("CoopContext: Loaded local state");
+          const parsedState = JSON.parse(savedState);
+          dispatch({ type: "LOAD_STATE", payload: parsedState });
+        } else {
+          console.log("CoopContext: No saved state found, using initial state");
+        }
+      } catch (error) {
+        console.error("CoopContext: Error during initialization:", error);
       }
     };
     init();
-  }, []);
+  }, [user]);
 
   useEffect(() => {
+    if (!user) return; // Don't seed if no user
+
     // Seed initial collection periods if none exist and not previously seeded
-    const seeded = localStorage.getItem("coopSeeded");
+    const seeded = localStorage.getItem(`coopSeeded_${user.id}`);
     if (!seeded) {
       if (state.collections.length === 0) {
         const seedPeriods: CollectionPeriod[] = [
@@ -542,17 +563,24 @@ export function CoopProvider({ children }: { children: ReactNode }) {
           dispatch({ type: "ADD_COLLECTION_PERIOD", payload: p })
         );
       }
-      localStorage.setItem("coopSeeded", "1");
+      localStorage.setItem(`coopSeeded_${user.id}`, "1");
     }
-  }, [state.collections.length]);
+  }, [state.collections.length, user]);
 
   useEffect(() => {
+    if (!user) return; // Don't save if no user
+
+    console.log("CoopContext: Saving state for user", user.id);
+
     // Save to Supabase if available; always mirror to localStorage as fallback
-    saveRemoteState(state).catch(() => void 0);
+    saveRemoteState(state, user.id).catch((err) => {
+      console.error("Failed to save remote state:", err);
+    });
     if (typeof window !== "undefined") {
-      localStorage.setItem("coopState", JSON.stringify(state));
+      localStorage.setItem(`coopState_${user.id}`, JSON.stringify(state));
+      console.log("CoopContext: Saved to localStorage");
     }
-  }, [state]);
+  }, [state, user]);
 
   useEffect(() => {
     // Derive current balance = contributions + repayments - disbursed loans

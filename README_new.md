@@ -43,21 +43,11 @@ A comprehensive web application for managing a 20-member cooperative with monthl
   - Ending Balance
 - **Auto-balancing**: System automatically recalculates balances
 
-### **User Authentication & Security**
-
-- **Secure Login/Signup**: Email and password authentication via Supabase
-- **User Isolation**: Each user has completely separate cooperative data
-- **Session Management**: Automatic session handling and persistence
-- **Password Recovery**: Built-in password reset functionality
-- **Row Level Security**: Database-level security ensuring data privacy
-
 ### **Data Persistence**
 
-- **Supabase Integration**: Cloud database storage with authentication
-- **User-Specific Data**: Each user's cooperative data is completely isolated
+- **Supabase Integration**: Cloud database storage
 - **Local State Management**: React Context with automatic sync
 - **Real-time Updates**: Changes reflect immediately across all pages
-- **Automatic Backup**: Cloud-based data storage with automatic backups
 
 ## 🛠️ Technology Stack
 
@@ -71,10 +61,9 @@ A comprehensive web application for managing a 20-member cooperative with monthl
 
 ## 📱 Pages & Navigation
 
-1. **Authentication** - Secure login/signup with email and password
-2. **Home Dashboard** (`/`) - Main interface with collection periods, loan creation, and member payments
-3. **Members** (`/members`) - Member management with search, bulk operations, and payment history
-4. **Loans** (`/loans`) - Detailed loan management with repayments and status updates
+1. **Home Dashboard** (`/`) - Main interface with collection periods, loan creation, and member payments
+2. **Members** (`/members`) - Member management with search, bulk operations, and payment history
+3. **Loans** (`/loans`) - Detailed loan management with repayments and status updates
 
 ## 🚀 Installation & Setup
 
@@ -82,7 +71,7 @@ A comprehensive web application for managing a 20-member cooperative with monthl
 
 - Node.js (Latest LTS version)
 - npm or yarn package manager
-- Supabase account (for authentication and cloud storage)
+- Supabase account (optional, for cloud storage)
 
 ### Installation
 
@@ -96,17 +85,14 @@ npm install
 npm.cmd install
 ```
 
-### Supabase Setup (Required for Authentication)
+### Environment Setup (Optional)
 
-**📋 See detailed setup instructions in `SUPABASE_SETUP.md`**
+Create a `.env.local` file for Supabase integration:
 
-1. Create a Supabase project at [supabase.com](https://supabase.com)
-2. Run the SQL script from `supabase.sql` in your Supabase SQL Editor
-3. Copy `.env.local.example` to `.env.local` and add your Supabase credentials:
-   ```env
-   NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
-   ```
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
 ### Development Server
 

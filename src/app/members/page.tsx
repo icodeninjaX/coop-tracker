@@ -4,8 +4,9 @@ import { useCoop } from "@/context/CoopContext";
 import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import { format } from "date-fns";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
-export default function MembersPage() {
+function MembersPage() {
   const { state, dispatch } = useCoop();
   const [selectedPeriod, setSelectedPeriod] = useState<string>("");
   const [query, setQuery] = useState<string>("");
@@ -279,5 +280,13 @@ export default function MembersPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function Members() {
+  return (
+    <ProtectedRoute>
+      <MembersPage />
+    </ProtectedRoute>
   );
 }

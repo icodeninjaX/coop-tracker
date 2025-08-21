@@ -4,8 +4,9 @@ import { useCoop } from "@/context/CoopContext";
 import { format } from "date-fns";
 import { useState } from "react";
 import clsx from "clsx";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
-export default function LoansPage() {
+function LoansPage() {
   const { state, dispatch } = useCoop();
   const [selectedPeriod, setSelectedPeriod] = useState<string>("");
   const [repaymentInputs, setRepaymentInputs] = useState<
@@ -234,5 +235,13 @@ export default function LoansPage() {
         )}
       </div>
     </main>
+  );
+}
+
+export default function Loans() {
+  return (
+    <ProtectedRoute>
+      <LoansPage />
+    </ProtectedRoute>
   );
 }
