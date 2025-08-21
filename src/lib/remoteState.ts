@@ -7,7 +7,7 @@ export async function loadRemoteState(
   userId?: string
 ): Promise<CoopState | null> {
   const supabase = getSupabaseClient();
-  
+
   if (!supabase || !userId) {
     console.log("loadRemoteState: No supabase client or userId", {
       supabase: !!supabase,
@@ -47,7 +47,7 @@ export async function saveRemoteState(
   userId?: string
 ): Promise<void> {
   const supabase = getSupabaseClient();
-  
+
   if (!supabase || !userId) {
     console.log("saveRemoteState: No supabase client or userId", {
       supabase: !!supabase,

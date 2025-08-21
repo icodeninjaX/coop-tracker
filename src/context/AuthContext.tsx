@@ -29,7 +29,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const supabase = getSupabaseClient();
-    
+
     if (!supabase) {
       console.error("Supabase not configured - check environment variables");
       setLoading(false);
@@ -50,7 +50,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log("AuthProvider: Auth state changed", session?.user?.id || "none");
+      console.log(
+        "AuthProvider: Auth state changed",
+        session?.user?.id || "none"
+      );
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -88,7 +91,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     const supabase = getSupabaseClient();
     if (!supabase) return;
-    
+
     console.log("AuthProvider: Signing out");
     await supabase.auth.signOut();
   };
