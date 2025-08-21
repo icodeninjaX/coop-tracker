@@ -59,52 +59,29 @@ export async function saveRemoteState(
   console.log("Saving remote state for user:", userId);
 
   try {
-    // First, check if record exists
-    const { data: existingData, error: selectError } = await supabase
+    // Use upsert instead of separate check and insert/update
+    const { error } = await supabase
       .from(TABLE)
-      .select("id")
-      .eq("user_id", userId)
-      .single();
-
-    if (selectError && selectError.code !== "PGRST116") {
-      // PGRST116 is "not found", which is expected for new users
-      console.error("Error checking existing record:", selectError);
-      return;
-    }
-
-    if (existingData) {
-      // Record exists, update it
-      console.log("Record exists, updating...");
-      const { error: updateError } = await supabase
-        .from(TABLE)
-        .update({
+      .upsert(
+        {
+          user_id: userId,
           data: state,
           updated_at: new Date().toISOString(),
-        })
-        .eq("user_id", userId);
+        },
+        { 
+          onConflict: 'user_id',
+          ignoreDuplicates: false 
+        }
+      );
 
-      if (updateError) {
-        console.error("Error updating remote state:", updateError);
-      } else {
-        console.log("Remote state updated successfully");
-      }
+    if (error) {
+      console.error("Error saving remote state:", error);
+      throw error;
     } else {
-      // Record doesn't exist, insert it
-      console.log("Record doesn't exist, inserting...");
-      const { error: insertError } = await supabase.from(TABLE).insert({
-        user_id: userId,
-        data: state,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      });
-
-      if (insertError) {
-        console.error("Error inserting remote state:", insertError);
-      } else {
-        console.log("Remote state inserted successfully");
-      }
+      console.log("Remote state saved successfully");
     }
   } catch (err) {
     console.error("Exception saving remote state:", err);
+    throw err;
   }
 }

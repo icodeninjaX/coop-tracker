@@ -1,89 +1,83 @@
-import { getSupabaseClient } from "./supabaseClient";
-
-export async function clearUserData(userId: string) {
-  const supabase = getSupabaseClient();
+export function debugDataPersistence() {
+  console.group("🔍 Data Persistence Debug");
   
-  if (!supabase) {
-    console.error("Supabase not configured");
-    return false;
-  }
-
-  try {
-    console.log("Clearing data for user:", userId);
-    
-    // Delete from Supabase
-    const { error } = await supabase
-      .from('coop_state')
-      .delete()
-      .eq('user_id', userId);
-    
-    if (error) {
-      console.error("Error clearing Supabase data:", error);
-      return false;
-    }
-    
-    // Clear localStorage
-    if (typeof window !== "undefined") {
-      localStorage.removeItem(`coopState_${userId}`);
-      localStorage.removeItem(`coopSeeded_${userId}`);
-      console.log("Cleared localStorage data");
-    }
-    
-    console.log("Successfully cleared all user data");
-    return true;
-  } catch (err) {
-    console.error("Exception clearing user data:", err);
-    return false;
-  }
-}
-
-export async function debugUserData(userId: string) {
-  const supabase = getSupabaseClient();
-  
-  if (!supabase) {
-    console.error("Supabase not configured");
+  if (typeof window === "undefined") {
+    console.log("❌ Not in browser environment");
+    console.groupEnd();
     return;
   }
 
+  console.log("🌐 LocalStorage contents:");
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && (key.includes('coop') || key.includes('supabase'))) {
+      const value = localStorage.getItem(key);
+      console.log(`  ${key}:`, value?.substring(0, 100) + (value && value.length > 100 ? '...' : ''));
+    }
+  }
+
+  console.log("📊 Coop State Keys:");
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key?.startsWith('coopState_')) {
+      console.log(`  Found state for user: ${key.replace('coopState_', '')}`);
+    }
+    if (key?.startsWith('coopSeeded_')) {
+      console.log(`  Found seed flag for user: ${key.replace('coopSeeded_', '')}`);
+    }
+  }
+
+  console.groupEnd();
+}
+
+export function clearAllCoopData() {
+  if (typeof window === "undefined") {
+    console.log("❌ Not in browser environment");
+    return;
+  }
+
+  console.log("🧹 Clearing all coop data from localStorage");
+  
+  const keysToRemove: string[] = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && (key.startsWith('coopState_') || key.startsWith('coopSeeded_'))) {
+      keysToRemove.push(key);
+    }
+  }
+
+  keysToRemove.forEach(key => {
+    localStorage.removeItem(key);
+    console.log(`  Removed: ${key}`);
+  });
+
+  console.log(`✅ Cleared ${keysToRemove.length} coop data entries`);
+}
+
+export function testDataPersistence() {
+  if (typeof window === "undefined") {
+    console.log("❌ Not in browser environment");
+    return;
+  }
+
+  console.log("🧪 Testing localStorage persistence...");
+  
+  const testKey = 'coopTest_' + Date.now();
+  const testData = { test: true, timestamp: Date.now() };
+  
   try {
-    console.log("=== DEBUG USER DATA ===");
-    console.log("User ID:", userId);
+    localStorage.setItem(testKey, JSON.stringify(testData));
+    const retrieved = localStorage.getItem(testKey);
+    const parsed = JSON.parse(retrieved || '{}');
     
-    // Check Supabase data
-    const { data, error } = await supabase
-      .from('coop_state')
-      .select('*')
-      .eq('user_id', userId);
-    
-    if (error) {
-      console.error("Error fetching Supabase data:", error);
+    if (parsed.test === true) {
+      console.log("✅ LocalStorage is working correctly");
     } else {
-      console.log("Supabase records:", data?.length || 0);
-      if (data && data.length > 0) {
-        console.log("Latest record:", data[0]);
-      }
+      console.log("❌ LocalStorage data corruption detected");
     }
     
-    // Check localStorage
-    if (typeof window !== "undefined") {
-      const localState = localStorage.getItem(`coopState_${userId}`);
-      const seeded = localStorage.getItem(`coopSeeded_${userId}`);
-      
-      console.log("LocalStorage state exists:", !!localState);
-      console.log("LocalStorage seeded flag:", seeded);
-      
-      if (localState) {
-        const parsed = JSON.parse(localState);
-        console.log("Local data summary:", {
-          collections: parsed.collections?.length || 0,
-          members: parsed.members?.length || 0,
-          loans: parsed.loans?.length || 0,
-        });
-      }
-    }
-    
-    console.log("=== END DEBUG ===");
-  } catch (err) {
-    console.error("Exception during debug:", err);
+    localStorage.removeItem(testKey);
+  } catch (error) {
+    console.error("❌ LocalStorage test failed:", error);
   }
 }

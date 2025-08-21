@@ -14,33 +14,37 @@ function LoansPage() {
   >({});
 
   return (
-    <main className="container mx-auto max-w-6xl p-6">
-      <h1 className="text-3xl font-bold mb-2 text-gray-900">Loans</h1>
-      <p className="text-gray-600 mb-6">
-        Create, approve, and manage repayments.
-      </p>
+    <main className="container mx-auto max-w-7xl px-4 py-6 lg:px-8">
+      <div className="mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+          Loans Management
+        </h1>
+        <p className="text-gray-600 text-sm md:text-base">
+          Create, approve, and manage loan repayments.
+        </p>
+      </div>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">
+      <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200 mb-6">
+        <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4">
           Select Period (for repayments)
         </h2>
         <select
-          className="w-full p-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          className="w-full p-2 md:p-3 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm md:text-base"
           value={selectedPeriod}
           onChange={(e) => setSelectedPeriod(e.target.value)}
         >
           <option value="">Select Period</option>
           {state.collections.map((p) => (
             <option key={p.id} value={p.id}>
-              {format(new Date(p.date), "MMMM d, yyyy")} — Collected ₱
+              {format(new Date(p.date), "MMM d, yyyy")} — Collected ₱
               {p.totalCollected.toLocaleString()}
             </option>
           ))}
         </select>
       </div>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">
+      <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200">
+        <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4">
           Active Loans
         </h2>
         {state.loans.length === 0 ? (

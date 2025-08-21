@@ -498,6 +498,7 @@ export function CoopProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!user) {
       console.log("CoopContext: No user, skipping load");
+      setHasLoadedOnce(false); // Reset load state when no user
       return; // Don't load state if no user
     }
 
@@ -511,9 +512,10 @@ export function CoopProvider({ children }: { children: ReactNode }) {
           console.log("CoopContext: Loaded remote state", remote);
           dispatch({ type: "LOAD_STATE", payload: remote });
           setHasLoadedOnce(true);
-          // Clear any old localStorage data since we have fresh remote data
+          // Keep localStorage as backup - don't remove it immediately
           if (typeof window !== "undefined") {
-            localStorage.removeItem(`coopState_${user.id}`);
+            localStorage.setItem(`coopState_${user.id}`, JSON.stringify(remote));
+            console.log("CoopContext: Synced remote state to localStorage backup");
           }
           return;
         }
@@ -524,14 +526,20 @@ export function CoopProvider({ children }: { children: ReactNode }) {
             : null;
         if (savedState) {
           console.log("CoopContext: Loaded local state");
-          const parsedState = JSON.parse(savedState);
-          dispatch({ type: "LOAD_STATE", payload: parsedState });
+          try {
+            const parsedState = JSON.parse(savedState);
+            dispatch({ type: "LOAD_STATE", payload: parsedState });
+          } catch (parseError) {
+            console.error("CoopContext: Error parsing saved state:", parseError);
+            console.log("CoopContext: Using initial state due to parse error");
+          }
         } else {
           console.log("CoopContext: No saved state found, using initial state");
         }
         setHasLoadedOnce(true);
       } catch (error) {
         console.error("CoopContext: Error during initialization:", error);
+        setHasLoadedOnce(true); // Still mark as loaded to prevent infinite loading
       }
     };
     init();
@@ -581,14 +589,25 @@ export function CoopProvider({ children }: { children: ReactNode }) {
 
     console.log("CoopContext: Saving state for user", user.id);
 
-    // Save to Supabase if available; always mirror to localStorage as fallback
-    saveRemoteState(state, user.id).catch((err) => {
-      console.error("Failed to save remote state:", err);
-    });
+    // Always save to localStorage first as it's synchronous and reliable
     if (typeof window !== "undefined") {
-      localStorage.setItem(`coopState_${user.id}`, JSON.stringify(state));
-      console.log("CoopContext: Saved to localStorage");
+      try {
+        localStorage.setItem(`coopState_${user.id}`, JSON.stringify(state));
+        console.log("CoopContext: Saved to localStorage successfully");
+      } catch (localError) {
+        console.error("CoopContext: Error saving to localStorage:", localError);
+      }
     }
+
+    // Save to Supabase as additional backup (async)
+    saveRemoteState(state, user.id)
+      .then(() => {
+        console.log("CoopContext: Saved to remote state successfully");
+      })
+      .catch((err) => {
+        console.error("CoopContext: Failed to save remote state:", err);
+        // LocalStorage save already completed above, so data is still persisted
+      });
   }, [state, user, hasLoadedOnce]);
 
   useEffect(() => {
