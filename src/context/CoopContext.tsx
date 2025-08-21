@@ -6,6 +6,7 @@ import {
   useReducer,
   ReactNode,
   useEffect,
+  useState,
 } from "react";
 import {
   CoopState,
@@ -491,6 +492,7 @@ const CoopContext = createContext<
 
 export function CoopProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(coopReducer, initialState);
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -508,6 +510,11 @@ export function CoopProvider({ children }: { children: ReactNode }) {
         if (remote) {
           console.log("CoopContext: Loaded remote state", remote);
           dispatch({ type: "LOAD_STATE", payload: remote });
+          setHasLoadedOnce(true);
+          // Clear any old localStorage data since we have fresh remote data
+          if (typeof window !== "undefined") {
+            localStorage.removeItem(`coopState_${user.id}`);
+          }
           return;
         }
 
@@ -522,6 +529,7 @@ export function CoopProvider({ children }: { children: ReactNode }) {
         } else {
           console.log("CoopContext: No saved state found, using initial state");
         }
+        setHasLoadedOnce(true);
       } catch (error) {
         console.error("CoopContext: Error during initialization:", error);
       }
@@ -569,6 +577,7 @@ export function CoopProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!user) return; // Don't save if no user
+    if (!hasLoadedOnce) return; // Don't save during initial load
 
     console.log("CoopContext: Saving state for user", user.id);
 
@@ -580,7 +589,7 @@ export function CoopProvider({ children }: { children: ReactNode }) {
       localStorage.setItem(`coopState_${user.id}`, JSON.stringify(state));
       console.log("CoopContext: Saved to localStorage");
     }
-  }, [state, user]);
+  }, [state, user, hasLoadedOnce]);
 
   useEffect(() => {
     // Derive current balance = contributions + repayments - disbursed loans
