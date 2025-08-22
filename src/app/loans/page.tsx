@@ -47,6 +47,13 @@ function LoansPage() {
         <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4">
           Active Loans
         </h2>
+        {state.loans.filter(l => l.status === "PENDING").length > 0 && (
+          <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-md">
+            <p className="text-sm text-amber-700">
+              <strong>💡 Tip:</strong> Pending loans need approval before repayments can be added. Use the Approve/Reject buttons on the right to change loan status.
+            </p>
+          </div>
+        )}
         {state.loans.length === 0 ? (
           <p className="text-gray-500">No active loans</p>
         ) : (
@@ -183,6 +190,56 @@ function LoansPage() {
                     >
                       {loan.status}
                     </span>
+                    
+                    {/* Approval buttons for pending loans */}
+                    {loan.status === "PENDING" && (
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => {
+                            const confirmApprove = confirm(
+                              `Approve loan of ₱${loan.amount.toLocaleString()} for ${member?.name}?`
+                            );
+                            if (confirmApprove) {
+                              dispatch({
+                                type: "UPDATE_LOAN_STATUS",
+                                payload: {
+                                  loanId: loan.id,
+                                  status: "APPROVED" as const,
+                                  dateApproved: new Date().toISOString(),
+                                  disbursementPeriodId: selectedPeriod || undefined,
+                                },
+                              });
+                            }
+                          }}
+                          className="text-xs px-3 py-1 rounded-md bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
+                          title="Approve this loan"
+                        >
+                          ✓ Approve
+                        </button>
+                        <button
+                          onClick={() => {
+                            const confirmReject = confirm(
+                              `Reject loan of ₱${loan.amount.toLocaleString()} for ${member?.name}?`
+                            );
+                            if (confirmReject) {
+                              dispatch({
+                                type: "UPDATE_LOAN_STATUS",
+                                payload: {
+                                  loanId: loan.id,
+                                  status: "REJECTED" as const,
+                                },
+                              });
+                            }
+                          }}
+                          className="text-xs px-3 py-1 rounded-md bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
+                          title="Reject this loan"
+                        >
+                          ✕ Reject
+                        </button>
+                      </div>
+                    )}
+                    
+                    {/* Repayment section for approved loans */}
                     {(loan.status === "APPROVED" || loan.status === "PAID") && (
                       <div className="flex items-center gap-2">
                         <input
