@@ -60,4 +60,5 @@ export interface CoopState {
   loans: Loan[];
   repayments: Repayment[];
   penalties: Penalty[];
+  selectedPeriod: string; // Currently selected period ID
 }

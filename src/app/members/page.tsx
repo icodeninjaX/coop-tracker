@@ -11,10 +11,13 @@ function MembersPage() {
   const [selectedPeriod, setSelectedPeriod] = useState<string>("");
   const [query, setQuery] = useState<string>("");
   const [amounts, setAmounts] = useState<Record<number, string>>({});
-  
+
   // Member CRUD states
   const [newMemberName, setNewMemberName] = useState<string>("");
-  const [editingMember, setEditingMember] = useState<{ id: number; name: string } | null>(null);
+  const [editingMember, setEditingMember] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
   const [showAddMember, setShowAddMember] = useState<boolean>(false);
 
   const period = useMemo(
@@ -146,7 +149,9 @@ function MembersPage() {
       {/* Member Management Section */}
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Member Management</h2>
+          <h2 className="text-lg font-semibold text-gray-900">
+            Member Management
+          </h2>
           <button
             onClick={() => setShowAddMember(!showAddMember)}
             className="px-4 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
@@ -204,7 +209,10 @@ function MembersPage() {
                       type="text"
                       value={editingMember.name}
                       onChange={(e) =>
-                        setEditingMember({ ...editingMember, name: e.target.value })
+                        setEditingMember({
+                          ...editingMember,
+                          name: e.target.value,
+                        })
                       }
                       className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-3"
                       onKeyDown={(e) => {
@@ -234,12 +242,18 @@ function MembersPage() {
                 ) : (
                   <>
                     <div className="flex-1">
-                      <span className="font-medium text-gray-900">{member.name}</span>
-                      <span className="text-sm text-gray-500 ml-2">#{member.id}</span>
+                      <span className="font-medium text-gray-900">
+                        {member.name}
+                      </span>
+                      <span className="text-sm text-gray-500 ml-2">
+                        #{member.id}
+                      </span>
                     </div>
                     <div className="flex gap-2">
                       <button
-                        onClick={() => setEditingMember({ id: member.id, name: member.name })}
+                        onClick={() =>
+                          setEditingMember({ id: member.id, name: member.name })
+                        }
                         className="px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded hover:bg-blue-200 focus:outline-none"
                         title="Edit member name"
                       >

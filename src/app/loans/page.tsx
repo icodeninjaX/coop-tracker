@@ -8,11 +8,11 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 
 function LoansPage() {
   const { state, dispatch } = useCoop();
-  const [selectedPeriod, setSelectedPeriod] = useState<string>("");
+  const selectedPeriod = state.selectedPeriod;
   const [repaymentInputs, setRepaymentInputs] = useState<
     Record<string, string>
   >({});
-  
+
   // Loan CRUD states
   const [showCreateLoan, setShowCreateLoan] = useState<boolean>(false);
   const [newLoan, setNewLoan] = useState({
@@ -26,7 +26,7 @@ function LoansPage() {
   const createLoan = () => {
     if (!newLoan.memberId || !newLoan.amount) return;
     const rate = newLoan.repaymentPlan === "MONTHLY" ? 0.04 : 0.03;
-    
+
     dispatch({
       type: "ADD_LOAN",
       payload: {
@@ -40,7 +40,7 @@ function LoansPage() {
         termCount: parseInt(newLoan.termCount) || undefined,
       },
     });
-    
+
     setNewLoan({
       memberId: "",
       amount: "",
@@ -50,11 +50,17 @@ function LoansPage() {
     setShowCreateLoan(false);
   };
 
-  const deleteLoan = (loanId: string, memberName: string, amount: number, status: string) => {
-    const message = status === "REJECTED" 
-      ? `Remove rejected loan request of ₱${amount.toLocaleString()} for ${memberName}?`
-      : `Are you sure you want to delete the loan of ₱${amount.toLocaleString()} for ${memberName}? This will also remove all related repayments and penalties.`;
-      
+  const deleteLoan = (
+    loanId: string,
+    memberName: string,
+    amount: number,
+    status: string
+  ) => {
+    const message =
+      status === "REJECTED"
+        ? `Remove rejected loan request of ₱${amount.toLocaleString()} for ${memberName}?`
+        : `Are you sure you want to delete the loan of ₱${amount.toLocaleString()} for ${memberName}? This will also remove all related repayments and penalties.`;
+
     const confirmDelete = confirm(message);
     if (confirmDelete) {
       dispatch({
@@ -82,7 +88,10 @@ function LoansPage() {
         <select
           className="w-full p-2 md:p-3 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm md:text-base"
           value={selectedPeriod}
-          onChange={(e) => setSelectedPeriod(e.target.value)}
+          onChange={(e) => dispatch({
+            type: "SET_SELECTED_PERIOD",
+            payload: { periodId: e.target.value },
+          })}
         >
           <option value="">Select Period</option>
           {state.collections.map((p) => (
@@ -97,7 +106,9 @@ function LoansPage() {
       {/* Loan Management Section */}
       <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200 mb-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg md:text-xl font-semibold text-gray-900">Create New Loan</h2>
+          <h2 className="text-lg md:text-xl font-semibold text-gray-900">
+            Create New Loan
+          </h2>
           <button
             onClick={() => setShowCreateLoan(!showCreateLoan)}
             className="px-4 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
@@ -110,12 +121,14 @@ function LoansPage() {
           <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
             <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
               <p className="text-sm text-blue-700">
-                <strong>💡 Loan Types:</strong><br/>
-                • <strong>One-time payment:</strong> Borrower pays the full amount + interest after the term period<br/>
-                • <strong>Per cut-off installments:</strong> Borrower pays in installments every cut-off (twice per month)
+                <strong>💡 Loan Types:</strong>
+                <br />• <strong>One-time payment:</strong> Borrower pays the
+                full amount + interest after the term period
+                <br />• <strong>Per cut-off installments:</strong> Borrower pays
+                in installments every cut-off (twice per month)
               </p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -123,7 +136,9 @@ function LoansPage() {
                 </label>
                 <select
                   value={newLoan.memberId}
-                  onChange={(e) => setNewLoan({ ...newLoan, memberId: e.target.value })}
+                  onChange={(e) =>
+                    setNewLoan({ ...newLoan, memberId: e.target.value })
+                  }
                   className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
                 >
                   <option value="">Select Member</option>
@@ -144,7 +159,9 @@ function LoansPage() {
                   min="0"
                   step="0.01"
                   value={newLoan.amount}
-                  onChange={(e) => setNewLoan({ ...newLoan, amount: e.target.value })}
+                  onChange={(e) =>
+                    setNewLoan({ ...newLoan, amount: e.target.value })
+                  }
                   placeholder="Loan amount"
                   className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
                 />
@@ -156,11 +173,20 @@ function LoansPage() {
                 </label>
                 <select
                   value={newLoan.repaymentPlan}
-                  onChange={(e) => setNewLoan({ ...newLoan, repaymentPlan: e.target.value as "CUT_OFF" | "MONTHLY" })}
+                  onChange={(e) =>
+                    setNewLoan({
+                      ...newLoan,
+                      repaymentPlan: e.target.value as "CUT_OFF" | "MONTHLY",
+                    })
+                  }
                   className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
                 >
-                  <option value="CUT_OFF">Per Cut-off installments (3% per month)</option>
-                  <option value="MONTHLY">One-time payment (4% per month)</option>
+                  <option value="CUT_OFF">
+                    Per Cut-off installments (3% per month)
+                  </option>
+                  <option value="MONTHLY">
+                    One-time payment (4% per month)
+                  </option>
                 </select>
               </div>
 
@@ -172,7 +198,9 @@ function LoansPage() {
                   type="number"
                   min="1"
                   value={newLoan.termCount}
-                  onChange={(e) => setNewLoan({ ...newLoan, termCount: e.target.value })}
+                  onChange={(e) =>
+                    setNewLoan({ ...newLoan, termCount: e.target.value })
+                  }
                   title={
                     newLoan.repaymentPlan === "MONTHLY"
                       ? "Number of months before full payment is due"
@@ -212,8 +240,14 @@ function LoansPage() {
         {state.loans.filter((l) => l.status === "REJECTED").length > 0 && (
           <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
             <p className="text-sm text-red-700">
-              <strong>🗑️ Clean up:</strong> You have {state.loans.filter((l) => l.status === "REJECTED").length} rejected loan{state.loans.filter((l) => l.status === "REJECTED").length > 1 ? 's' : ''}. 
-              Click the &ldquo;🗑️ Remove&rdquo; button to delete rejected loan requests.
+              <strong>🗑️ Clean up:</strong> You have{" "}
+              {state.loans.filter((l) => l.status === "REJECTED").length}{" "}
+              rejected loan
+              {state.loans.filter((l) => l.status === "REJECTED").length > 1
+                ? "s"
+                : ""}
+              . Click the &ldquo;🗑️ Remove&rdquo; button to delete rejected loan
+              requests.
             </p>
           </div>
         )}
@@ -235,32 +269,39 @@ function LoansPage() {
               const months = loan.termCount ?? 0;
               const totalDue = (loan.amount || 0) * (1 + rate * months);
               const remaining = Math.max(totalDue - repaid, 0);
-              
+
               // For one-time loans (MONTHLY), there are no installments - pay entire amount after term
               // For per cut-off loans (CUT_OFF), divide into installments over the term period
               const periodsCount = loan.termCount
                 ? loan.repaymentPlan === "CUT_OFF"
-                  ? loan.termCount * 2  // Cut-off periods (2 per month)
-                  : 1  // One-time payment after full term
+                  ? loan.termCount * 2 // Cut-off periods (2 per month)
+                  : 1 // One-time payment after full term
                 : undefined;
-              
-              const installment = loan.repaymentPlan === "MONTHLY"
-                ? totalDue  // One-time: pay entire amount at once
-                : periodsCount
-                ? totalDue / periodsCount  // Per cut-off: divide into installments
-                : undefined;
-                
-              const periodsPaid = loan.repaymentPlan === "MONTHLY"
-                ? repaid >= totalDue ? 1 : 0  // One-time: either paid in full or not
-                : periodsCount && installment
-                ? Math.floor(repaid / installment)
-                : undefined;
-                
-              const periodsLeft = loan.repaymentPlan === "MONTHLY"
-                ? repaid >= totalDue ? 0 : 1  // One-time: either 0 or 1 payment left
-                : periodsCount && periodsPaid !== undefined
-                ? Math.max(periodsCount - periodsPaid, 0)
-                : undefined;
+
+              const installment =
+                loan.repaymentPlan === "MONTHLY"
+                  ? totalDue // One-time: pay entire amount at once
+                  : periodsCount
+                  ? totalDue / periodsCount // Per cut-off: divide into installments
+                  : undefined;
+
+              const periodsPaid =
+                loan.repaymentPlan === "MONTHLY"
+                  ? repaid >= totalDue
+                    ? 1
+                    : 0 // One-time: either paid in full or not
+                  : periodsCount && installment
+                  ? Math.floor(repaid / installment)
+                  : undefined;
+
+              const periodsLeft =
+                loan.repaymentPlan === "MONTHLY"
+                  ? repaid >= totalDue
+                    ? 0
+                    : 1 // One-time: either 0 or 1 payment left
+                  : periodsCount && periodsPaid !== undefined
+                  ? Math.max(periodsCount - periodsPaid, 0)
+                  : undefined;
               return (
                 <div
                   key={loan.id}
@@ -282,8 +323,12 @@ function LoansPage() {
                     {loan.termCount && (
                       <p className="text-xs text-gray-600">
                         {loan.repaymentPlan === "MONTHLY"
-                          ? `Term: ${loan.termCount} month${loan.termCount > 1 ? 's' : ''} (pay full amount after term)`
-                          : `Terms: ${loan.termCount} month${loan.termCount > 1 ? 's' : ''} (${loan.termCount * 2} cut-off payments)`}
+                          ? `Term: ${loan.termCount} month${
+                              loan.termCount > 1 ? "s" : ""
+                            } (pay full amount after term)`
+                          : `Terms: ${loan.termCount} month${
+                              loan.termCount > 1 ? "s" : ""
+                            } (${loan.termCount * 2} cut-off payments)`}
                       </p>
                     )}
                     <p className="text-xs text-gray-500">
@@ -304,15 +349,27 @@ function LoansPage() {
                       {loan.repaymentPlan === "MONTHLY" ? (
                         /* One-time payment: Show total amount and due date */
                         <p>
-                          <strong>Payment due after {loan.termCount} month{(loan.termCount ?? 0) > 1 ? 's' : ''}:</strong> ₱{totalDue.toFixed(2)}
-                          {periodsLeft !== undefined ? ` • ${periodsLeft > 0 ? 'Payment pending' : 'Fully paid'}` : ""}
+                          <strong>
+                            Payment due after {loan.termCount} month
+                            {(loan.termCount ?? 0) > 1 ? "s" : ""}:
+                          </strong>{" "}
+                          ₱{totalDue.toFixed(2)}
+                          {periodsLeft !== undefined
+                            ? ` • ${
+                                periodsLeft > 0
+                                  ? "Payment pending"
+                                  : "Fully paid"
+                              }`
+                            : ""}
                         </p>
                       ) : (
                         /* Per cut-off installments: Show installment details */
                         installment && (
                           <p>
                             Installment: ₱{installment.toFixed(2)} per cut-off
-                            {periodsLeft !== undefined ? ` • Payments left: ${periodsLeft}` : ""}
+                            {periodsLeft !== undefined
+                              ? ` • Payments left: ${periodsLeft}`
+                              : ""}
                           </p>
                         )
                       )}
@@ -363,17 +420,25 @@ function LoansPage() {
                               loan.status === "PENDING",
                             "bg-green-100 text-green-800":
                               loan.status === "APPROVED",
-                            "bg-red-100 text-red-800": loan.status === "REJECTED",
+                            "bg-red-100 text-red-800":
+                              loan.status === "REJECTED",
                             "bg-blue-100 text-blue-800": loan.status === "PAID",
                           }
                         )}
                       >
                         {loan.status}
                       </span>
-                      
+
                       {/* Delete loan button - more prominent for rejected loans */}
                       <button
-                        onClick={() => deleteLoan(loan.id, member?.name || "Unknown", loan.amount, loan.status)}
+                        onClick={() =>
+                          deleteLoan(
+                            loan.id,
+                            member?.name || "Unknown",
+                            loan.amount,
+                            loan.status
+                          )
+                        }
                         className={clsx(
                           "px-2 py-1 text-xs rounded hover:bg-red-200 focus:outline-none",
                           loan.status === "REJECTED"

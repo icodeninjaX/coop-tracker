@@ -8,7 +8,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 
 function HomePage() {
   const { state, dispatch } = useCoop();
-  const [selectedPeriod, setSelectedPeriod] = useState<string>("");
+  const selectedPeriod = state.selectedPeriod;
   const [newLoanMemberId, setNewLoanMemberId] = useState<string>("");
   const [newLoanAmount, setNewLoanAmount] = useState<string>("");
   const [newLoanPlan, setNewLoanPlan] = useState<"MONTHLY" | "CUT_OFF">(
@@ -118,23 +118,52 @@ function HomePage() {
 
     const approvedLoans = state.loans.filter((l) => l.status === "APPROVED");
 
-    const sumDisbursedInPeriods = (periodIds: string[]) =>
-      approvedLoans
+    const sumDisbursedInPeriods = (periodIds: string[]) => {
+      return approvedLoans
         .filter((l) =>
           l.disbursementPeriodId
             ? periodIds.includes(l.disbursementPeriodId)
             : false
         )
         .reduce((sum, l) => sum + (l.amount || 0), 0);
+    };
+
+    // Calculate interest collected this period from repayments
+    const calculateInterestFromRepayments = (periodId: string) => {
+      const periodRepayments = state.repayments.filter((r) => r.periodId === periodId);
+      let totalInterest = 0;
+
+      periodRepayments.forEach((repayment) => {
+        const loan = state.loans.find((l) => l.id === repayment.loanId);
+        if (!loan || loan.status !== "APPROVED") return;
+
+        const rate = loan.interestRate ?? (loan.repaymentPlan === "MONTHLY" ? 0.04 : 0.03);
+        const months = loan.termCount ?? (loan.repaymentPlan === "MONTHLY" ? 1 : 12);
+        const totalDue = loan.amount * (1 + rate * months);
+        const totalInterestOnLoan = totalDue - loan.amount;
+
+        // For simplicity, assume interest is collected proportionally
+        const interestRatio = totalInterestOnLoan / totalDue;
+        const interestInThisPayment = repayment.amount * interestRatio;
+        
+        totalInterest += interestInThisPayment;
+      });
+
+      return totalInterest;
+    };
 
     const beginningBalance =
       sumCollections(prevPeriods) -
-      sumDisbursedInPeriods(prevPeriods.map((p) => p.id));
+      sumDisbursedInPeriods(prevPeriods.map((p) => p.id)) +
+      state.repayments
+        .filter((r) => prevPeriods.some((p) => p.id === r.periodId))
+        .reduce((sum, r) => sum + (r.amount || 0), 0);
     const collectionsThis = thisPeriod.totalCollected || 0;
     const repaymentsThis = state.repayments
       .filter((r) => r.periodId === thisPeriod.id)
       .reduce((sum, r) => sum + (r.amount || 0), 0);
     const disbursedThis = sumDisbursedInPeriods([thisPeriod.id]);
+    const interestCollectedThis = calculateInterestFromRepayments(thisPeriod.id);
     const endingBalance =
       beginningBalance + collectionsThis + repaymentsThis - disbursedThis;
 
@@ -143,6 +172,7 @@ function HomePage() {
       collectionsThis,
       repaymentsThis,
       disbursedThis,
+      interestCollectedThis,
       endingBalance,
     };
   };
@@ -180,7 +210,10 @@ function HomePage() {
         payload: { id, date: id, totalCollected: 0, payments: [] },
       });
     }
-    setSelectedPeriod(id);
+    dispatch({
+      type: "SET_SELECTED_PERIOD",
+      payload: { periodId: id },
+    });
   };
 
   const markAllPaid = () => {
@@ -274,7 +307,10 @@ function HomePage() {
           <select
             className="w-full p-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             value={selectedPeriod}
-            onChange={(e) => setSelectedPeriod(e.target.value)}
+            onChange={(e) => dispatch({
+              type: "SET_SELECTED_PERIOD",
+              payload: { periodId: e.target.value },
+            })}
           >
             <option value="">Select Period</option>
             {state.collections.map((period) => (
@@ -304,7 +340,7 @@ function HomePage() {
               const ledger = computeLedgerForSelected();
               if (!ledger) return null;
               return (
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
                   <div>
                     <p className="text-xs uppercase tracking-wide text-gray-500">
                       Beginning
@@ -331,9 +367,17 @@ function HomePage() {
                   </div>
                   <div>
                     <p className="text-xs uppercase tracking-wide text-gray-500">
+                      Interest
+                    </p>
+                    <p className="text-lg font-medium text-green-700">
+                      ₱{ledger.interestCollectedThis.toLocaleString()}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs uppercase tracking-wide text-gray-500">
                       Disbursed
                     </p>
-                    <p className="text-lg font-medium text-gray-900">
+                    <p className="text-lg font-medium text-red-700">
                       ₱{ledger.disbursedThis.toLocaleString()}
                     </p>
                   </div>
@@ -360,9 +404,11 @@ function HomePage() {
           </h2>
           <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
             <p className="text-sm text-blue-700">
-              <strong>💡 Loan Types:</strong><br/>
-              • <strong>One-time payment:</strong> Borrower pays the full amount + interest after the term period<br/>
-              • <strong>Per cut-off installments:</strong> Borrower pays in installments every cut-off (twice per month)
+              <strong>💡 Loan Types:</strong>
+              <br />• <strong>One-time payment:</strong> Borrower pays the full
+              amount + interest after the term period
+              <br />• <strong>Per cut-off installments:</strong> Borrower pays
+              in installments every cut-off (twice per month)
             </p>
           </div>
           <div className="space-y-3">
@@ -396,7 +442,9 @@ function HomePage() {
                 }
                 title="Repayment Plan"
               >
-                <option value="CUT_OFF">Per Cut-off installments (3% per month)</option>
+                <option value="CUT_OFF">
+                  Per Cut-off installments (3% per month)
+                </option>
                 <option value="MONTHLY">One-time payment (4% per month)</option>
               </select>
               {/* terms */}
@@ -404,9 +452,7 @@ function HomePage() {
                 type="number"
                 min={1}
                 className="shrink-0 w-24 min-w-[5rem] p-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 focus:border-indigo-500"
-                placeholder={
-                  newLoanPlan === "MONTHLY" ? "Months" : "Months"
-                }
+                placeholder={newLoanPlan === "MONTHLY" ? "Months" : "Months"}
                 value={newLoanTerms}
                 onChange={(e) => setNewLoanTerms(e.target.value)}
                 title={

@@ -92,6 +92,7 @@ const initialState: CoopState = {
   loans: [],
   repayments: [],
   penalties: [],
+  selectedPeriod: "",
 };
 
 type CoopAction =
@@ -135,6 +136,7 @@ type CoopAction =
         date?: string;
       };
     }
+  | { type: "SET_SELECTED_PERIOD"; payload: { periodId: string } }
   | { type: "LOAD_STATE"; payload: CoopState };
 
 function coopReducer(state: CoopState, action: CoopAction): CoopState {
@@ -181,8 +183,12 @@ function coopReducer(state: CoopState, action: CoopAction): CoopState {
       return {
         ...state,
         loans: state.loans.filter((loan) => loan.id !== action.payload.loanId),
-        repayments: state.repayments.filter((repayment) => repayment.loanId !== action.payload.loanId),
-        penalties: state.penalties.filter((penalty) => penalty.loanId !== action.payload.loanId),
+        repayments: state.repayments.filter(
+          (repayment) => repayment.loanId !== action.payload.loanId
+        ),
+        penalties: state.penalties.filter(
+          (penalty) => penalty.loanId !== action.payload.loanId
+        ),
       };
 
     case "ADD_MEMBER": {
@@ -215,10 +221,12 @@ function coopReducer(state: CoopState, action: CoopAction): CoopState {
       const memberLoanIds = state.loans
         .filter((loan) => loan.memberId === memberId)
         .map((loan) => loan.id);
-      
+
       // Also remove all related data for this member
       const newCollections = state.collections.map((collection) => {
-        const filteredPayments = collection.payments.filter((p) => p.memberId !== memberId);
+        const filteredPayments = collection.payments.filter(
+          (p) => p.memberId !== memberId
+        );
         const removedTotal = collection.payments
           .filter((p) => p.memberId === memberId)
           .reduce((sum, p) => sum + (p.amount || 0), 0);
@@ -228,14 +236,18 @@ function coopReducer(state: CoopState, action: CoopAction): CoopState {
           totalCollected: collection.totalCollected - removedTotal,
         };
       });
-      
+
       return {
         ...state,
         members: state.members.filter((member) => member.id !== memberId),
         collections: newCollections,
         loans: state.loans.filter((loan) => loan.memberId !== memberId),
-        repayments: state.repayments.filter((repayment) => repayment.memberId !== memberId),
-        penalties: state.penalties.filter((penalty) => !memberLoanIds.includes(penalty.loanId)),
+        repayments: state.repayments.filter(
+          (repayment) => repayment.memberId !== memberId
+        ),
+        penalties: state.penalties.filter(
+          (penalty) => !memberLoanIds.includes(penalty.loanId)
+        ),
       };
     }
 
@@ -337,25 +349,26 @@ function coopReducer(state: CoopState, action: CoopAction): CoopState {
     }
 
     case "UPDATE_LOAN_STATUS":
+      const updatedLoans = state.loans.map((loan) =>
+        loan.id === action.payload.loanId
+          ? {
+              ...loan,
+              status: action.payload.status,
+              dateApproved:
+                action.payload.status === "APPROVED"
+                  ? action.payload.dateApproved ?? new Date().toISOString()
+                  : loan.dateApproved,
+              disbursementPeriodId:
+                action.payload.status === "APPROVED"
+                  ? action.payload.disbursementPeriodId ??
+                    loan.disbursementPeriodId
+                  : loan.disbursementPeriodId,
+            }
+          : loan
+      );
       return {
         ...state,
-        loans: state.loans.map((loan) =>
-          loan.id === action.payload.loanId
-            ? {
-                ...loan,
-                status: action.payload.status,
-                dateApproved:
-                  action.payload.status === "APPROVED"
-                    ? action.payload.dateApproved ?? new Date().toISOString()
-                    : loan.dateApproved,
-                disbursementPeriodId:
-                  action.payload.status === "APPROVED"
-                    ? action.payload.disbursementPeriodId ??
-                      loan.disbursementPeriodId
-                    : loan.disbursementPeriodId,
-              }
-            : loan
-        ),
+        loans: updatedLoans,
       };
 
     case "UPDATE_BALANCE":
@@ -551,6 +564,13 @@ function coopReducer(state: CoopState, action: CoopAction): CoopState {
         collections: mergedCollections,
         repayments,
         penalties,
+      };
+    }
+
+    case "SET_SELECTED_PERIOD": {
+      return {
+        ...state,
+        selectedPeriod: action.payload.periodId,
       };
     }
 
