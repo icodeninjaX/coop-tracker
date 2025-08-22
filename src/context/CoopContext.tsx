@@ -97,6 +97,11 @@ const initialState: CoopState = {
 type CoopAction =
   | { type: "ADD_PAYMENT"; payload: Payment }
   | { type: "ADD_LOAN"; payload: Loan }
+  | { type: "UPDATE_LOAN"; payload: { loanId: string; loan: Partial<Loan> } }
+  | { type: "DELETE_LOAN"; payload: { loanId: string } }
+  | { type: "ADD_MEMBER"; payload: { name: string } }
+  | { type: "UPDATE_MEMBER"; payload: { memberId: number; name: string } }
+  | { type: "DELETE_MEMBER"; payload: { memberId: number } }
   | { type: "ADD_REPAYMENT"; payload: Repayment }
   | { type: "REMOVE_REPAYMENT"; payload: { repaymentId: string } }
   | { type: "ADD_PENALTY"; payload: Penalty }
@@ -161,6 +166,78 @@ function coopReducer(state: CoopState, action: CoopAction): CoopState {
         ...state,
         loans: [...state.loans, action.payload],
       };
+
+    case "UPDATE_LOAN":
+      return {
+        ...state,
+        loans: state.loans.map((loan) =>
+          loan.id === action.payload.loanId
+            ? { ...loan, ...action.payload.loan }
+            : loan
+        ),
+      };
+
+    case "DELETE_LOAN":
+      return {
+        ...state,
+        loans: state.loans.filter((loan) => loan.id !== action.payload.loanId),
+        repayments: state.repayments.filter((repayment) => repayment.loanId !== action.payload.loanId),
+        penalties: state.penalties.filter((penalty) => penalty.loanId !== action.payload.loanId),
+      };
+
+    case "ADD_MEMBER": {
+      const newMemberId = Math.max(...state.members.map((m) => m.id), 0) + 1;
+      return {
+        ...state,
+        members: [
+          ...state.members,
+          {
+            id: newMemberId,
+            name: action.payload.name,
+          },
+        ],
+      };
+    }
+
+    case "UPDATE_MEMBER":
+      return {
+        ...state,
+        members: state.members.map((member) =>
+          member.id === action.payload.memberId
+            ? { ...member, name: action.payload.name }
+            : member
+        ),
+      };
+
+    case "DELETE_MEMBER": {
+      const memberId = action.payload.memberId;
+      // Get loan IDs for this member
+      const memberLoanIds = state.loans
+        .filter((loan) => loan.memberId === memberId)
+        .map((loan) => loan.id);
+      
+      // Also remove all related data for this member
+      const newCollections = state.collections.map((collection) => {
+        const filteredPayments = collection.payments.filter((p) => p.memberId !== memberId);
+        const removedTotal = collection.payments
+          .filter((p) => p.memberId === memberId)
+          .reduce((sum, p) => sum + (p.amount || 0), 0);
+        return {
+          ...collection,
+          payments: filteredPayments,
+          totalCollected: collection.totalCollected - removedTotal,
+        };
+      });
+      
+      return {
+        ...state,
+        members: state.members.filter((member) => member.id !== memberId),
+        collections: newCollections,
+        loans: state.loans.filter((loan) => loan.memberId !== memberId),
+        repayments: state.repayments.filter((repayment) => repayment.memberId !== memberId),
+        penalties: state.penalties.filter((penalty) => !memberLoanIds.includes(penalty.loanId)),
+      };
+    }
 
     case "ADD_REPAYMENT": {
       const repayments = [...state.repayments, action.payload];

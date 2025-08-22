@@ -358,6 +358,13 @@ function HomePage() {
           <h2 className="text-lg font-semibold text-gray-900 mb-2">
             Create New Loan
           </h2>
+          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+            <p className="text-sm text-blue-700">
+              <strong>💡 Loan Types:</strong><br/>
+              • <strong>One-time payment:</strong> Borrower pays the full amount + interest after the term period<br/>
+              • <strong>Per cut-off installments:</strong> Borrower pays in installments every cut-off (twice per month)
+            </p>
+          </div>
           <div className="space-y-3">
             <select
               className="w-full p-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
@@ -389,8 +396,8 @@ function HomePage() {
                 }
                 title="Repayment Plan"
               >
-                <option value="CUT_OFF">Per Cut-off (3%)</option>
-                <option value="MONTHLY">One-time (4%)</option>
+                <option value="CUT_OFF">Per Cut-off installments (3% per month)</option>
+                <option value="MONTHLY">One-time payment (4% per month)</option>
               </select>
               {/* terms */}
               <input
@@ -398,14 +405,14 @@ function HomePage() {
                 min={1}
                 className="shrink-0 w-24 min-w-[5rem] p-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 focus:border-indigo-500"
                 placeholder={
-                  newLoanPlan === "MONTHLY" ? "One-time" : "Cut-offs"
+                  newLoanPlan === "MONTHLY" ? "Months" : "Months"
                 }
                 value={newLoanTerms}
                 onChange={(e) => setNewLoanTerms(e.target.value)}
                 title={
                   newLoanPlan === "MONTHLY"
-                    ? "Number of one-time periods"
-                    : "Cut-offs to pay"
+                    ? "Number of months before full payment is due"
+                    : "Number of months to pay (2 cut-offs per month)"
                 }
               />
               {/* button wrapper: full width on small screens; right-aligned beyond sm */}

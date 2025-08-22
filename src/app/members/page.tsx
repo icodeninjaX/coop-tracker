@@ -11,6 +11,11 @@ function MembersPage() {
   const [selectedPeriod, setSelectedPeriod] = useState<string>("");
   const [query, setQuery] = useState<string>("");
   const [amounts, setAmounts] = useState<Record<number, string>>({});
+  
+  // Member CRUD states
+  const [newMemberName, setNewMemberName] = useState<string>("");
+  const [editingMember, setEditingMember] = useState<{ id: number; name: string } | null>(null);
+  const [showAddMember, setShowAddMember] = useState<boolean>(false);
 
   const period = useMemo(
     () => state.collections.find((c) => c.id === selectedPeriod),
@@ -94,6 +99,38 @@ function MembersPage() {
     });
   };
 
+  // Member CRUD functions
+  const addMember = () => {
+    if (!newMemberName.trim()) return;
+    dispatch({
+      type: "ADD_MEMBER",
+      payload: { name: newMemberName.trim() },
+    });
+    setNewMemberName("");
+    setShowAddMember(false);
+  };
+
+  const updateMember = () => {
+    if (!editingMember || !editingMember.name.trim()) return;
+    dispatch({
+      type: "UPDATE_MEMBER",
+      payload: { memberId: editingMember.id, name: editingMember.name.trim() },
+    });
+    setEditingMember(null);
+  };
+
+  const deleteMember = (memberId: number, memberName: string) => {
+    const confirmDelete = confirm(
+      `Are you sure you want to delete "${memberName}"? This will also remove all their payments, loans, and repayments. This action cannot be undone.`
+    );
+    if (confirmDelete) {
+      dispatch({
+        type: "DELETE_MEMBER",
+        payload: { memberId },
+      });
+    }
+  };
+
   return (
     <main className="container mx-auto max-w-7xl px-4 py-6 lg:px-8">
       <div className="mb-8">
@@ -104,6 +141,124 @@ function MembersPage() {
           Rename members and manage their paid/unpaid status per collection
           period.
         </p>
+      </div>
+
+      {/* Member Management Section */}
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-gray-900">Member Management</h2>
+          <button
+            onClick={() => setShowAddMember(!showAddMember)}
+            className="px-4 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
+          >
+            {showAddMember ? "Cancel" : "+ Add Member"}
+          </button>
+        </div>
+
+        {/* Add Member Form */}
+        {showAddMember && (
+          <div className="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
+            <div className="flex gap-3 items-end">
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Member Name
+                </label>
+                <input
+                  type="text"
+                  value={newMemberName}
+                  onChange={(e) => setNewMemberName(e.target.value)}
+                  placeholder="Enter member name"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      addMember();
+                    }
+                  }}
+                />
+              </div>
+              <button
+                onClick={addMember}
+                disabled={!newMemberName.trim()}
+                className="px-4 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+              >
+                Add Member
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Members List with Edit/Delete */}
+        <div className="space-y-3">
+          <div className="text-sm text-gray-600 mb-3">
+            Total Members: {state.members.length}
+          </div>
+          <div className="max-h-60 overflow-y-auto">
+            {state.members.map((member) => (
+              <div
+                key={member.id}
+                className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50"
+              >
+                {editingMember?.id === member.id ? (
+                  <>
+                    <input
+                      type="text"
+                      value={editingMember.name}
+                      onChange={(e) =>
+                        setEditingMember({ ...editingMember, name: e.target.value })
+                      }
+                      className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-3"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          updateMember();
+                        } else if (e.key === "Escape") {
+                          setEditingMember(null);
+                        }
+                      }}
+                      autoFocus
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        onClick={updateMember}
+                        className="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 focus:outline-none"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => setEditingMember(null)}
+                        className="px-3 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-700 focus:outline-none"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex-1">
+                      <span className="font-medium text-gray-900">{member.name}</span>
+                      <span className="text-sm text-gray-500 ml-2">#{member.id}</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setEditingMember({ id: member.id, name: member.name })}
+                        className="px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded hover:bg-blue-200 focus:outline-none"
+                        title="Edit member name"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => deleteMember(member.id, member.name)}
+                        className="px-3 py-1 bg-red-100 text-red-700 text-xs rounded hover:bg-red-200 focus:outline-none"
+                        title="Delete member (will remove all related data)"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 mb-6">
