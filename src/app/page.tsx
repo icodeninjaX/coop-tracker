@@ -116,16 +116,27 @@ function HomePage() {
     const sumCollections = (periods: typeof periodsSorted) =>
       periods.reduce((sum, p) => sum + (p.totalCollected || 0), 0);
 
-    const approvedLoans = state.loans.filter((l) => l.status === "APPROVED");
+    const approvedLoans = state.loans.filter((l) => l.status === "APPROVED" || l.status === "PAID");
 
     const sumDisbursedInPeriods = (periodIds: string[]) => {
-      return approvedLoans
+      const disbursedAmount = approvedLoans
         .filter((l) =>
           l.disbursementPeriodId
             ? periodIds.includes(l.disbursementPeriodId)
             : false
         )
         .reduce((sum, l) => sum + (l.amount || 0), 0);
+      
+      // Temporary debugging - remove after testing
+      if (periodIds.length === 1) {
+        console.log('Debug disbursements - Period:', periodIds[0]);
+        console.log('All loans:', state.loans.map(l => ({ id: l.id, status: l.status, disbursementPeriodId: l.disbursementPeriodId })));
+        console.log('Approved+Paid loans:', approvedLoans.map(l => ({ id: l.id, status: l.status, disbursementPeriodId: l.disbursementPeriodId })));
+        console.log('Matching loans for period:', approvedLoans.filter(l => l.disbursementPeriodId && periodIds.includes(l.disbursementPeriodId)));
+        console.log('Total disbursed:', disbursedAmount);
+      }
+      
+      return disbursedAmount;
     };
 
     // Calculate interest collected this period from repayments
@@ -135,9 +146,16 @@ function HomePage() {
       );
       let totalInterest = 0;
 
+      // Temporary debugging - remove after testing
+      console.log('Debug interest - Period:', periodId);
+      console.log('Period repayments:', periodRepayments);
+
       periodRepayments.forEach((repayment) => {
         const loan = state.loans.find((l) => l.id === repayment.loanId);
-        if (!loan || loan.status !== "APPROVED") return;
+        if (!loan || (loan.status !== "APPROVED" && loan.status !== "PAID")) {
+          console.log('Skipping repayment - loan not found or wrong status:', repayment.loanId, loan?.status);
+          return;
+        }
 
         const rate =
           loan.interestRate ?? (loan.repaymentPlan === "MONTHLY" ? 0.04 : 0.03);
@@ -146,16 +164,24 @@ function HomePage() {
         const totalDue = loan.amount * (1 + rate * months);
         const totalInterestOnLoan = totalDue - loan.amount;
 
+        console.log(`Loan ${loan.id} (${loan.status}): amount=${loan.amount}, rate=${rate}, months=${months}, totalDue=${totalDue}, totalInterest=${totalInterestOnLoan}`);
+
         // Ensure we have valid numbers
-        if (totalDue <= 0 || totalInterestOnLoan <= 0) return;
+        if (totalDue <= 0 || totalInterestOnLoan <= 0) {
+          console.log('Skipping - invalid totals');
+          return;
+        }
 
         // Calculate interest portion of this repayment proportionally
         const interestRatio = totalInterestOnLoan / totalDue;
         const interestInThisPayment = repayment.amount * interestRatio;
 
+        console.log(`Repayment ${repayment.amount}: interestRatio=${interestRatio.toFixed(4)}, interestInPayment=${interestInThisPayment.toFixed(2)}`);
+
         totalInterest += interestInThisPayment;
       });
 
+      console.log('Total interest for period:', totalInterest);
       return Math.max(0, totalInterest);
     };
 
