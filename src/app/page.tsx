@@ -132,24 +132,41 @@ function HomePage() {
     const calculateInterestFromRepayments = (periodId: string) => {
       const periodRepayments = state.repayments.filter((r) => r.periodId === periodId);
       let totalInterest = 0;
+      
+      console.log(`Debug: Calculating interest for period ${periodId}`);
+      console.log('Period repayments:', periodRepayments);
 
       periodRepayments.forEach((repayment) => {
         const loan = state.loans.find((l) => l.id === repayment.loanId);
-        if (!loan || loan.status !== "APPROVED") return;
+        if (!loan || loan.status !== "APPROVED") {
+          console.log('Skipping repayment - loan not found or not approved:', repayment.loanId);
+          return;
+        }
 
         const rate = loan.interestRate ?? (loan.repaymentPlan === "MONTHLY" ? 0.04 : 0.03);
-        const months = loan.termCount ?? (loan.repaymentPlan === "MONTHLY" ? 1 : 12);
+        const months = loan.termCount ?? (loan.repaymentPlan === "MONTHLY" ? 1 : 5); // Default to 5 for cut-off
         const totalDue = loan.amount * (1 + rate * months);
         const totalInterestOnLoan = totalDue - loan.amount;
 
-        // For simplicity, assume interest is collected proportionally
+        console.log(`Loan ${loan.id}: amount=${loan.amount}, rate=${rate}, months=${months}, totalDue=${totalDue}, totalInterest=${totalInterestOnLoan}`);
+
+        // Ensure we have valid numbers
+        if (totalDue <= 0 || totalInterestOnLoan <= 0) {
+          console.log('Skipping - invalid totals');
+          return;
+        }
+
+        // Calculate interest portion of this repayment proportionally
         const interestRatio = totalInterestOnLoan / totalDue;
         const interestInThisPayment = repayment.amount * interestRatio;
+        
+        console.log(`Repayment ${repayment.amount}: interestRatio=${interestRatio}, interestInPayment=${interestInThisPayment}`);
         
         totalInterest += interestInThisPayment;
       });
 
-      return totalInterest;
+      console.log('Total interest for period:', totalInterest);
+      return Math.max(0, totalInterest); // Ensure non-negative
     };
 
     const beginningBalance =
@@ -370,7 +387,7 @@ function HomePage() {
                       Interest
                     </p>
                     <p className="text-lg font-medium text-green-700">
-                      ₱{ledger.interestCollectedThis.toLocaleString()}
+                      ₱{ledger.interestCollectedThis.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                     </p>
                   </div>
                   <div>
