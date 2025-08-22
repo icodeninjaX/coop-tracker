@@ -514,8 +514,13 @@ export function CoopProvider({ children }: { children: ReactNode }) {
           setHasLoadedOnce(true);
           // Keep localStorage as backup - don't remove it immediately
           if (typeof window !== "undefined") {
-            localStorage.setItem(`coopState_${user.id}`, JSON.stringify(remote));
-            console.log("CoopContext: Synced remote state to localStorage backup");
+            localStorage.setItem(
+              `coopState_${user.id}`,
+              JSON.stringify(remote)
+            );
+            console.log(
+              "CoopContext: Synced remote state to localStorage backup"
+            );
           }
           return;
         }
@@ -530,7 +535,10 @@ export function CoopProvider({ children }: { children: ReactNode }) {
             const parsedState = JSON.parse(savedState);
             dispatch({ type: "LOAD_STATE", payload: parsedState });
           } catch (parseError) {
-            console.error("CoopContext: Error parsing saved state:", parseError);
+            console.error(
+              "CoopContext: Error parsing saved state:",
+              parseError
+            );
             console.log("CoopContext: Using initial state due to parse error");
           }
         } else {

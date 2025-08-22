@@ -60,19 +60,17 @@ export async function saveRemoteState(
 
   try {
     // Use upsert instead of separate check and insert/update
-    const { error } = await supabase
-      .from(TABLE)
-      .upsert(
-        {
-          user_id: userId,
-          data: state,
-          updated_at: new Date().toISOString(),
-        },
-        { 
-          onConflict: 'user_id',
-          ignoreDuplicates: false 
-        }
-      );
+    const { error } = await supabase.from(TABLE).upsert(
+      {
+        user_id: userId,
+        data: state,
+        updated_at: new Date().toISOString(),
+      },
+      {
+        onConflict: "user_id",
+        ignoreDuplicates: false,
+      }
+    );
 
     if (error) {
       console.error("Error saving remote state:", error);

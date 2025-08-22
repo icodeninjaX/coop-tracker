@@ -25,9 +25,13 @@ export default function ResetPasswordPage() {
     const type = urlParams.get("type");
 
     if (type === "recovery" && accessToken && refreshToken) {
-      setMessage("You can now update your password. Please check your email for further instructions.");
+      setMessage(
+        "You can now update your password. Please check your email for further instructions."
+      );
     } else {
-      setError("Invalid or expired reset link. Please request a new password reset.");
+      setError(
+        "Invalid or expired reset link. Please request a new password reset."
+      );
     }
   }, []);
 

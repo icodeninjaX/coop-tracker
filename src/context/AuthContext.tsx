@@ -95,7 +95,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log("AuthProvider: Starting sign out process");
 
       // Don't clear state immediately - let components finish any pending saves
-      
+
       if (supabase) {
         // Sign out from Supabase first
         const { error } = await supabase.auth.signOut();
@@ -112,7 +112,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Give components time to finish saving before clearing state
       setTimeout(() => {
         console.log("AuthProvider: Clearing local state");
-        
+
         // Clear local state
         setUser(null);
         setSession(null);
@@ -132,7 +132,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           window.location.href = "/";
         }
       }, 500); // Give 500ms for any pending saves to complete
-
     } catch (error) {
       console.error("Error during sign out:", error);
       // Even if there's an error, clear local state and reload after delay

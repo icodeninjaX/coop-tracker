@@ -2,7 +2,11 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { useCoop } from "@/context/CoopContext";
-import { debugDataPersistence, clearAllCoopData, testDataPersistence } from "@/lib/debugUtils";
+import {
+  debugDataPersistence,
+  clearAllCoopData,
+  testDataPersistence,
+} from "@/lib/debugUtils";
 
 export default function DebugPage() {
   const { user, session, signOut } = useAuth();
@@ -93,7 +97,8 @@ export default function DebugPage() {
               Clear All Data
             </button>
             <p className="text-sm text-gray-600 mt-2">
-              Use these buttons to debug data persistence issues. Check browser console for detailed logs.
+              Use these buttons to debug data persistence issues. Check browser
+              console for detailed logs.
             </p>
           </div>
         </div>
