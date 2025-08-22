@@ -564,6 +564,8 @@ function coopReducer(state: CoopState, action: CoopAction): CoopState {
         collections: mergedCollections,
         repayments,
         penalties,
+        // Preserve the current selected period if it exists and is valid
+        selectedPeriod: action.payload.selectedPeriod || state.selectedPeriod || "",
       };
     }
 
@@ -608,6 +610,17 @@ export function CoopProvider({ children }: { children: ReactNode }) {
         if (remote) {
           console.log("CoopContext: Loaded remote state", remote);
           dispatch({ type: "LOAD_STATE", payload: remote });
+          
+          // Auto-select latest period if none is selected
+          if (!remote.selectedPeriod && remote.collections && remote.collections.length > 0) {
+            const latest = [...remote.collections].sort(
+              (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+            )[0];
+            if (latest) {
+              dispatch({ type: "SET_SELECTED_PERIOD", payload: { periodId: latest.id } });
+            }
+          }
+          
           setHasLoadedOnce(true);
           // Keep localStorage as backup - don't remove it immediately
           if (typeof window !== "undefined") {
@@ -631,6 +644,16 @@ export function CoopProvider({ children }: { children: ReactNode }) {
           try {
             const parsedState = JSON.parse(savedState);
             dispatch({ type: "LOAD_STATE", payload: parsedState });
+            
+            // Auto-select latest period if none is selected
+            if (!parsedState.selectedPeriod && parsedState.collections && parsedState.collections.length > 0) {
+              const latest = [...parsedState.collections].sort(
+                (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+              )[0];
+              if (latest) {
+                dispatch({ type: "SET_SELECTED_PERIOD", payload: { periodId: latest.id } });
+              }
+            }
           } catch (parseError) {
             console.error(
               "CoopContext: Error parsing saved state:",

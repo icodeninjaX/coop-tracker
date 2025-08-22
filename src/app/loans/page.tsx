@@ -88,10 +88,12 @@ function LoansPage() {
         <select
           className="w-full p-2 md:p-3 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm md:text-base"
           value={selectedPeriod}
-          onChange={(e) => dispatch({
-            type: "SET_SELECTED_PERIOD",
-            payload: { periodId: e.target.value },
-          })}
+          onChange={(e) =>
+            dispatch({
+              type: "SET_SELECTED_PERIOD",
+              payload: { periodId: e.target.value },
+            })
+          }
         >
           <option value="">Select Period</option>
           {state.collections.map((p) => (

@@ -130,43 +130,33 @@ function HomePage() {
 
     // Calculate interest collected this period from repayments
     const calculateInterestFromRepayments = (periodId: string) => {
-      const periodRepayments = state.repayments.filter((r) => r.periodId === periodId);
+      const periodRepayments = state.repayments.filter(
+        (r) => r.periodId === periodId
+      );
       let totalInterest = 0;
-      
-      console.log(`Debug: Calculating interest for period ${periodId}`);
-      console.log('Period repayments:', periodRepayments);
 
       periodRepayments.forEach((repayment) => {
         const loan = state.loans.find((l) => l.id === repayment.loanId);
-        if (!loan || loan.status !== "APPROVED") {
-          console.log('Skipping repayment - loan not found or not approved:', repayment.loanId);
-          return;
-        }
+        if (!loan || loan.status !== "APPROVED") return;
 
-        const rate = loan.interestRate ?? (loan.repaymentPlan === "MONTHLY" ? 0.04 : 0.03);
-        const months = loan.termCount ?? (loan.repaymentPlan === "MONTHLY" ? 1 : 5); // Default to 5 for cut-off
+        const rate =
+          loan.interestRate ?? (loan.repaymentPlan === "MONTHLY" ? 0.04 : 0.03);
+        const months =
+          loan.termCount ?? (loan.repaymentPlan === "MONTHLY" ? 1 : 5);
         const totalDue = loan.amount * (1 + rate * months);
         const totalInterestOnLoan = totalDue - loan.amount;
 
-        console.log(`Loan ${loan.id}: amount=${loan.amount}, rate=${rate}, months=${months}, totalDue=${totalDue}, totalInterest=${totalInterestOnLoan}`);
-
         // Ensure we have valid numbers
-        if (totalDue <= 0 || totalInterestOnLoan <= 0) {
-          console.log('Skipping - invalid totals');
-          return;
-        }
+        if (totalDue <= 0 || totalInterestOnLoan <= 0) return;
 
         // Calculate interest portion of this repayment proportionally
         const interestRatio = totalInterestOnLoan / totalDue;
         const interestInThisPayment = repayment.amount * interestRatio;
-        
-        console.log(`Repayment ${repayment.amount}: interestRatio=${interestRatio}, interestInPayment=${interestInThisPayment}`);
-        
+
         totalInterest += interestInThisPayment;
       });
 
-      console.log('Total interest for period:', totalInterest);
-      return Math.max(0, totalInterest); // Ensure non-negative
+      return Math.max(0, totalInterest);
     };
 
     const beginningBalance =
@@ -180,7 +170,9 @@ function HomePage() {
       .filter((r) => r.periodId === thisPeriod.id)
       .reduce((sum, r) => sum + (r.amount || 0), 0);
     const disbursedThis = sumDisbursedInPeriods([thisPeriod.id]);
-    const interestCollectedThis = calculateInterestFromRepayments(thisPeriod.id);
+    const interestCollectedThis = calculateInterestFromRepayments(
+      thisPeriod.id
+    );
     const endingBalance =
       beginningBalance + collectionsThis + repaymentsThis - disbursedThis;
 
@@ -324,10 +316,12 @@ function HomePage() {
           <select
             className="w-full p-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             value={selectedPeriod}
-            onChange={(e) => dispatch({
-              type: "SET_SELECTED_PERIOD",
-              payload: { periodId: e.target.value },
-            })}
+            onChange={(e) =>
+              dispatch({
+                type: "SET_SELECTED_PERIOD",
+                payload: { periodId: e.target.value },
+              })
+            }
           >
             <option value="">Select Period</option>
             {state.collections.map((period) => (
@@ -387,7 +381,10 @@ function HomePage() {
                       Interest
                     </p>
                     <p className="text-lg font-medium text-green-700">
-                      ₱{ledger.interestCollectedThis.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                      ₱
+                      {ledger.interestCollectedThis
+                        .toFixed(2)
+                        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                     </p>
                   </div>
                   <div>
