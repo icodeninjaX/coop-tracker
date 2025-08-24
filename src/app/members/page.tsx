@@ -2,11 +2,19 @@
 
 import { useCoop } from "@/context/CoopContext";
 import { useEffect, useMemo, useState } from "react";
-import clsx from "clsx";
 import { format } from "date-fns";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import {
+  Button,
+  Card,
+  Input,
+  Select,
+  Badge,
+  EmptyState,
+  Modal,
+} from "@/components/UI";
 
-function MembersPage() {
+function MembersContent() {
   const { state, dispatch } = useCoop();
   const [selectedPeriod, setSelectedPeriod] = useState<string>("");
   const [query, setQuery] = useState<string>("");
@@ -134,488 +142,422 @@ function MembersPage() {
     }
   };
 
+  // Stats calculations
+  const totalPaid = period?.payments.length || 0;
+  const totalMembers = state.members.length;
+  const totalCollected = period?.totalCollected || 0;
+  const paymentProgress =
+    totalMembers > 0 ? (totalPaid / totalMembers) * 100 : 0;
+
   return (
-    <main className="container mx-auto max-w-7xl px-4 py-6 lg:px-8">
-      <div className="mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-          Member Management
-        </h1>
-        <p className="text-gray-600 text-sm md:text-base mb-4">
-          Rename members and manage their paid/unpaid status per collection
-          period.
-        </p>
-      </div>
-
-      {/* Member Management Section */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">
-            Member Management
-          </h2>
-          <button
-            onClick={() => setShowAddMember(!showAddMember)}
-            className="px-4 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
-          >
-            {showAddMember ? "Cancel" : "+ Add Member"}
-          </button>
-        </div>
-
-        {/* Add Member Form */}
-        {showAddMember && (
-          <div className="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
-            <div className="flex gap-3 items-end">
-              <div className="flex-1">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Member Name
-                </label>
-                <input
-                  type="text"
-                  value={newMemberName}
-                  onChange={(e) => setNewMemberName(e.target.value)}
-                  placeholder="Enter member name"
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      addMember();
-                    }
-                  }}
-                />
-              </div>
-              <button
-                onClick={addMember}
-                disabled={!newMemberName.trim()}
-                className="px-4 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-              >
-                Add Member
-              </button>
+    <div className="min-h-screen">
+      <div className="container mx-auto max-w-6xl px-4 sm:px-6 py-8">
+        {/* Header Section */}
+        <div className="mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                👥 Members
+              </h1>
+              <p className="text-gray-600">
+                Manage your cooperative members and track their payments
+              </p>
+            </div>
+            <div className="flex items-center space-x-3">
+              <Badge variant="info">{totalMembers} members</Badge>
+              {selectedPeriod && (
+                <Badge variant="success">
+                  {format(new Date(selectedPeriod), "MMM dd")}
+                </Badge>
+              )}
             </div>
           </div>
+        </div>
+
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-blue-600 text-sm font-medium">
+                  Total Members
+                </p>
+                <p className="text-2xl font-bold text-blue-900">
+                  {totalMembers}
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
+                <span className="text-white text-xl">👥</span>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6 bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-green-600 text-sm font-medium">
+                  Payments Made
+                </p>
+                <p className="text-2xl font-bold text-green-900">
+                  {totalPaid} / {totalMembers}
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
+                <span className="text-white text-xl">💳</span>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6 bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-purple-600 text-sm font-medium">
+                  Total Collected
+                </p>
+                <p className="text-2xl font-bold text-purple-900">
+                  ₱{totalCollected.toLocaleString()}
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center">
+                <span className="text-white text-xl">💰</span>
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* Controls Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {/* Period Selection */}
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Collection Period
+            </h3>
+            <Select
+              value={selectedPeriod}
+              onChange={(e) => setSelectedPeriod(e.target.value)}
+              options={[
+                { value: "", label: "Select Period" },
+                ...state.collections.map((p) => ({
+                  value: p.id,
+                  label: `${format(
+                    new Date(p.date),
+                    "MMM d, yyyy"
+                  )} - ₱${p.totalCollected.toLocaleString()}`,
+                })),
+              ]}
+            />
+          </Card>
+
+          {/* Search */}
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Search Members
+            </h3>
+            <Input
+              type="text"
+              placeholder="Search by name..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              icon={
+                <svg
+                  className="h-4 w-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              }
+            />
+          </Card>
+
+          {/* Quick Actions */}
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Quick Actions
+            </h3>
+            <div className="space-y-3">
+              <Button
+                onClick={() => setShowAddMember(true)}
+                variant="primary"
+                className="w-full"
+              >
+                + Add Member
+              </Button>
+              {selectedPeriod && (
+                <div className="flex space-x-2">
+                  <Button
+                    onClick={() => markAll(true)}
+                    variant="success"
+                    size="sm"
+                    className="flex-1"
+                  >
+                    Mark All Paid
+                  </Button>
+                  <Button
+                    onClick={() => markAll(false)}
+                    variant="secondary"
+                    size="sm"
+                    className="flex-1"
+                  >
+                    Mark All Unpaid
+                  </Button>
+                </div>
+              )}
+            </div>
+          </Card>
+        </div>
+
+        {/* Progress Bar */}
+        {selectedPeriod && (
+          <Card className="p-6 mb-8">
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Payment Progress
+              </h3>
+              <span className="text-sm font-medium text-gray-600">
+                {Math.round(paymentProgress)}%
+              </span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-3">
+              <div
+                className="bg-green-500 h-3 rounded-full transition-all duration-500"
+                style={{ width: `${paymentProgress}%` }}
+              />
+            </div>
+            <p className="text-sm text-gray-500 mt-2">
+              {totalPaid} of {totalMembers} members have paid
+            </p>
+          </Card>
         )}
 
-        {/* Members List with Edit/Delete */}
-        <div className="space-y-3">
-          <div className="text-sm text-gray-600 mb-3">
-            Total Members: {state.members.length}
-          </div>
-          <div className="max-h-60 overflow-y-auto">
-            {state.members.map((member) => (
-              <div
-                key={member.id}
-                className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50"
-              >
-                {editingMember?.id === member.id ? (
-                  <>
-                    <input
-                      type="text"
-                      value={editingMember.name}
-                      onChange={(e) =>
-                        setEditingMember({
-                          ...editingMember,
-                          name: e.target.value,
-                        })
-                      }
-                      className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-3"
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          updateMember();
-                        } else if (e.key === "Escape") {
-                          setEditingMember(null);
-                        }
-                      }}
-                      autoFocus
-                    />
-                    <div className="flex gap-2">
-                      <button
-                        onClick={updateMember}
-                        className="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 focus:outline-none"
-                      >
-                        Save
-                      </button>
-                      <button
-                        onClick={() => setEditingMember(null)}
-                        className="px-3 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-700 focus:outline-none"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="flex-1">
-                      <span className="font-medium text-gray-900">
-                        {member.name}
-                      </span>
-                      <span className="text-sm text-gray-500 ml-2">
-                        #{member.id}
-                      </span>
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() =>
-                          setEditingMember({ id: member.id, name: member.name })
-                        }
-                        className="px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded hover:bg-blue-200 focus:outline-none"
-                        title="Edit member name"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => deleteMember(member.id, member.name)}
-                        className="px-3 py-1 bg-red-100 text-red-700 text-xs rounded hover:bg-red-200 focus:outline-none"
-                        title="Delete member (will remove all related data)"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 mb-6">
-        <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Collection Period
-          </label>
-          <select
-            className="w-full p-2 md:p-3 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm md:text-base"
-            value={selectedPeriod}
-            onChange={(e) => setSelectedPeriod(e.target.value)}
-          >
-            <option value="">Select Period</option>
-            {state.collections.map((p) => (
-              <option key={p.id} value={p.id}>
-                {format(new Date(p.date), "MMM d, yyyy")} - ₱
-                {p.totalCollected.toLocaleString()}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Search Members
-          </label>
-          <input
-            type="text"
-            placeholder="Search by name"
-            className="w-full p-2 md:p-3 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm md:text-base"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-        </div>
-
-        <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Quick Actions
-          </label>
-          <div className="flex gap-2">
-            <button
-              disabled={!selectedPeriod}
-              onClick={() => markAll(true)}
-              className={clsx(
-                "flex-1 inline-flex items-center justify-center px-3 py-2 text-sm rounded-md",
-                selectedPeriod
-                  ? "bg-green-600 text-white hover:bg-green-500"
-                  : "bg-gray-300 text-gray-600 cursor-not-allowed"
-              )}
-            >
-              Mark All Paid
-            </button>
-            <button
-              disabled={!selectedPeriod}
-              onClick={() => markAll(false)}
-              className={clsx(
-                "flex-1 inline-flex items-center justify-center px-3 py-2 text-sm rounded-md",
-                selectedPeriod
-                  ? "bg-gray-700 text-white hover:bg-gray-600"
-                  : "bg-gray-300 text-gray-600 cursor-not-allowed"
-              )}
-            >
-              Mark All Unpaid
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200">
-        {/* Stats Summary */}
-        <div className="mb-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            <div className="bg-gray-50 p-3 rounded-lg">
-              <p className="text-lg md:text-xl font-semibold text-gray-900">
-                {members.length}
-              </p>
-              <p className="text-sm text-gray-600">Total Members</p>
+        {/* Members List */}
+        <Card className="overflow-hidden">
+          <div className="p-6 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-gray-900">
+                Members List
+              </h2>
+              <span className="text-sm text-gray-500">
+                {members.length} members
+                {query && ` (filtered from ${state.members.length})`}
+              </span>
             </div>
-            {selectedPeriod && (
-              <>
-                <div className="bg-green-50 p-3 rounded-lg">
-                  <p className="text-lg md:text-xl font-semibold text-green-600">
-                    {members.filter((m) => getIsPaid(m.id)).length}
-                  </p>
-                  <p className="text-sm text-gray-600">Paid</p>
-                </div>
-                <div className="bg-red-50 p-3 rounded-lg">
-                  <p className="text-lg md:text-xl font-semibold text-red-600">
-                    {members.filter((m) => !getIsPaid(m.id)).length}
-                  </p>
-                  <p className="text-sm text-gray-600">Unpaid</p>
-                </div>
-                <div className="bg-blue-50 p-3 rounded-lg">
-                  <p className="text-lg md:text-xl font-semibold text-blue-600">
-                    ₱{period?.defaultContribution ?? 0}
-                  </p>
-                  <p className="text-sm text-gray-600">Default Amount</p>
-                </div>
-              </>
-            )}
           </div>
-        </div>
 
-        {/* Desktop Table */}
-        <div className="hidden md:block overflow-x-auto">
-          <table className="min-w-full text-left">
-            <thead>
-              <tr className="text-sm text-gray-600 border-b">
-                <th className="py-3 pr-4 font-medium">Member</th>
-                <th className="py-3 pr-4 font-medium">Status</th>
-                <th className="py-3 pr-4 font-medium">Amount</th>
-                <th className="py-3 pr-4 font-medium">Periods Paid</th>
-                <th className="py-3 pr-4 font-medium">Approved Loans</th>
-                <th className="py-3 pr-4 text-right font-medium">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {members.map((m) => {
-                const paidCount = state.collections.reduce(
-                  (acc, c) =>
-                    c.payments.some((p) => p.memberId === m.id) ? acc + 1 : acc,
-                  0
+          {members.length === 0 ? (
+            <div className="p-12">
+              <EmptyState
+                title="No Members Found"
+                description={
+                  query
+                    ? "No members match your search"
+                    : "Add your first member to get started"
+                }
+                action={
+                  <Button onClick={() => setShowAddMember(true)}>
+                    Add First Member
+                  </Button>
+                }
+              />
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-200">
+              {members.map((member) => {
+                const isPaid = getIsPaid(member.id);
+                const payment = period?.payments.find(
+                  (p) => p.memberId === member.id
                 );
-                const approvedLoansTotal = state.loans
-                  .filter((l) => l.memberId === m.id && l.status === "APPROVED")
-                  .reduce((sum, l) => sum + (l.amount || 0), 0);
-                const isPaid = getIsPaid(m.id);
-                const currentPayment = period?.payments.find(
-                  (p) => p.memberId === m.id
-                );
+
                 return (
-                  <tr
-                    key={m.id}
-                    className="border-b last:border-0 hover:bg-gray-50"
+                  <div
+                    key={member.id}
+                    className="p-6 hover:bg-gray-50 transition-colors"
                   >
-                    <td className="py-3 pr-4 align-middle">
-                      <input
-                        className="w-full max-w-xs p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                        value={m.name}
-                        onChange={(e) =>
-                          dispatch({
-                            type: "UPDATE_MEMBER_NAME",
-                            payload: { memberId: m.id, name: e.target.value },
-                          })
-                        }
-                      />
-                    </td>
-                    <td className="py-3 pr-4 align-middle">
-                      <span
-                        className={clsx(
-                          "px-2 py-1 rounded-full text-xs font-medium",
-                          isPaid
-                            ? "bg-green-100 text-green-800"
-                            : "bg-gray-100 text-gray-800"
-                        )}
-                      >
-                        {isPaid ? "Paid" : "Unpaid"}
-                      </span>
-                    </td>
-                    <td className="py-3 pr-4 align-middle">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-500">₱</span>
-                        <input
-                          type="number"
-                          min={0}
-                          step={0.01}
-                          className="w-24 p-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                          placeholder={String(period?.defaultContribution ?? 0)}
-                          value={
-                            amounts[m.id] ??
-                            (currentPayment
-                              ? String(currentPayment.amount)
-                              : "")
-                          }
-                          onChange={(e) =>
-                            setAmounts((prev) => ({
-                              ...prev,
-                              [m.id]: e.target.value,
-                            }))
-                          }
-                        />
+                    {editingMember?.id === member.id ? (
+                      // Edit Mode
+                      <div className="flex items-center space-x-4">
+                        <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                          <span className="text-white font-medium">
+                            {editingMember.name[0]?.toUpperCase() || "?"}
+                          </span>
+                        </div>
+                        <div className="flex-1">
+                          <Input
+                            value={editingMember.name}
+                            onChange={(e) =>
+                              setEditingMember({
+                                ...editingMember,
+                                name: e.target.value,
+                              })
+                            }
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") updateMember();
+                              if (e.key === "Escape") setEditingMember(null);
+                            }}
+                          />
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button
+                            onClick={updateMember}
+                            variant="primary"
+                            size="sm"
+                          >
+                            Save
+                          </Button>
+                          <Button
+                            onClick={() => setEditingMember(null)}
+                            variant="secondary"
+                            size="sm"
+                          >
+                            Cancel
+                          </Button>
+                        </div>
                       </div>
-                    </td>
-                    <td className="py-3 pr-4 align-middle text-center">
-                      {paidCount}
-                    </td>
-                    <td className="py-3 pr-4 align-middle">
-                      ₱{approvedLoansTotal.toLocaleString()}
-                    </td>
-                    <td className="py-3 pr-0 align-middle text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          disabled={!selectedPeriod}
-                          onClick={() => saveAmount(m.id)}
-                          className={clsx(
-                            "inline-flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors",
-                            selectedPeriod
-                              ? "bg-indigo-600 text-white hover:bg-indigo-500"
-                              : "bg-gray-300 text-gray-600 cursor-not-allowed"
+                    ) : (
+                      // Display Mode
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                            <span className="text-white font-medium">
+                              {member.name[0]?.toUpperCase() || "?"}
+                            </span>
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-gray-900">
+                              {member.name}
+                            </h3>
+                            <p className="text-sm text-gray-500">
+                              Member #{member.id}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+                          {selectedPeriod && (
+                            <div className="flex items-center space-x-3">
+                              {isPaid ? (
+                                <div className="flex items-center space-x-2">
+                                  <Badge variant="success">Paid</Badge>
+                                  <span className="font-semibold text-green-600">
+                                    ₱{payment?.amount?.toLocaleString() || 0}
+                                  </span>
+                                </div>
+                              ) : (
+                                <div className="flex items-center space-x-2">
+                                  <Badge variant="error">Unpaid</Badge>
+                                  <div className="flex space-x-2">
+                                    <Input
+                                      type="number"
+                                      placeholder={
+                                        period?.defaultContribution?.toString() ||
+                                        "0"
+                                      }
+                                      value={amounts[member.id] || ""}
+                                      onChange={(e) =>
+                                        setAmounts((prev) => ({
+                                          ...prev,
+                                          [member.id]: e.target.value,
+                                        }))
+                                      }
+                                      className="w-24 text-sm"
+                                    />
+                                    <Button
+                                      onClick={() => saveAmount(member.id)}
+                                      variant="success"
+                                      size="sm"
+                                    >
+                                      Pay
+                                    </Button>
+                                  </div>
+                                </div>
+                              )}
+
+                              {isPaid && (
+                                <Button
+                                  onClick={() => clearAmount(member.id)}
+                                  variant="secondary"
+                                  size="sm"
+                                >
+                                  Clear
+                                </Button>
+                              )}
+                            </div>
                           )}
-                        >
-                          {isPaid ? "Update" : "Save"}
-                        </button>
-                        <button
-                          disabled={!selectedPeriod || !isPaid}
-                          onClick={() => clearAmount(m.id)}
-                          className={clsx(
-                            "inline-flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors",
-                            selectedPeriod && isPaid
-                              ? "bg-gray-700 text-white hover:bg-gray-600"
-                              : "bg-gray-300 text-gray-600 cursor-not-allowed"
-                          )}
-                        >
-                          Clear
-                        </button>
+
+                          <div className="flex space-x-2">
+                            <Button
+                              onClick={() =>
+                                setEditingMember({
+                                  id: member.id,
+                                  name: member.name,
+                                })
+                              }
+                              variant="ghost"
+                              size="sm"
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              onClick={() =>
+                                deleteMember(member.id, member.name)
+                              }
+                              variant="danger"
+                              size="sm"
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        </div>
                       </div>
-                    </td>
-                  </tr>
+                    )}
+                  </div>
                 );
               })}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Mobile Card Layout */}
-        <div className="md:hidden space-y-4">
-          {members.map((m) => {
-            const paidCount = state.collections.reduce(
-              (acc, c) =>
-                c.payments.some((p) => p.memberId === m.id) ? acc + 1 : acc,
-              0
-            );
-            const approvedLoansTotal = state.loans
-              .filter((l) => l.memberId === m.id && l.status === "APPROVED")
-              .reduce((sum, l) => sum + (l.amount || 0), 0);
-            const isPaid = getIsPaid(m.id);
-            const currentPayment = period?.payments.find(
-              (p) => p.memberId === m.id
-            );
-
-            return (
-              <div key={m.id} className="bg-gray-50 p-4 rounded-lg border">
-                <div className="flex items-center justify-between mb-3">
-                  <input
-                    className="flex-1 mr-3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm font-medium"
-                    value={m.name}
-                    onChange={(e) =>
-                      dispatch({
-                        type: "UPDATE_MEMBER_NAME",
-                        payload: { memberId: m.id, name: e.target.value },
-                      })
-                    }
-                  />
-                  <span
-                    className={clsx(
-                      "px-2 py-1 rounded-full text-xs font-medium",
-                      isPaid
-                        ? "bg-green-100 text-green-800"
-                        : "bg-gray-100 text-gray-800"
-                    )}
-                  >
-                    {isPaid ? "Paid" : "Unpaid"}
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
-                  <div>
-                    <p className="text-gray-500 mb-1">Periods Paid</p>
-                    <p className="font-medium">{paidCount}</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-500 mb-1">Approved Loans</p>
-                    <p className="font-medium">
-                      ₱{approvedLoansTotal.toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-
-                {selectedPeriod && (
-                  <>
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Payment Amount
-                      </label>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-500">₱</span>
-                        <input
-                          type="number"
-                          min={0}
-                          step={0.01}
-                          className="flex-1 p-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                          placeholder={String(period?.defaultContribution ?? 0)}
-                          value={
-                            amounts[m.id] ??
-                            (currentPayment
-                              ? String(currentPayment.amount)
-                              : "")
-                          }
-                          onChange={(e) =>
-                            setAmounts((prev) => ({
-                              ...prev,
-                              [m.id]: e.target.value,
-                            }))
-                          }
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => saveAmount(m.id)}
-                        className="flex-1 bg-indigo-600 text-white py-2 px-3 rounded-md text-sm font-medium hover:bg-indigo-500 transition-colors"
-                      >
-                        {isPaid ? "Update" : "Save"}
-                      </button>
-                      <button
-                        disabled={!isPaid}
-                        onClick={() => clearAmount(m.id)}
-                        className={clsx(
-                          "flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors",
-                          isPaid
-                            ? "bg-gray-700 text-white hover:bg-gray-600"
-                            : "bg-gray-300 text-gray-600 cursor-not-allowed"
-                        )}
-                      >
-                        Clear
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
-            );
-          })}
-        </div>
+            </div>
+          )}
+        </Card>
       </div>
-    </main>
+
+      {/* Add Member Modal */}
+      <Modal
+        isOpen={showAddMember}
+        onClose={() => setShowAddMember(false)}
+        title="Add New Member"
+      >
+        <div className="space-y-4">
+          <Input
+            label="Member Name"
+            value={newMemberName}
+            onChange={(e) => setNewMemberName(e.target.value)}
+            placeholder="Enter member name"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") addMember();
+            }}
+          />
+          <div className="flex justify-end space-x-3">
+            <Button variant="secondary" onClick={() => setShowAddMember(false)}>
+              Cancel
+            </Button>
+            <Button onClick={addMember} disabled={!newMemberName.trim()}>
+              Add Member
+            </Button>
+          </div>
+        </div>
+      </Modal>
+    </div>
   );
 }
 
 export default function Members() {
   return (
     <ProtectedRoute>
-      <MembersPage />
+      <MembersContent />
     </ProtectedRoute>
   );
 }

@@ -2,13 +2,14 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { useCoop } from "@/context/CoopContext";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import {
   debugDataPersistence,
   clearAllCoopData,
   testDataPersistence,
 } from "@/lib/debugUtils";
 
-export default function DebugPage() {
+function DebugContent() {
   const { user, session, signOut } = useAuth();
   const { state } = useCoop();
 
@@ -134,5 +135,13 @@ export default function DebugPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function DebugPage() {
+  return (
+    <ProtectedRoute>
+      <DebugContent />
+    </ProtectedRoute>
   );
 }

@@ -14,51 +14,48 @@ import {
   Modal,
 } from "@/components/UI";
 
-function HomeContent() {
+function DashboardContent() {
   const { state, dispatch } = useCoop();
   const selectedPeriod = state.selectedPeriod;
   const [newLoanMemberId, setNewLoanMemberId] = useState<string>("");
   const [newLoanAmount, setNewLoanAmount] = useState<string>("");
-  const [newLoanPurpose, setNewLoanPurpose] = useState<string>("");
   const [newLoanPlan, setNewLoanPlan] = useState<"MONTHLY" | "CUT_OFF">(
     "CUT_OFF"
   );
   const [newLoanTerms, setNewLoanTerms] = useState<string>("5");
   const [newPeriodDate, setNewPeriodDate] = useState<string>("");
+  // (Removed unused quick pay states)
   const [showNewLoanModal, setShowNewLoanModal] = useState(false);
   const [showNewPeriodModal, setShowNewPeriodModal] = useState(false);
 
   // Quick actions
   const quickActions = [
-    {
-      title: "Members",
-      description: "Manage member payments",
-      icon: "👥",
-      color: "from-blue-500 to-blue-600",
-      href: "/members",
-    },
-    {
-      title: "Loans",
-      description: "View and manage loans",
-      icon: "💰",
-      color: "from-green-500 to-green-600",
-      href: "/loans",
-    },
+    // Quick Pay action removed for now (not used)
     {
       title: "New Loan",
       description: "Create a new loan",
-      icon: "➕",
-      color: "from-purple-500 to-purple-600",
+      icon: "💰",
+      color: "from-green-500 to-green-600",
       action: () => setShowNewLoanModal(true),
     },
     {
       title: "New Period",
       description: "Add collection period",
       icon: "📅",
-      color: "from-orange-500 to-orange-600",
+      color: "from-purple-500 to-purple-600",
       action: () => setShowNewPeriodModal(true),
     },
+    {
+      title: "Reports",
+      description: "View financial reports",
+      icon: "📊",
+      color: "from-orange-500 to-orange-600",
+      action: () => {},
+    },
   ];
+
+  // Existing functions (simplified for brevity)
+  // (Removed unused recordPayment helper)
 
   const createLoan = () => {
     if (!newLoanMemberId || !newLoanAmount) return;
@@ -80,7 +77,6 @@ function HomeContent() {
     });
     setNewLoanMemberId("");
     setNewLoanAmount("");
-    setNewLoanPurpose("");
     setShowNewLoanModal(false);
   };
 
@@ -99,6 +95,56 @@ function HomeContent() {
     setShowNewPeriodModal(false);
   };
 
+  // Function to generate the next collection period automatically
+  const addNextCollectionPeriod = () => {
+    const latestPeriod = state.collections
+      .map(p => new Date(p.date))
+      .sort((a, b) => b.getTime() - a.getTime())[0];
+    
+    let nextDate: Date;
+    
+    if (!latestPeriod) {
+      // If no periods exist, start with today
+      nextDate = new Date();
+    } else {
+      // Get the day of the month from the latest period
+      const day = latestPeriod.getDate();
+      
+      // Cooperative collection pattern: typically 10th and 25th of each month
+      if (day <= 10) {
+        // If latest was around 10th, next should be 25th of same month
+        nextDate = new Date(latestPeriod.getFullYear(), latestPeriod.getMonth(), 25);
+      } else if (day <= 25) {
+        // If latest was around 25th, next should be 10th of next month
+        nextDate = new Date(latestPeriod.getFullYear(), latestPeriod.getMonth() + 1, 10);
+      } else {
+        // If latest was end of month, next should be 10th of next month
+        nextDate = new Date(latestPeriod.getFullYear(), latestPeriod.getMonth() + 1, 10);
+      }
+      
+      // If the calculated date is in the past or same as latest, move to next period
+      if (nextDate <= latestPeriod) {
+        if (day <= 10) {
+          nextDate = new Date(latestPeriod.getFullYear(), latestPeriod.getMonth(), 25);
+        } else {
+          nextDate = new Date(latestPeriod.getFullYear(), latestPeriod.getMonth() + 1, 10);
+        }
+      }
+    }
+    
+    const nextPeriodId = nextDate.toISOString().split('T')[0];
+    
+    dispatch({
+      type: "ADD_COLLECTION_PERIOD",
+      payload: {
+        id: nextPeriodId,
+        date: nextPeriodId,
+        totalCollected: 0,
+        payments: [],
+      },
+    });
+  };
+
   // Get current period data
   const currentPeriodData = state.collections.find(
     (p) => p.id === selectedPeriod
@@ -112,7 +158,7 @@ function HomeContent() {
   const recentPayments = currentPeriodData?.payments.slice(-5) || [];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-50/50">
       <div className="container mx-auto max-w-6xl px-4 sm:px-6 py-8">
         {/* Header Section */}
         <div className="mb-8">
@@ -210,33 +256,17 @@ function HomeContent() {
               Quick Actions
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {quickActions.map((action, index) => {
-                if (action.href) {
-                  return (
-                    <a
-                      key={index}
-                      href={action.href}
-                      className={`p-4 rounded-xl bg-gradient-to-r ${action.color} text-white hover:shadow-lg transform hover:scale-105 transition-all duration-200 block text-center`}
-                    >
-                      <div className="text-2xl mb-2">{action.icon}</div>
-                      <h3 className="font-semibold text-sm">{action.title}</h3>
-                      <p className="text-xs opacity-90">{action.description}</p>
-                    </a>
-                  );
-                }
-
-                return (
-                  <button
-                    key={index}
-                    onClick={action.action}
-                    className={`p-4 rounded-xl bg-gradient-to-r ${action.color} text-white hover:shadow-lg transform hover:scale-105 transition-all duration-200 text-center`}
-                  >
-                    <div className="text-2xl mb-2">{action.icon}</div>
-                    <h3 className="font-semibold text-sm">{action.title}</h3>
-                    <p className="text-xs opacity-90">{action.description}</p>
-                  </button>
-                );
-              })}
+              {quickActions.map((action, index) => (
+                <button
+                  key={index}
+                  onClick={action.action}
+                  className={`p-4 rounded-xl bg-gradient-to-r ${action.color} text-white hover:shadow-lg transform hover:scale-105 transition-all duration-200`}
+                >
+                  <div className="text-2xl mb-2">{action.icon}</div>
+                  <h3 className="font-semibold text-sm">{action.title}</h3>
+                  <p className="text-xs opacity-90">{action.description}</p>
+                </button>
+              ))}
             </div>
           </div>
         </Card>
@@ -282,13 +312,6 @@ function HomeContent() {
                       }}
                     />
                   </div>
-                  <Button
-                    variant="ghost"
-                    className="w-full"
-                    onClick={() => (window.location.href = "/members")}
-                  >
-                    Manage Payments
-                  </Button>
                 </div>
               ) : (
                 <EmptyState
@@ -397,17 +420,36 @@ function HomeContent() {
                       </p>
                     </button>
                   ))}
+                
+                {/* Add Next Period Card */}
+                <button
+                  onClick={addNextCollectionPeriod}
+                  className="p-4 rounded-lg border-2 border-dashed border-indigo-300 hover:border-indigo-400 hover:bg-indigo-50 transition-all duration-200 flex flex-col items-center justify-center min-h-[100px] group"
+                >
+                  <div className="w-8 h-8 bg-indigo-100 group-hover:bg-indigo-200 rounded-full flex items-center justify-center mb-2 transition-colors">
+                    <span className="text-indigo-600 text-xl font-bold">+</span>
+                  </div>
+                  <span className="text-indigo-600 font-medium text-sm">Add Next Period</span>
+                  <span className="text-indigo-500 text-xs mt-1">Auto-generate</span>
+                </button>
               </div>
             ) : (
-              <EmptyState
-                title="No Collection Periods"
-                description="Create your first collection period to get started"
-                action={
-                  <Button onClick={() => setShowNewPeriodModal(true)}>
-                    Create First Period
-                  </Button>
-                }
-              />
+              <div className="text-center space-y-4">
+                <EmptyState
+                  title="No Collection Periods"
+                  description="Create your first collection period to get started"
+                  action={
+                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                      <Button onClick={addNextCollectionPeriod} variant="primary">
+                        ➕ Quick Start Period
+                      </Button>
+                      <Button onClick={() => setShowNewPeriodModal(true)} variant="secondary">
+                        📅 Custom Date
+                      </Button>
+                    </div>
+                  }
+                />
+              </div>
             )}
           </div>
         </Card>
@@ -464,12 +506,6 @@ function HomeContent() {
             onChange={(e) => setNewLoanAmount(e.target.value)}
             placeholder="0.00"
           />
-          <Input
-            label="Purpose"
-            value={newLoanPurpose}
-            onChange={(e) => setNewLoanPurpose(e.target.value)}
-            placeholder="Loan purpose"
-          />
           <Select
             label="Repayment Plan"
             value={newLoanPlan}
@@ -477,83 +513,17 @@ function HomeContent() {
               setNewLoanPlan(e.target.value as "MONTHLY" | "CUT_OFF")
             }
             options={[
-              {
-                value: "CUT_OFF",
-                label: "Per Cut-off installments (3% per month)",
-              },
-              { value: "MONTHLY", label: "One-time payment (4% per month)" },
+              { value: "CUT_OFF", label: "Cut-off (3% interest)" },
+              { value: "MONTHLY", label: "Monthly (4% interest)" },
             ]}
           />
           <Input
             type="number"
-            label="Terms (months)"
+            label="Terms"
             value={newLoanTerms}
             onChange={(e) => setNewLoanTerms(e.target.value)}
             placeholder="5"
-            title={
-              newLoanPlan === "MONTHLY"
-                ? "Number of months before full payment is due"
-                : "Number of months to pay (2 cut-offs per month)"
-            }
           />
-
-          {/* Loan Type Explanation */}
-          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <h4 className="font-semibold text-blue-900 mb-2">
-              Loan Type Information
-            </h4>
-            {newLoanPlan === "MONTHLY" ? (
-              <div className="text-sm text-blue-800">
-                <p className="mb-2">
-                  <strong>One-time Payment Loan:</strong>
-                </p>
-                <ul className="list-disc list-inside space-y-1">
-                  <li>
-                    Pay the full amount + interest after {newLoanTerms || 5}{" "}
-                    months
-                  </li>
-                  <li>
-                    Interest: 4% per month × {newLoanTerms || 5} months ={" "}
-                    {(parseFloat(newLoanTerms) || 5) * 4}% total
-                  </li>
-                  <li>
-                    Example: ₱10,000 → Pay ₱
-                    {(
-                      10000 *
-                      (1 + 0.04 * (parseFloat(newLoanTerms) || 5))
-                    ).toLocaleString()}{" "}
-                    after {newLoanTerms || 5} months
-                  </li>
-                </ul>
-              </div>
-            ) : (
-              <div className="text-sm text-blue-800">
-                <p className="mb-2">
-                  <strong>Per Cut-off Installment Loan:</strong>
-                </p>
-                <ul className="list-disc list-inside space-y-1">
-                  <li>Pay in installments every cut-off (2 times per month)</li>
-                  <li>
-                    Interest: 3% per month × {newLoanTerms || 5} months ={" "}
-                    {(parseFloat(newLoanTerms) || 5) * 3}% total
-                  </li>
-                  <li>
-                    Total payments: {(parseFloat(newLoanTerms) || 5) * 2}{" "}
-                    installments
-                  </li>
-                  <li>
-                    Example: ₱10,000 → {(parseFloat(newLoanTerms) || 5) * 2}{" "}
-                    payments of ₱
-                    {(
-                      (10000 * (1 + 0.03 * (parseFloat(newLoanTerms) || 5))) /
-                      ((parseFloat(newLoanTerms) || 5) * 2)
-                    ).toFixed(0)}{" "}
-                    each
-                  </li>
-                </ul>
-              </div>
-            )}
-          </div>
           <div className="flex justify-end space-x-3">
             <Button
               variant="secondary"
@@ -569,10 +539,10 @@ function HomeContent() {
   );
 }
 
-export default function HomePage() {
+export default function Home() {
   return (
     <ProtectedRoute>
-      <HomeContent />
+      <DashboardContent />
     </ProtectedRoute>
   );
 }
