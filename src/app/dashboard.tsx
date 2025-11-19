@@ -385,7 +385,7 @@ function DashboardContent() {
             {state.collections.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {state.collections
-                  .slice(-6)
+                  .slice(-5)
                   .reverse()
                   .map((period) => (
                     <button
@@ -421,7 +421,7 @@ function DashboardContent() {
                     </button>
                   ))}
                 
-                {/* Add Next Period Card */}
+                {/* Add Next Period Card - Always visible when there are periods */}
                 <button
                   onClick={addNextCollectionPeriod}
                   className="p-4 rounded-lg border-2 border-dashed border-indigo-300 hover:border-indigo-400 hover:bg-indigo-50 transition-all duration-200 flex flex-col items-center justify-center min-h-[100px] group"

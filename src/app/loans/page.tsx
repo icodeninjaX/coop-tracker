@@ -13,7 +13,7 @@ import {
   EmptyState,
   Modal,
 } from "@/components/UI";
-import { Loan, Repayment } from "@/types"; 
+import { Loan, Repayment } from "@/types";
 
 const LoansPage = () => {
   const { state, dispatch } = useCoop();
@@ -148,8 +148,7 @@ const LoansPage = () => {
 
   const calculateTotalDue = (loan: Loan) => {
     const interestRate =
-      loan.interestRate ||
-      (loan.repaymentPlan === "MONTHLY" ? 0.04 : 0.03);
+      loan.interestRate || (loan.repaymentPlan === "MONTHLY" ? 0.04 : 0.03);
     const termCount = loan.termCount || 5;
     const totalInterest = loan.amount * interestRate * termCount;
     return loan.amount + totalInterest;
@@ -160,7 +159,10 @@ const LoansPage = () => {
   const approvedLoans = loans.filter((l) => l.status === "APPROVED").length;
   const totalOutstanding = loans
     .filter((l) => l.status === "APPROVED")
-    .reduce((sum, l) => sum + (calculateTotalDue(l) - calculateTotalRepayments(l.id)), 0);
+    .reduce(
+      (sum, l) => sum + (calculateTotalDue(l) - calculateTotalRepayments(l.id)),
+      0
+    );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -177,8 +179,12 @@ const LoansPage = () => {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-              <Badge variant="info" className="text-xs sm:text-sm">{totalLoans} loans</Badge>
-              <Badge variant="warning" className="text-xs sm:text-sm">{pendingLoans} pending</Badge>
+              <Badge variant="info" className="text-xs sm:text-sm">
+                {totalLoans} loans
+              </Badge>
+              <Badge variant="warning" className="text-xs sm:text-sm">
+                {pendingLoans} pending
+              </Badge>
               {selectedPeriod && (
                 <Badge variant="success" className="text-xs sm:text-sm">
                   {format(new Date(selectedPeriod), "MMM dd")}
@@ -193,8 +199,12 @@ const LoansPage = () => {
           <Card className="p-4 sm:p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-blue-600 text-xs sm:text-sm font-medium">Total Loans</p>
-                <p className="text-lg sm:text-2xl font-bold text-blue-900">{totalLoans}</p>
+                <p className="text-blue-600 text-xs sm:text-sm font-medium">
+                  Total Loans
+                </p>
+                <p className="text-lg sm:text-2xl font-bold text-blue-900">
+                  {totalLoans}
+                </p>
               </div>
               <div className="w-8 h-8 sm:w-12 sm:h-12 bg-blue-500 rounded-lg flex items-center justify-center">
                 <span className="text-white text-sm sm:text-xl">💰</span>
@@ -205,7 +215,9 @@ const LoansPage = () => {
           <Card className="p-4 sm:p-6 bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-yellow-600 text-xs sm:text-sm font-medium">Pending</p>
+                <p className="text-yellow-600 text-xs sm:text-sm font-medium">
+                  Pending
+                </p>
                 <p className="text-lg sm:text-2xl font-bold text-yellow-900">
                   {pendingLoans}
                 </p>
@@ -219,7 +231,9 @@ const LoansPage = () => {
           <Card className="p-4 sm:p-6 bg-gradient-to-br from-green-50 to-green-100 border-green-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-600 text-xs sm:text-sm font-medium">Approved</p>
+                <p className="text-green-600 text-xs sm:text-sm font-medium">
+                  Approved
+                </p>
                 <p className="text-lg sm:text-2xl font-bold text-green-900">
                   {approvedLoans}
                 </p>
@@ -233,7 +247,9 @@ const LoansPage = () => {
           <Card className="p-4 sm:p-6 bg-gradient-to-br from-red-50 to-red-100 border-red-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-red-600 text-xs sm:text-sm font-medium">Outstanding</p>
+                <p className="text-red-600 text-xs sm:text-sm font-medium">
+                  Outstanding
+                </p>
                 <p className="text-lg sm:text-2xl font-bold text-red-900">
                   ₱{totalOutstanding.toLocaleString()}
                 </p>
@@ -285,7 +301,9 @@ const LoansPage = () => {
 
           {/* Search */}
           <Card className="p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Search</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
+              Search
+            </h3>
             <Input
               type="text"
               placeholder="Search member..."
@@ -423,7 +441,7 @@ const LoansPage = () => {
                             </div>
                           </div>
                         </div>
-                        
+
                         {/* Delete button - always visible on mobile */}
                         <Button
                           onClick={() => deleteLoan(loan.id)}
@@ -440,11 +458,15 @@ const LoansPage = () => {
                         <div className="space-y-2">
                           <div className="flex justify-between">
                             <span className="text-gray-600">Amount:</span>
-                            <span className="font-semibold">₱{loan.amount.toLocaleString()}</span>
+                            <span className="font-semibold">
+                              ₱{loan.amount.toLocaleString()}
+                            </span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-600">Rate:</span>
-                            <span className="font-semibold">{(interestRate * 100).toFixed(1)}%/month</span>
+                            <span className="font-semibold">
+                              {(interestRate * 100).toFixed(1)}%/month
+                            </span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-600">Date:</span>
@@ -453,24 +475,32 @@ const LoansPage = () => {
                             </span>
                           </div>
                         </div>
-                        
+
                         <div className="space-y-2">
                           <div className="flex justify-between">
                             <span className="text-gray-600">Plan:</span>
                             <span className="font-semibold text-right">
-                              {loan.repaymentPlan === "MONTHLY" ? "One-time" : "Installments"}
+                              {loan.repaymentPlan === "MONTHLY"
+                                ? "One-time"
+                                : "Installments"}
                             </span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-600">Terms:</span>
-                            <span className="font-semibold">{termCount} months</span>
+                            <span className="font-semibold">
+                              {termCount} months
+                            </span>
                           </div>
                           {installment && (
                             <div className="flex justify-between">
                               <span className="text-gray-600">
-                                {loan.repaymentPlan === "MONTHLY" ? "Total Due:" : "Per Cut-off:"}
+                                {loan.repaymentPlan === "MONTHLY"
+                                  ? "Total Due:"
+                                  : "Per Cut-off:"}
                               </span>
-                              <span className="font-semibold">₱{installment.toFixed(2)}</span>
+                              <span className="font-semibold">
+                                ₱{installment.toFixed(2)}
+                              </span>
                             </div>
                           )}
                         </div>
@@ -493,7 +523,7 @@ const LoansPage = () => {
                               </div>
                             </div>
                           </div>
-                          
+
                           {remainingBalance > 0 && (
                             <>
                               {/* Progress Bar */}
@@ -503,7 +533,7 @@ const LoansPage = () => {
                                   style={{ width: `${repaymentProgress}%` }}
                                 />
                               </div>
-                              
+
                               {/* Payment Input */}
                               <div className="flex flex-col sm:flex-row gap-2">
                                 <Input
@@ -523,7 +553,8 @@ const LoansPage = () => {
                                     const amount = parseFloat(
                                       repaymentAmount[loan.id] || "0"
                                     );
-                                    if (amount > 0) addRepayment(loan.id, amount);
+                                    if (amount > 0)
+                                      addRepayment(loan.id, amount);
                                   }}
                                   variant="primary"
                                   size="sm"
@@ -538,7 +569,7 @@ const LoansPage = () => {
                               </div>
                             </>
                           )}
-                          
+
                           {remainingBalance <= 0 && (
                             <div className="text-center">
                               <Badge variant="success" className="text-sm">
@@ -668,11 +699,15 @@ const LoansPage = () => {
                     Pay full amount + interest after {newLoanTerms || 5} months
                   </li>
                   <li>
-                    Interest: 4%/month × {newLoanTerms || 5} months = {(parseFloat(newLoanTerms) || 5) * 4}% total
+                    Interest: 4%/month × {newLoanTerms || 5} months ={" "}
+                    {(parseFloat(newLoanTerms) || 5) * 4}% total
                   </li>
                   <li className="break-words">
                     Example: ₱10,000 → Pay ₱
-                    {(10000 * (1 + 0.04 * (parseFloat(newLoanTerms) || 5))).toLocaleString()}{" "}
+                    {(
+                      10000 *
+                      (1 + 0.04 * (parseFloat(newLoanTerms) || 5))
+                    ).toLocaleString()}{" "}
                     after {newLoanTerms || 5} months
                   </li>
                 </ul>
@@ -685,14 +720,21 @@ const LoansPage = () => {
                 <ul className="list-disc list-inside space-y-1">
                   <li>Pay in installments every cut-off (2 times/month)</li>
                   <li>
-                    Interest: 3%/month × {newLoanTerms || 5} months = {(parseFloat(newLoanTerms) || 5) * 3}% total
+                    Interest: 3%/month × {newLoanTerms || 5} months ={" "}
+                    {(parseFloat(newLoanTerms) || 5) * 3}% total
                   </li>
                   <li>
-                    Total payments: {(parseFloat(newLoanTerms) || 5) * 2} installments
+                    Total payments: {(parseFloat(newLoanTerms) || 5) * 2}{" "}
+                    installments
                   </li>
                   <li className="break-words">
-                    Example: ₱10,000 → {(parseFloat(newLoanTerms) || 5) * 2} payments of ₱
-                    {((10000 * (1 + 0.03 * (parseFloat(newLoanTerms) || 5))) / ((parseFloat(newLoanTerms) || 5) * 2)).toFixed(0)} each
+                    Example: ₱10,000 → {(parseFloat(newLoanTerms) || 5) * 2}{" "}
+                    payments of ₱
+                    {(
+                      (10000 * (1 + 0.03 * (parseFloat(newLoanTerms) || 5))) /
+                      ((parseFloat(newLoanTerms) || 5) * 2)
+                    ).toFixed(0)}{" "}
+                    each
                   </li>
                 </ul>
               </div>
@@ -700,14 +742,14 @@ const LoansPage = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-3 pt-4">
-            <Button 
-              variant="secondary" 
+            <Button
+              variant="secondary"
               onClick={() => setShowAddLoan(false)}
               className="w-full sm:w-auto"
             >
               Cancel
             </Button>
-            <Button 
+            <Button
               onClick={createLoan}
               className="w-full sm:w-auto"
               disabled={!newLoanMemberId || !newLoanAmount}
@@ -719,7 +761,7 @@ const LoansPage = () => {
       </Modal>
     </div>
   );
-}
+};
 
 export default function Page() {
   return (

@@ -4,10 +4,11 @@ import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import AuthenticatedCoopProvider from "@/components/AuthenticatedCoopProvider";
 import AppNavigation from "@/components/AppNavigation";
+import SupabaseErrorBoundary from "@/components/SupabaseErrorBoundary";
 
-const poppins = Poppins({ 
+const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"]
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -23,12 +24,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={poppins.className}>
-        <AuthProvider>
-          <AuthenticatedCoopProvider>
-            <AppNavigation />
-            {children}
-          </AuthenticatedCoopProvider>
-        </AuthProvider>
+        <SupabaseErrorBoundary>
+          <AuthProvider>
+            <AuthenticatedCoopProvider>
+              <AppNavigation />
+              {children}
+            </AuthenticatedCoopProvider>
+          </AuthProvider>
+        </SupabaseErrorBoundary>
       </body>
     </html>
   );
