@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import { useCoop } from "@/context/CoopContext";
 import { useState } from "react";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import Link from "next/link";
 import {
   Button,
   Card,
@@ -213,7 +214,7 @@ function HomeContent() {
               {quickActions.map((action, index) => {
                 if (action.href) {
                   return (
-                    <a
+                    <Link
                       key={index}
                       href={action.href}
                       className={`p-4 rounded-xl bg-gradient-to-r ${action.color} text-white hover:shadow-lg transform hover:scale-105 transition-all duration-200 block text-center`}
@@ -221,7 +222,7 @@ function HomeContent() {
                       <div className="text-2xl mb-2">{action.icon}</div>
                       <h3 className="font-semibold text-sm">{action.title}</h3>
                       <p className="text-xs sm:text-sm opacity-90">{action.description}</p>
-                    </a>
+                    </Link>
                   );
                 }
 
@@ -282,13 +283,14 @@ function HomeContent() {
                       }}
                     />
                   </div>
-                  <Button
-                    variant="ghost"
-                    className="w-full"
-                    onClick={() => (window.location.href = "/members")}
-                  >
-                    Manage Payments
-                  </Button>
+                  <Link href="/members">
+                    <Button
+                      variant="ghost"
+                      className="w-full"
+                    >
+                      Manage Payments
+                    </Button>
+                  </Link>
                 </div>
               ) : (
                 <EmptyState
