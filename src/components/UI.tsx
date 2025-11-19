@@ -35,9 +35,9 @@ export const Button: React.FC<ButtonProps> = ({
   };
 
   const sizes = {
-    sm: "px-3 py-2 text-sm",
-    md: "px-4 py-2.5 text-sm",
-    lg: "px-6 py-3 text-base",
+    sm: "px-3 py-2.5 text-sm min-h-[44px]",
+    md: "px-4 py-2.5 text-sm min-h-[44px]",
+    lg: "px-6 py-3 text-base min-h-[48px]",
   };
 
   return (
@@ -290,26 +290,29 @@ export const Modal: React.FC<ModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex min-h-screen items-center justify-center p-4">
+      <div className="flex min-h-screen items-end sm:items-center justify-center p-0 sm:p-4">
         <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
           onClick={onClose}
         />
         <div
           className={clsx(
-            "relative w-full bg-white rounded-2xl shadow-2xl p-6 transition-all duration-300",
+            "relative w-full bg-white shadow-2xl p-4 sm:p-6 overflow-y-auto transition-all duration-300",
+            "rounded-t-3xl sm:rounded-2xl", // More rounded top on mobile, fully rounded on desktop
+            "max-h-[95vh] sm:max-h-[90vh]", // Nearly full screen on mobile
+            "animate-in slide-in-from-bottom sm:slide-in-from-bottom-0", // Slide up animation on mobile
             sizes[size]
           )}
         >
           {title && (
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900">{title}</h3>
               <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 transition-colors"
+                className="text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-gray-100 transition-colors touch-manipulation"
               >
                 <svg
-                  className="h-5 w-5"
+                  className="h-6 w-6 sm:h-5 sm:w-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"

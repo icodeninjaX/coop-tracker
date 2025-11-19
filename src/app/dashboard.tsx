@@ -183,7 +183,7 @@ function DashboardContent() {
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <Card className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
             <div className="flex items-center justify-between">
               <div>
@@ -255,7 +255,7 @@ function DashboardContent() {
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               Quick Actions
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               {quickActions.map((action, index) => (
                 <button
                   key={index}
@@ -264,7 +264,7 @@ function DashboardContent() {
                 >
                   <div className="text-2xl mb-2">{action.icon}</div>
                   <h3 className="font-semibold text-sm">{action.title}</h3>
-                  <p className="text-xs opacity-90">{action.description}</p>
+                  <p className="text-xs sm:text-sm opacity-90">{action.description}</p>
                 </button>
               ))}
             </div>
@@ -383,7 +383,7 @@ function DashboardContent() {
               Collection Periods
             </h2>
             {state.collections.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {state.collections
                   .slice(-5)
                   .reverse()
@@ -407,7 +407,7 @@ function DashboardContent() {
                           {format(new Date(period.date), "MMM dd, yyyy")}
                         </span>
                         {selectedPeriod === period.id && (
-                          <Badge variant="info" className="text-xs">
+                          <Badge variant="info" className="text-xs sm:text-sm">
                             Active
                           </Badge>
                         )}
@@ -424,13 +424,13 @@ function DashboardContent() {
                 {/* Add Next Period Card - Always visible when there are periods */}
                 <button
                   onClick={addNextCollectionPeriod}
-                  className="p-4 rounded-lg border-2 border-dashed border-indigo-300 hover:border-indigo-400 hover:bg-indigo-50 transition-all duration-200 flex flex-col items-center justify-center min-h-[100px] group"
+                  className="p-4 rounded-lg border-2 border-dashed border-indigo-300 hover:border-indigo-400 hover:bg-indigo-50 transition-all duration-200 flex flex-col items-center justify-center min-h-[80px] sm:min-h-[100px] group"
                 >
                   <div className="w-8 h-8 bg-indigo-100 group-hover:bg-indigo-200 rounded-full flex items-center justify-center mb-2 transition-colors">
                     <span className="text-indigo-600 text-xl font-bold">+</span>
                   </div>
                   <span className="text-indigo-600 font-medium text-sm">Add Next Period</span>
-                  <span className="text-indigo-500 text-xs mt-1">Auto-generate</span>
+                  <span className="text-indigo-500 text-xs sm:text-sm mt-1">Auto-generate</span>
                 </button>
               </div>
             ) : (

@@ -137,7 +137,7 @@ function HomeContent() {
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <Card className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
             <div className="flex items-center justify-between">
               <div>
@@ -209,7 +209,7 @@ function HomeContent() {
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               Quick Actions
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               {quickActions.map((action, index) => {
                 if (action.href) {
                   return (
@@ -220,7 +220,7 @@ function HomeContent() {
                     >
                       <div className="text-2xl mb-2">{action.icon}</div>
                       <h3 className="font-semibold text-sm">{action.title}</h3>
-                      <p className="text-xs opacity-90">{action.description}</p>
+                      <p className="text-xs sm:text-sm opacity-90">{action.description}</p>
                     </a>
                   );
                 }
@@ -233,7 +233,7 @@ function HomeContent() {
                   >
                     <div className="text-2xl mb-2">{action.icon}</div>
                     <h3 className="font-semibold text-sm">{action.title}</h3>
-                    <p className="text-xs opacity-90">{action.description}</p>
+                    <p className="text-xs sm:text-sm opacity-90">{action.description}</p>
                   </button>
                 );
               })}
@@ -360,7 +360,7 @@ function HomeContent() {
               Collection Periods
             </h2>
             {state.collections.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {state.collections
                   .slice(-6)
                   .reverse()
@@ -384,7 +384,7 @@ function HomeContent() {
                           {format(new Date(period.date), "MMM dd, yyyy")}
                         </span>
                         {selectedPeriod === period.id && (
-                          <Badge variant="info" className="text-xs">
+                          <Badge variant="info" className="text-xs sm:text-sm">
                             Active
                           </Badge>
                         )}

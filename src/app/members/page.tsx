@@ -440,18 +440,18 @@ function MembersContent() {
 
                         <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
                           {selectedPeriod && (
-                            <div className="flex items-center space-x-3">
+                            <div className="flex items-center gap-3">
                               {isPaid ? (
-                                <div className="flex items-center space-x-2">
+                                <div className="flex items-center gap-2 sm:gap-3">
                                   <Badge variant="success">Paid</Badge>
                                   <span className="font-semibold text-green-600">
                                     ₱{payment?.amount?.toLocaleString() || 0}
                                   </span>
                                 </div>
                               ) : (
-                                <div className="flex items-center space-x-2">
+                                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
                                   <Badge variant="error">Unpaid</Badge>
-                                  <div className="flex space-x-2">
+                                  <div className="flex gap-2 sm:gap-3">
                                     <Input
                                       type="number"
                                       placeholder={
@@ -465,7 +465,7 @@ function MembersContent() {
                                           [member.id]: e.target.value,
                                         }))
                                       }
-                                      className="w-24 text-sm"
+                                      className="w-full sm:w-32 text-sm"
                                     />
                                     <Button
                                       onClick={() => saveAmount(member.id)}
@@ -490,7 +490,7 @@ function MembersContent() {
                             </div>
                           )}
 
-                          <div className="flex space-x-2">
+                          <div className="flex gap-2 sm:gap-3">
                             <Button
                               onClick={() =>
                                 setEditingMember({

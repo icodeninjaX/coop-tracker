@@ -454,8 +454,8 @@ const LoansPage = () => {
                       </div>
 
                       {/* Loan Details Grid */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                        <div className="space-y-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm sm:text-base">
+                        <div className="space-y-2 sm:space-y-3">
                           <div className="flex justify-between">
                             <span className="text-gray-600">Amount:</span>
                             <span className="font-semibold">
@@ -476,7 +476,7 @@ const LoansPage = () => {
                           </div>
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="space-y-2 sm:space-y-3">
                           <div className="flex justify-between">
                             <span className="text-gray-600">Plan:</span>
                             <span className="font-semibold text-right">
