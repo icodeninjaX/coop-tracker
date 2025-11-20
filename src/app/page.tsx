@@ -4,14 +4,11 @@ import { format } from "date-fns";
 import { useCoop } from "@/context/CoopContext";
 import { useState } from "react";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import Link from "next/link";
 import {
   Button,
-  Card,
   Input,
   Select,
   Badge,
-  EmptyState,
   Modal,
 } from "@/components/UI";
 
@@ -28,38 +25,9 @@ function HomeContent() {
   const [newPeriodDate, setNewPeriodDate] = useState<string>("");
   const [showNewLoanModal, setShowNewLoanModal] = useState(false);
   const [showNewPeriodModal, setShowNewPeriodModal] = useState(false);
-
-  // Quick actions
-  const quickActions = [
-    {
-      title: "Members",
-      description: "Manage member payments",
-      icon: "👥",
-      color: "from-blue-500 to-blue-600",
-      href: "/members",
-    },
-    {
-      title: "Loans",
-      description: "View and manage loans",
-      icon: "💰",
-      color: "from-green-500 to-green-600",
-      href: "/loans",
-    },
-    {
-      title: "New Loan",
-      description: "Create a new loan",
-      icon: "➕",
-      color: "from-purple-500 to-purple-600",
-      action: () => setShowNewLoanModal(true),
-    },
-    {
-      title: "New Period",
-      description: "Add collection period",
-      icon: "📅",
-      color: "from-orange-500 to-orange-600",
-      action: () => setShowNewPeriodModal(true),
-    },
-  ];
+  const [showArchiveModal, setShowArchiveModal] = useState(false);
+  const [selectedYearToArchive, setSelectedYearToArchive] = useState<number | null>(null);
+  const [showResetModal, setShowResetModal] = useState(false);
 
   const createLoan = () => {
     if (!newLoanMemberId || !newLoanAmount) return;
@@ -100,317 +68,328 @@ function HomeContent() {
     setShowNewPeriodModal(false);
   };
 
+  // Function to generate the next collection period automatically
+  const addNextCollectionPeriod = () => {
+    const latestPeriod = state.collections
+      .map(p => new Date(p.date))
+      .sort((a, b) => b.getTime() - a.getTime())[0];
+
+    let nextDate: Date;
+
+    if (!latestPeriod) {
+      // If no periods exist, start with today
+      nextDate = new Date();
+    } else {
+      // Get the day of the month from the latest period
+      const day = latestPeriod.getDate();
+
+      // Cooperative collection pattern: typically 10th and 25th of each month
+      if (day <= 10) {
+        // If latest was around 10th, next should be 25th of same month
+        nextDate = new Date(latestPeriod.getFullYear(), latestPeriod.getMonth(), 25);
+      } else if (day <= 25) {
+        // If latest was around 25th, next should be 10th of next month
+        nextDate = new Date(latestPeriod.getFullYear(), latestPeriod.getMonth() + 1, 10);
+      } else {
+        // If latest was end of month, next should be 10th of next month
+        nextDate = new Date(latestPeriod.getFullYear(), latestPeriod.getMonth() + 1, 10);
+      }
+
+      // If the calculated date is in the past or same as latest, move to next period
+      if (nextDate <= latestPeriod) {
+        if (day <= 10) {
+          nextDate = new Date(latestPeriod.getFullYear(), latestPeriod.getMonth(), 25);
+        } else {
+          nextDate = new Date(latestPeriod.getFullYear(), latestPeriod.getMonth() + 1, 10);
+        }
+      }
+    }
+
+    const nextPeriodId = nextDate.toISOString().split('T')[0];
+
+    dispatch({
+      type: "ADD_COLLECTION_PERIOD",
+      payload: {
+        id: nextPeriodId,
+        date: nextPeriodId,
+        totalCollected: 0,
+        payments: [],
+      },
+    });
+  };
+
+  // Get available years that can be archived
+  const getAvailableYears = () => {
+    const years = new Set<number>();
+    state.collections.forEach((c) => {
+      years.add(new Date(c.date).getFullYear());
+    });
+    return Array.from(years).sort((a, b) => b - a); // Newest first
+  };
+
+  // Handle archiving a year
+  const handleArchiveYear = () => {
+    if (selectedYearToArchive === null) return;
+
+    dispatch({
+      type: "ARCHIVE_YEAR",
+      payload: { year: selectedYearToArchive },
+    });
+
+    setShowArchiveModal(false);
+    setSelectedYearToArchive(null);
+  };
+
+  const openArchiveModal = (year: number) => {
+    setSelectedYearToArchive(year);
+    setShowArchiveModal(true);
+  };
+
+  // Handle resetting all periods
+  const handleResetPeriods = () => {
+    dispatch({ type: "RESET_PERIODS" });
+    setShowResetModal(false);
+  };
+
   // Get current period data
-  const currentPeriodData = state.collections.find(
-    (p) => p.id === selectedPeriod
-  );
   const totalBalance = state.currentBalance || 0;
   const totalMembers = state.members.length;
   const activeLoans = state.loans.filter((l) => l.status === "APPROVED").length;
   const pendingLoans = state.loans.filter((l) => l.status === "PENDING").length;
 
-  // Recent activity
-  const recentPayments = currentPeriodData?.payments.slice(-5) || [];
-
   return (
-    <div className="min-h-screen">
-      <div className="container mx-auto max-w-6xl px-4 sm:px-6 py-8">
-        {/* Header Section */}
-        <div className="mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                Good morning! 👋
-              </h1>
-              <p className="text-gray-600">
-                Here&apos;s what&apos;s happening with your cooperative today.
-              </p>
-            </div>
-            <div className="flex items-center space-x-3">
-              <Badge variant="info" className="hidden sm:inline-flex">
-                {state.collections.length} periods
-              </Badge>
-              <Badge variant="neutral">
-                {format(new Date(), "MMM dd, yyyy")}
-              </Badge>
-            </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto max-w-7xl px-4 py-6">
+        {/* Header + Actions - Single compact row */}
+        <div className="flex items-center justify-between mb-6 bg-white border border-gray-200 rounded-lg px-6 py-4">
+          <div>
+            <h1 className="text-2xl font-medium text-gray-900 tracking-tight">
+              Dashboard
+            </h1>
+            <p className="text-xs text-gray-500 mt-0.5">
+              {format(new Date(), "MMMM d, yyyy")} · {state.collections.length} periods
+            </p>
           </div>
-        </div>
-
-        {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
-          <Card className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-blue-600 text-sm font-medium">
-                  Total Balance
-                </p>
-                <p className="text-2xl font-bold text-blue-900">
-                  ₱{totalBalance.toLocaleString()}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-xl">💰</span>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6 bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-green-600 text-sm font-medium">
-                  Active Members
-                </p>
-                <p className="text-2xl font-bold text-green-900">
-                  {totalMembers}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-xl">👥</span>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6 bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-purple-600 text-sm font-medium">
-                  Active Loans
-                </p>
-                <p className="text-2xl font-bold text-purple-900">
-                  {activeLoans}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-xl">📋</span>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6 bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-orange-600 text-sm font-medium">
-                  Pending Loans
-                </p>
-                <p className="text-2xl font-bold text-orange-900">
-                  {pendingLoans}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-xl">⏳</span>
-              </div>
-            </div>
-          </Card>
-        </div>
-
-        {/* Quick Actions */}
-        <Card className="mb-8">
-          <div className="p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Quick Actions
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-              {quickActions.map((action, index) => {
-                if (action.href) {
-                  return (
-                    <Link
-                      key={index}
-                      href={action.href}
-                      className={`p-4 rounded-xl bg-gradient-to-r ${action.color} text-white hover:shadow-lg transform hover:scale-105 transition-all duration-200 block text-center`}
-                    >
-                      <div className="text-2xl mb-2">{action.icon}</div>
-                      <h3 className="font-semibold text-sm">{action.title}</h3>
-                      <p className="text-xs sm:text-sm opacity-90">{action.description}</p>
-                    </Link>
-                  );
-                }
-
-                return (
-                  <button
-                    key={index}
-                    onClick={action.action}
-                    className={`p-4 rounded-xl bg-gradient-to-r ${action.color} text-white hover:shadow-lg transform hover:scale-105 transition-all duration-200 text-center`}
-                  >
-                    <div className="text-2xl mb-2">{action.icon}</div>
-                    <h3 className="font-semibold text-sm">{action.title}</h3>
-                    <p className="text-xs sm:text-sm opacity-90">{action.description}</p>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </Card>
-
-        {/* Current Period & Recent Activity */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Current Period */}
-          <Card>
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-gray-900">
-                  Current Period
-                </h2>
-                {selectedPeriod && (
-                  <Badge variant="success">
-                    {format(new Date(selectedPeriod), "MMM dd, yyyy")}
-                  </Badge>
-                )}
-              </div>
-
-              {currentPeriodData ? (
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Total Collected</span>
-                    <span className="font-semibold">
-                      ₱{currentPeriodData.totalCollected.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Payments Made</span>
-                    <span className="font-semibold">
-                      {currentPeriodData.payments.length} / {totalMembers}
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-green-500 h-2 rounded-full transition-all duration-300"
-                      style={{
-                        width: `${
-                          (currentPeriodData.payments.length / totalMembers) *
-                          100
-                        }%`,
-                      }}
-                    />
-                  </div>
-                  <Link href="/members">
-                    <Button
-                      variant="ghost"
-                      className="w-full"
-                    >
-                      Manage Payments
-                    </Button>
-                  </Link>
-                </div>
-              ) : (
-                <EmptyState
-                  title="No Period Selected"
-                  description="Select or create a collection period to get started"
-                  action={
-                    <Button onClick={() => setShowNewPeriodModal(true)}>
-                      Create Period
-                    </Button>
-                  }
-                />
-              )}
-            </div>
-          </Card>
-
-          {/* Recent Activity */}
-          <Card>
-            <div className="p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                Recent Activity
-              </h2>
-              {recentPayments.length > 0 ? (
-                <div className="space-y-3">
-                  {recentPayments.map((payment, index) => {
-                    const member = state.members.find(
-                      (m) => m.id === payment.memberId
-                    );
-                    return (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                      >
-                        <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                            <span className="text-blue-600 text-sm font-medium">
-                              {member?.name[0] || "?"}
-                            </span>
-                          </div>
-                          <div>
-                            <p className="font-medium text-gray-900">
-                              {member?.name}
-                            </p>
-                            <p className="text-sm text-gray-500">
-                              {format(new Date(payment.date), "MMM dd, HH:mm")}
-                            </p>
-                          </div>
-                        </div>
-                        <span className="font-semibold text-green-600">
-                          +₱{payment.amount.toLocaleString()}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <EmptyState
-                  title="No Recent Activity"
-                  description="Payment activity will appear here"
-                />
-              )}
-            </div>
-          </Card>
-        </div>
-
-        {/* Period Selector */}
-        <Card className="mt-8">
-          <div className="p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Collection Periods
-            </h2>
-            {state.collections.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                {state.collections
-                  .map((period) => (
-                    <button
-                      key={period.id}
-                      onClick={() =>
-                        dispatch({
-                          type: "SET_SELECTED_PERIOD",
-                          payload: { periodId: period.id },
-                        })
-                      }
-                      className={`p-4 rounded-lg border-2 transition-all duration-200 text-left ${
-                        selectedPeriod === period.id
-                          ? "border-indigo-500 bg-indigo-50"
-                          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                      }`}
-                    >
-                      <div className="flex justify-between items-start mb-2">
-                        <span className="font-medium">
-                          {format(new Date(period.date), "MMM dd, yyyy")}
-                        </span>
-                        {selectedPeriod === period.id && (
-                          <Badge variant="info" className="text-xs sm:text-sm">
-                            Active
-                          </Badge>
-                        )}
-                      </div>
-                      <p className="text-sm text-gray-600">
-                        ₱{period.totalCollected.toLocaleString()} collected
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {period.payments.length} payments
-                      </p>
-                    </button>
-                  ))}
-              </div>
-            ) : (
-              <EmptyState
-                title="No Collection Periods"
-                description="Create your first collection period to get started"
-                action={
-                  <Button onClick={() => setShowNewPeriodModal(true)}>
-                    Create First Period
-                  </Button>
-                }
-              />
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowNewPeriodModal(true)}
+              className="px-4 py-2 bg-gray-900 text-white text-xs font-medium rounded hover:bg-gray-800 transition-colors"
+            >
+              New Period
+            </button>
+            <button
+              onClick={() => setShowNewLoanModal(true)}
+              className="px-4 py-2 border border-gray-300 text-gray-700 text-xs font-medium rounded hover:bg-gray-50 transition-colors"
+            >
+              New Loan
+            </button>
+            {state.collections.length > 0 && (
+              <button
+                onClick={() => setShowResetModal(true)}
+                className="px-4 py-2 border border-red-300 text-red-600 text-xs font-medium rounded hover:bg-red-50 transition-colors"
+              >
+                Reset
+              </button>
             )}
           </div>
-        </Card>
+        </div>
+
+        {/* Stats Grid - 4 columns, compact */}
+        <div className="grid grid-cols-4 gap-3 mb-6">
+          <div className="bg-white border border-gray-200 rounded-lg p-4">
+            <p className="text-[10px] uppercase tracking-wide text-gray-500 font-medium mb-1">
+              Total Balance
+            </p>
+            <p className="text-2xl font-semibold text-gray-900">
+              ₱{totalBalance.toLocaleString()}
+            </p>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-lg p-4">
+            <p className="text-[10px] uppercase tracking-wide text-gray-500 font-medium mb-1">
+              Members
+            </p>
+            <p className="text-2xl font-semibold text-gray-900">
+              {totalMembers}
+            </p>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-lg p-4">
+            <p className="text-[10px] uppercase tracking-wide text-gray-500 font-medium mb-1">
+              Active Loans
+            </p>
+            <p className="text-2xl font-semibold text-gray-900">
+              {activeLoans}
+            </p>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-lg p-4">
+            <p className="text-[10px] uppercase tracking-wide text-gray-500 font-medium mb-1">
+              Pending
+            </p>
+            <p className="text-2xl font-semibold text-gray-900">
+              {pendingLoans}
+            </p>
+          </div>
+        </div>
+
+        {/* Collection Periods - Grid layout */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-3 px-1">
+            <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+              Collection Periods
+            </h2>
+          </div>
+          {state.collections.length > 0 ? (
+            <div className="grid grid-cols-4 gap-3">
+              {state.collections.map((period) => (
+                <button
+                  key={period.id}
+                  onClick={() =>
+                    dispatch({
+                      type: "SET_SELECTED_PERIOD",
+                      payload: { periodId: period.id },
+                    })
+                  }
+                  className={`p-4 rounded-lg border text-left transition-colors ${
+                    selectedPeriod === period.id
+                      ? "border-gray-900 bg-gray-900 text-white"
+                      : "border-gray-200 bg-white hover:border-gray-300"
+                  }`}
+                >
+                  <p className={`text-[10px] uppercase tracking-wide font-medium mb-2 ${
+                    selectedPeriod === period.id ? "text-gray-300" : "text-gray-500"
+                  }`}>
+                    {format(new Date(period.date), "MMM d, yyyy")}
+                  </p>
+                  <p className={`text-xl font-semibold mb-1 ${
+                    selectedPeriod === period.id ? "text-white" : "text-gray-900"
+                  }`}>
+                    ₱{period.totalCollected.toLocaleString()}
+                  </p>
+                  <p className={`text-[10px] ${
+                    selectedPeriod === period.id ? "text-gray-400" : "text-gray-500"
+                  }`}>
+                    {period.payments.length} payments
+                  </p>
+                </button>
+              ))}
+
+              <button
+                onClick={addNextCollectionPeriod}
+                className="p-4 rounded-lg border-2 border-dashed border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-colors flex flex-col items-center justify-center min-h-[112px]"
+              >
+                <span className="text-2xl text-gray-400 mb-1">+</span>
+                <span className="text-xs text-gray-500 font-medium">Add Period</span>
+              </button>
+            </div>
+          ) : (
+            <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+              <p className="text-sm text-gray-500 mb-4">No periods yet</p>
+              <button
+                onClick={addNextCollectionPeriod}
+                className="px-4 py-2 bg-gray-900 text-white text-xs font-medium rounded hover:bg-gray-800 transition-colors"
+              >
+                Create First Period
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Year Management */}
+        {getAvailableYears().length > 0 && (
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-3 px-1">
+              <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+                Years
+              </h2>
+            </div>
+            <div className="grid grid-cols-4 gap-3">
+              {getAvailableYears().map((year) => (
+                <div
+                  key={year}
+                  className="bg-white border border-gray-200 rounded-lg p-4"
+                >
+                  <p className="text-[10px] uppercase tracking-wide text-gray-500 font-medium mb-1">
+                    Year {year}
+                  </p>
+                  <p className="text-xl font-semibold text-gray-900 mb-3">
+                    {state.collections.filter(
+                      (c) => new Date(c.date).getFullYear() === year
+                    ).length} periods
+                  </p>
+                  <button
+                    onClick={() => openArchiveModal(year)}
+                    className="px-3 py-1.5 border border-gray-300 text-gray-600 text-[10px] font-medium rounded hover:bg-gray-50 transition-colors w-full"
+                  >
+                    Archive
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Archived Years */}
+        {state.archives.length > 0 && (
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-3 px-1">
+              <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+                Archives
+              </h2>
+            </div>
+            <div className="space-y-3">
+              {state.archives
+                .sort((a, b) => b.year - a.year)
+                .map((archive) => (
+                  <div
+                    key={archive.year}
+                    className="bg-white border border-gray-200 rounded-lg p-5"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <h3 className="text-base font-semibold text-gray-900">
+                          Year {archive.year}
+                        </h3>
+                        <p className="text-[10px] text-gray-500 mt-0.5">
+                          Archived {format(new Date(archive.archivedDate), "MMM d, yyyy")}
+                        </p>
+                      </div>
+                      <Badge variant="neutral" className="text-[10px]">
+                        Archived
+                      </Badge>
+                    </div>
+                    <div className="grid grid-cols-4 gap-3">
+                      <div className="bg-gray-50 border border-gray-100 rounded p-3">
+                        <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-1">Collected</p>
+                        <p className="text-base font-semibold text-gray-900">
+                          ₱{archive.summary.totalCollected.toLocaleString()}
+                        </p>
+                      </div>
+                      <div className="bg-gray-50 border border-gray-100 rounded p-3">
+                        <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-1">Disbursed</p>
+                        <p className="text-base font-semibold text-gray-900">
+                          ₱{archive.summary.totalDisbursed.toLocaleString()}
+                        </p>
+                      </div>
+                      <div className="bg-gray-50 border border-gray-100 rounded p-3">
+                        <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-1">Repayments</p>
+                        <p className="text-base font-semibold text-gray-900">
+                          ₱{archive.summary.totalRepayments.toLocaleString()}
+                        </p>
+                      </div>
+                      <div className="bg-gray-50 border border-gray-100 rounded p-3">
+                        <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-1">Balance</p>
+                        <p className="text-base font-semibold text-gray-900">
+                          ₱{archive.summary.endingBalance.toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Modals */}
@@ -562,6 +541,74 @@ function HomeContent() {
               Cancel
             </Button>
             <Button onClick={createLoan}>Create Loan</Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={showArchiveModal}
+        onClose={() => setShowArchiveModal(false)}
+        title="Archive Year"
+      >
+        <div className="space-y-4">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <p className="text-sm text-yellow-800">
+              <strong>⚠️ Warning:</strong> Archiving year {selectedYearToArchive} will:
+            </p>
+            <ul className="mt-2 ml-4 text-sm text-yellow-700 list-disc space-y-1">
+              <li>Move all {selectedYearToArchive} collection periods to the archive</li>
+              <li>Remove {selectedYearToArchive} loans, repayments, and penalties from active view</li>
+              <li>Calculate and save year-end summary statistics</li>
+              <li>This action cannot be undone</li>
+            </ul>
+          </div>
+          <p className="text-sm text-gray-600">
+            The archived data will be safely stored and viewable in the &ldquo;Archived Years&rdquo; section.
+          </p>
+          <div className="flex justify-end space-x-3">
+            <Button
+              variant="secondary"
+              onClick={() => setShowArchiveModal(false)}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleArchiveYear} variant="primary">
+              Confirm Archive
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={showResetModal}
+        onClose={() => setShowResetModal(false)}
+        title="Reset All Periods"
+      >
+        <div className="space-y-4">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <p className="text-sm text-red-800">
+              <strong>⚠️ DANGER:</strong> This will permanently delete:
+            </p>
+            <ul className="mt-2 ml-4 text-sm text-red-700 list-disc space-y-1">
+              <li>All collection periods ({state.collections.length} periods)</li>
+              <li>All loans ({state.loans.length} loans)</li>
+              <li>All repayments and penalties</li>
+              <li>This action CANNOT be undone!</li>
+            </ul>
+          </div>
+          <p className="text-sm text-gray-600">
+            Member information will be preserved. You can start creating new collection periods after reset.
+          </p>
+          <div className="flex justify-end space-x-3">
+            <Button
+              variant="secondary"
+              onClick={() => setShowResetModal(false)}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleResetPeriods} variant="danger">
+              Yes, Delete Everything
+            </Button>
           </div>
         </div>
       </Modal>

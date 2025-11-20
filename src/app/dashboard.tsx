@@ -160,98 +160,90 @@ function DashboardContent() {
   const pendingLoans = state.loans.filter((l) => l.status === "PENDING").length;
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="container mx-auto max-w-7xl px-6 sm:px-8 py-12">
-        {/* Header Section */}
-        <div className="mb-16">
-          <div className="flex flex-col gap-2">
-            <h1 className="text-4xl sm:text-5xl font-light text-gray-900 tracking-tight">
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto max-w-7xl px-4 py-6">
+        {/* Header + Actions - Single compact row */}
+        <div className="flex items-center justify-between mb-6 bg-white border border-gray-200 rounded-lg px-6 py-4">
+          <div>
+            <h1 className="text-2xl font-medium text-gray-900 tracking-tight">
               Dashboard
             </h1>
-            <p className="text-base text-gray-400 font-light">
+            <p className="text-xs text-gray-500 mt-0.5">
               {format(new Date(), "MMMM d, yyyy")}
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowNewPeriodModal(true)}
+              className="px-4 py-2 bg-gray-900 text-white text-xs font-medium rounded hover:bg-gray-800 transition-colors"
+            >
+              New Period
+            </button>
+            <button
+              onClick={() => setShowNewLoanModal(true)}
+              className="px-4 py-2 border border-gray-300 text-gray-700 text-xs font-medium rounded hover:bg-gray-50 transition-colors"
+            >
+              New Loan
+            </button>
+            {state.collections.length > 0 && (
+              <button
+                onClick={() => setShowResetModal(true)}
+                className="px-4 py-2 border border-red-300 text-red-600 text-xs font-medium rounded hover:bg-red-50 transition-colors"
+              >
+                Reset
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Stats Grid - 4 columns, compact */}
+        <div className="grid grid-cols-4 gap-3 mb-6">
+          <div className="bg-white border border-gray-200 rounded-lg p-4">
+            <p className="text-[10px] uppercase tracking-wide text-gray-500 font-medium mb-1">
+              Total Balance
+            </p>
+            <p className="text-2xl font-semibold text-gray-900">
+              ₱{totalBalance.toLocaleString()}
+            </p>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-lg p-4">
+            <p className="text-[10px] uppercase tracking-wide text-gray-500 font-medium mb-1">
+              Members
+            </p>
+            <p className="text-2xl font-semibold text-gray-900">
+              {totalMembers}
+            </p>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-lg p-4">
+            <p className="text-[10px] uppercase tracking-wide text-gray-500 font-medium mb-1">
+              Active Loans
+            </p>
+            <p className="text-2xl font-semibold text-gray-900">
+              {activeLoans}
+            </p>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-lg p-4">
+            <p className="text-[10px] uppercase tracking-wide text-gray-500 font-medium mb-1">
+              Pending
+            </p>
+            <p className="text-2xl font-semibold text-gray-900">
+              {pendingLoans}
             </p>
           </div>
         </div>
 
-        {/* Stats Overview */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          <div className="group hover:scale-[1.02] transition-transform duration-300">
-            <div className="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow">
-              <p className="text-xs uppercase tracking-wider text-gray-400 font-medium mb-3">
-                Total Balance
-              </p>
-              <p className="text-3xl font-light text-gray-900">
-                ₱{totalBalance.toLocaleString()}
-              </p>
-            </div>
+        {/* Collection Periods - Grid layout */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-3 px-1">
+            <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+              Collection Periods
+            </h2>
           </div>
-
-          <div className="group hover:scale-[1.02] transition-transform duration-300">
-            <div className="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow">
-              <p className="text-xs uppercase tracking-wider text-gray-400 font-medium mb-3">
-                Members
-              </p>
-              <p className="text-3xl font-light text-gray-900">
-                {totalMembers}
-              </p>
-            </div>
-          </div>
-
-          <div className="group hover:scale-[1.02] transition-transform duration-300">
-            <div className="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow">
-              <p className="text-xs uppercase tracking-wider text-gray-400 font-medium mb-3">
-                Active Loans
-              </p>
-              <p className="text-3xl font-light text-gray-900">
-                {activeLoans}
-              </p>
-            </div>
-          </div>
-
-          <div className="group hover:scale-[1.02] transition-transform duration-300">
-            <div className="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow">
-              <p className="text-xs uppercase tracking-wider text-gray-400 font-medium mb-3">
-                Pending
-              </p>
-              <p className="text-3xl font-light text-gray-900">
-                {pendingLoans}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="flex gap-3 mb-16">
-          <button
-            onClick={() => setShowNewPeriodModal(true)}
-            className="px-6 py-3 bg-gray-900 text-white text-sm font-light rounded-full hover:bg-gray-800 transition-colors"
-          >
-            New Period
-          </button>
-          <button
-            onClick={() => setShowNewLoanModal(true)}
-            className="px-6 py-3 border border-gray-200 text-gray-900 text-sm font-light rounded-full hover:bg-gray-50 transition-colors"
-          >
-            New Loan
-          </button>
-          {state.collections.length > 0 && (
-            <button
-              onClick={() => setShowResetModal(true)}
-              className="px-6 py-3 border border-red-200 text-red-600 text-sm font-light rounded-full hover:bg-red-50 transition-colors ml-auto"
-            >
-              Reset All
-            </button>
-          )}
-        </div>
-
-        {/* Collection Periods */}
-        <div className="mb-16">
-          <h2 className="text-2xl font-light text-gray-900 mb-8">
-            Periods
-          </h2>
           {state.collections.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-4 gap-3">
               {state.collections.map((period) => (
                 <button
                   key={period.id}
@@ -261,19 +253,25 @@ function DashboardContent() {
                       payload: { periodId: period.id },
                     })
                   }
-                  className={`group p-6 rounded-2xl border transition-all duration-300 text-left ${
+                  className={`p-4 rounded-lg border text-left transition-colors ${
                     selectedPeriod === period.id
-                      ? "border-gray-900 bg-gray-50"
-                      : "border-gray-100 hover:border-gray-200 hover:shadow-sm"
+                      ? "border-gray-900 bg-gray-900 text-white"
+                      : "border-gray-200 bg-white hover:border-gray-300"
                   }`}
                 >
-                  <p className="text-xs uppercase tracking-wider text-gray-400 font-medium mb-3">
+                  <p className={`text-[10px] uppercase tracking-wide font-medium mb-2 ${
+                    selectedPeriod === period.id ? "text-gray-300" : "text-gray-500"
+                  }`}>
                     {format(new Date(period.date), "MMM d, yyyy")}
                   </p>
-                  <p className="text-2xl font-light text-gray-900 mb-1">
+                  <p className={`text-xl font-semibold mb-1 ${
+                    selectedPeriod === period.id ? "text-white" : "text-gray-900"
+                  }`}>
                     ₱{period.totalCollected.toLocaleString()}
                   </p>
-                  <p className="text-xs text-gray-400">
+                  <p className={`text-[10px] ${
+                    selectedPeriod === period.id ? "text-gray-400" : "text-gray-500"
+                  }`}>
                     {period.payments.length} payments
                   </p>
                 </button>
@@ -281,18 +279,18 @@ function DashboardContent() {
 
               <button
                 onClick={addNextCollectionPeriod}
-                className="p-6 rounded-2xl border-2 border-dashed border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all duration-300 flex flex-col items-center justify-center min-h-[140px]"
+                className="p-4 rounded-lg border-2 border-dashed border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-colors flex flex-col items-center justify-center min-h-[112px]"
               >
-                <span className="text-3xl text-gray-300 mb-2">+</span>
-                <span className="text-sm text-gray-400 font-light">Add Period</span>
+                <span className="text-2xl text-gray-400 mb-1">+</span>
+                <span className="text-xs text-gray-500 font-medium">Add Period</span>
               </button>
             </div>
           ) : (
-            <div className="text-center py-16">
-              <p className="text-gray-400 mb-6 font-light">No periods yet</p>
+            <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+              <p className="text-sm text-gray-500 mb-4">No periods yet</p>
               <button
                 onClick={addNextCollectionPeriod}
-                className="px-6 py-3 bg-gray-900 text-white text-sm font-light rounded-full hover:bg-gray-800 transition-colors"
+                className="px-4 py-2 bg-gray-900 text-white text-xs font-medium rounded hover:bg-gray-800 transition-colors"
               >
                 Create First Period
               </button>
@@ -302,27 +300,29 @@ function DashboardContent() {
 
         {/* Year Management */}
         {getAvailableYears().length > 0 && (
-          <div className="mb-16">
-            <h2 className="text-2xl font-light text-gray-900 mb-8">
-              Years
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-3 px-1">
+              <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+                Years
+              </h2>
+            </div>
+            <div className="grid grid-cols-4 gap-3">
               {getAvailableYears().map((year) => (
                 <div
                   key={year}
-                  className="p-6 rounded-2xl border border-gray-100 bg-white hover:shadow-sm transition-shadow"
+                  className="bg-white border border-gray-200 rounded-lg p-4"
                 >
-                  <p className="text-xs uppercase tracking-wider text-gray-400 font-medium mb-3">
+                  <p className="text-[10px] uppercase tracking-wide text-gray-500 font-medium mb-1">
                     Year {year}
                   </p>
-                  <p className="text-2xl font-light text-gray-900 mb-4">
+                  <p className="text-xl font-semibold text-gray-900 mb-3">
                     {state.collections.filter(
                       (c) => new Date(c.date).getFullYear() === year
                     ).length} periods
                   </p>
                   <button
                     onClick={() => openArchiveModal(year)}
-                    className="px-4 py-2 border border-gray-200 text-gray-600 text-xs font-light rounded-full hover:bg-gray-50 transition-colors w-full"
+                    className="px-3 py-1.5 border border-gray-300 text-gray-600 text-[10px] font-medium rounded hover:bg-gray-50 transition-colors w-full"
                   >
                     Archive
                   </button>
@@ -334,53 +334,55 @@ function DashboardContent() {
 
         {/* Archived Years */}
         {state.archives.length > 0 && (
-          <div className="mb-16">
-            <h2 className="text-2xl font-light text-gray-900 mb-8">
-              Archives
-            </h2>
-            <div className="space-y-6">
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-3 px-1">
+              <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+                Archives
+              </h2>
+            </div>
+            <div className="space-y-3">
               {state.archives
                 .sort((a, b) => b.year - a.year)
                 .map((archive) => (
                   <div
                     key={archive.year}
-                    className="p-8 rounded-2xl border border-gray-100 bg-white"
+                    className="bg-white border border-gray-200 rounded-lg p-5"
                   >
-                    <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center justify-between mb-4">
                       <div>
-                        <h3 className="text-xl font-light text-gray-900">
+                        <h3 className="text-base font-semibold text-gray-900">
                           Year {archive.year}
                         </h3>
-                        <p className="text-xs text-gray-400 mt-1">
+                        <p className="text-[10px] text-gray-500 mt-0.5">
                           Archived {format(new Date(archive.archivedDate), "MMM d, yyyy")}
                         </p>
                       </div>
-                      <Badge variant="neutral" className="text-xs">
+                      <Badge variant="neutral" className="text-[10px]">
                         Archived
                       </Badge>
                     </div>
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                      <div className="p-4 rounded-xl bg-gray-50">
-                        <p className="text-xs uppercase tracking-wider text-gray-400 mb-2">Collected</p>
-                        <p className="text-lg font-light text-gray-900">
+                    <div className="grid grid-cols-4 gap-3">
+                      <div className="bg-gray-50 border border-gray-100 rounded p-3">
+                        <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-1">Collected</p>
+                        <p className="text-base font-semibold text-gray-900">
                           ₱{archive.summary.totalCollected.toLocaleString()}
                         </p>
                       </div>
-                      <div className="p-4 rounded-xl bg-gray-50">
-                        <p className="text-xs uppercase tracking-wider text-gray-400 mb-2">Disbursed</p>
-                        <p className="text-lg font-light text-gray-900">
+                      <div className="bg-gray-50 border border-gray-100 rounded p-3">
+                        <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-1">Disbursed</p>
+                        <p className="text-base font-semibold text-gray-900">
                           ₱{archive.summary.totalDisbursed.toLocaleString()}
                         </p>
                       </div>
-                      <div className="p-4 rounded-xl bg-gray-50">
-                        <p className="text-xs uppercase tracking-wider text-gray-400 mb-2">Repayments</p>
-                        <p className="text-lg font-light text-gray-900">
+                      <div className="bg-gray-50 border border-gray-100 rounded p-3">
+                        <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-1">Repayments</p>
+                        <p className="text-base font-semibold text-gray-900">
                           ₱{archive.summary.totalRepayments.toLocaleString()}
                         </p>
                       </div>
-                      <div className="p-4 rounded-xl bg-gray-50">
-                        <p className="text-xs uppercase tracking-wider text-gray-400 mb-2">Balance</p>
-                        <p className="text-lg font-light text-gray-900">
+                      <div className="bg-gray-50 border border-gray-100 rounded p-3">
+                        <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-1">Balance</p>
+                        <p className="text-base font-semibold text-gray-900">
                           ₱{archive.summary.endingBalance.toLocaleString()}
                         </p>
                       </div>
