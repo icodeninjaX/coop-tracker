@@ -308,7 +308,7 @@ function MembersContent() {
               { value: "", label: "📅 Select Period" },
               ...state.collections.map((p) => ({
                 value: p.id,
-                label: `${format(new Date(p.date), "MMM d")} - ₱${p.totalCollected.toLocaleString()}`,
+                label: `${format(new Date(p.date), "MMM d, yyyy")} - ₱${p.totalCollected.toLocaleString()}`,
               })),
             ]}
             className="text-sm"

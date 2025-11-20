@@ -364,8 +364,6 @@ function HomeContent() {
             {state.collections.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {state.collections
-                  .slice(-6)
-                  .reverse()
                   .map((period) => (
                     <button
                       key={period.id}

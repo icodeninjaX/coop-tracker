@@ -15,6 +15,7 @@ import {
   CollectionPeriod,
   Repayment,
   Penalty,
+  YearlyArchive,
 } from "../types";
 import { loadRemoteState, saveRemoteState } from "@/lib/remoteState";
 import { useAuth } from "./AuthContext";
@@ -93,6 +94,7 @@ const initialState: CoopState = {
   repayments: [],
   penalties: [],
   selectedPeriod: "",
+  archives: [],
 };
 
 type CoopAction =
@@ -137,7 +139,9 @@ type CoopAction =
       };
     }
   | { type: "SET_SELECTED_PERIOD"; payload: { periodId: string } }
-  | { type: "LOAD_STATE"; payload: CoopState };
+  | { type: "LOAD_STATE"; payload: CoopState }
+  | { type: "ARCHIVE_YEAR"; payload: { year: number } }
+  | { type: "RESET_PERIODS" };
 
 function coopReducer(state: CoopState, action: CoopAction): CoopState {
   switch (action.type) {
@@ -574,6 +578,106 @@ function coopReducer(state: CoopState, action: CoopAction): CoopState {
       return {
         ...state,
         selectedPeriod: action.payload.periodId,
+      };
+    }
+
+    case "ARCHIVE_YEAR": {
+      const { year } = action.payload;
+
+      // Filter data for the specified year
+      const yearCollections = state.collections.filter(
+        (c) => new Date(c.date).getFullYear() === year
+      );
+      const yearLoans = state.loans.filter(
+        (l) => new Date(l.dateIssued).getFullYear() === year
+      );
+      const yearRepayments = state.repayments.filter(
+        (r) => new Date(r.date).getFullYear() === year
+      );
+      const yearPenalties = state.penalties.filter(
+        (p) => new Date(p.date).getFullYear() === year
+      );
+
+      // Calculate summary statistics
+      const totalCollected = yearCollections.reduce(
+        (sum, c) => sum + c.totalCollected,
+        0
+      );
+      const totalDisbursed = yearLoans
+        .filter((l) => l.status === "APPROVED")
+        .reduce((sum, l) => sum + l.amount, 0);
+      const totalRepayments = yearRepayments.reduce(
+        (sum, r) => sum + r.amount,
+        0
+      );
+      const totalPenalties = yearPenalties.reduce(
+        (sum, p) => sum + p.amount,
+        0
+      );
+
+      // Calculate ending balance for the year
+      const endingBalance = totalCollected + totalRepayments - totalDisbursed;
+
+      // Count active members (members who made at least one payment during the year)
+      const activeMemberIds = new Set(
+        yearCollections.flatMap((c) => c.payments.map((p) => p.memberId))
+      );
+
+      // Create archive
+      const archive: YearlyArchive = {
+        year,
+        archivedDate: new Date().toISOString(),
+        summary: {
+          totalCollected,
+          totalDisbursed,
+          totalRepayments,
+          totalPenalties,
+          endingBalance,
+          activeMembers: activeMemberIds.size,
+          totalLoansIssued: yearLoans.length,
+        },
+        collections: yearCollections,
+        loans: yearLoans,
+        repayments: yearRepayments,
+        penalties: yearPenalties,
+      };
+
+      // Remove archived data from current state
+      const remainingCollections = state.collections.filter(
+        (c) => new Date(c.date).getFullYear() !== year
+      );
+      const remainingLoans = state.loans.filter(
+        (l) => new Date(l.dateIssued).getFullYear() !== year
+      );
+      const remainingRepayments = state.repayments.filter(
+        (r) => new Date(r.date).getFullYear() !== year
+      );
+      const remainingPenalties = state.penalties.filter(
+        (p) => new Date(p.date).getFullYear() !== year
+      );
+
+      return {
+        ...state,
+        archives: [...state.archives, archive],
+        collections: remainingCollections,
+        loans: remainingLoans,
+        repayments: remainingRepayments,
+        penalties: remainingPenalties,
+        beginningBalance: endingBalance, // Carry forward the balance
+        currentBalance: state.currentBalance, // Keep current balance as is
+        selectedPeriod: remainingCollections.length > 0 ? remainingCollections[0].id : "",
+      };
+    }
+
+    case "RESET_PERIODS": {
+      return {
+        ...state,
+        collections: [],
+        loans: [],
+        repayments: [],
+        penalties: [],
+        selectedPeriod: "",
+        // Keep members and balance, but reset all transactional data
       };
     }
 

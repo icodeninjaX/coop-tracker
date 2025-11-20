@@ -27,6 +27,9 @@ function DashboardContent() {
   // (Removed unused quick pay states)
   const [showNewLoanModal, setShowNewLoanModal] = useState(false);
   const [showNewPeriodModal, setShowNewPeriodModal] = useState(false);
+  const [showArchiveModal, setShowArchiveModal] = useState(false);
+  const [selectedYearToArchive, setSelectedYearToArchive] = useState<number | null>(null);
+  const [showResetModal, setShowResetModal] = useState(false);
 
   // Quick actions
   const quickActions = [
@@ -143,6 +146,39 @@ function DashboardContent() {
         payments: [],
       },
     });
+  };
+
+  // Get available years that can be archived
+  const getAvailableYears = () => {
+    const years = new Set<number>();
+    state.collections.forEach((c) => {
+      years.add(new Date(c.date).getFullYear());
+    });
+    return Array.from(years).sort((a, b) => b - a); // Newest first
+  };
+
+  // Handle archiving a year
+  const handleArchiveYear = () => {
+    if (selectedYearToArchive === null) return;
+
+    dispatch({
+      type: "ARCHIVE_YEAR",
+      payload: { year: selectedYearToArchive },
+    });
+
+    setShowArchiveModal(false);
+    setSelectedYearToArchive(null);
+  };
+
+  const openArchiveModal = (year: number) => {
+    setSelectedYearToArchive(year);
+    setShowArchiveModal(true);
+  };
+
+  // Handle resetting all periods
+  const handleResetPeriods = () => {
+    dispatch({ type: "RESET_PERIODS" });
+    setShowResetModal(false);
   };
 
   // Get current period data
@@ -379,14 +415,23 @@ function DashboardContent() {
         {/* Period Selector */}
         <Card className="mt-8">
           <div className="p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Collection Periods
-            </h2>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+              <h2 className="text-xl font-semibold text-gray-900">
+                Collection Periods
+              </h2>
+              {state.collections.length > 0 && (
+                <Button
+                  onClick={() => setShowResetModal(true)}
+                  variant="danger"
+                  className="text-sm whitespace-nowrap"
+                >
+                  🗑️ Reset All
+                </Button>
+              )}
+            </div>
             {state.collections.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {state.collections
-                  .slice(-5)
-                  .reverse()
                   .map((period) => (
                     <button
                       key={period.id}
@@ -453,6 +498,130 @@ function DashboardContent() {
             )}
           </div>
         </Card>
+
+        {/* Year Management Section */}
+        {getAvailableYears().length > 0 && (
+          <Card className="mt-8">
+            <div className="p-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900">
+                    Year Management
+                  </h2>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Archive completed years to organize your records and start fresh for the new year.
+                  </p>
+                </div>
+                <Button
+                  onClick={() => setShowResetModal(true)}
+                  variant="danger"
+                  className="text-sm whitespace-nowrap"
+                >
+                  🗑️ Reset All Periods
+                </Button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                {getAvailableYears().map((year) => (
+                  <div
+                    key={year}
+                    className="p-4 rounded-lg border-2 border-gray-200 bg-white"
+                  >
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {year}
+                        </h3>
+                        <p className="text-sm text-gray-600">
+                          {state.collections.filter(
+                            (c) => new Date(c.date).getFullYear() === year
+                          ).length}{" "}
+                          periods
+                        </p>
+                      </div>
+                      <Badge variant="info" className="text-xs">
+                        Active
+                      </Badge>
+                    </div>
+                    <Button
+                      onClick={() => openArchiveModal(year)}
+                      variant="secondary"
+                      className="w-full text-sm"
+                    >
+                      📦 Archive Year
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Card>
+        )}
+
+        {/* Archived Years Section */}
+        {state.archives.length > 0 && (
+          <Card className="mt-8">
+            <div className="p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                Archived Years
+              </h2>
+              <div className="space-y-4">
+                {state.archives
+                  .sort((a, b) => b.year - a.year)
+                  .map((archive) => (
+                    <div
+                      key={archive.year}
+                      className="p-4 rounded-lg border-2 border-gray-200 bg-gray-50"
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-900">
+                            Year {archive.year}
+                          </h3>
+                          <p className="text-xs text-gray-500">
+                            Archived on{" "}
+                            {format(new Date(archive.archivedDate), "MMM d, yyyy")}
+                          </p>
+                        </div>
+                        <Badge variant="neutral" className="text-xs w-fit">
+                          Archived
+                        </Badge>
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div className="bg-white p-3 rounded-lg">
+                          <p className="text-xs text-gray-600 mb-1">Collected</p>
+                          <p className="text-sm font-semibold text-gray-900">
+                            ₱{archive.summary.totalCollected.toLocaleString()}
+                          </p>
+                        </div>
+                        <div className="bg-white p-3 rounded-lg">
+                          <p className="text-xs text-gray-600 mb-1">Disbursed</p>
+                          <p className="text-sm font-semibold text-gray-900">
+                            ₱{archive.summary.totalDisbursed.toLocaleString()}
+                          </p>
+                        </div>
+                        <div className="bg-white p-3 rounded-lg">
+                          <p className="text-xs text-gray-600 mb-1">Repayments</p>
+                          <p className="text-sm font-semibold text-gray-900">
+                            ₱{archive.summary.totalRepayments.toLocaleString()}
+                          </p>
+                        </div>
+                        <div className="bg-white p-3 rounded-lg">
+                          <p className="text-xs text-gray-600 mb-1">Ending Balance</p>
+                          <p className="text-sm font-semibold text-green-600">
+                            ₱{archive.summary.endingBalance.toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="mt-3 flex gap-4 text-xs text-gray-600">
+                        <span>{archive.collections.length} periods</span>
+                        <span>{archive.summary.totalLoansIssued} loans</span>
+                        <span>{archive.summary.activeMembers} active members</span>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          </Card>
+        )}
       </div>
 
       {/* Modals */}
@@ -532,6 +701,74 @@ function DashboardContent() {
               Cancel
             </Button>
             <Button onClick={createLoan}>Create Loan</Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={showArchiveModal}
+        onClose={() => setShowArchiveModal(false)}
+        title="Archive Year"
+      >
+        <div className="space-y-4">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <p className="text-sm text-yellow-800">
+              <strong>⚠️ Warning:</strong> Archiving year {selectedYearToArchive} will:
+            </p>
+            <ul className="mt-2 ml-4 text-sm text-yellow-700 list-disc space-y-1">
+              <li>Move all {selectedYearToArchive} collection periods to the archive</li>
+              <li>Remove {selectedYearToArchive} loans, repayments, and penalties from active view</li>
+              <li>Calculate and save year-end summary statistics</li>
+              <li>This action cannot be undone</li>
+            </ul>
+          </div>
+          <p className="text-sm text-gray-600">
+            The archived data will be safely stored and viewable in the &ldquo;Archived Years&rdquo; section.
+          </p>
+          <div className="flex justify-end space-x-3">
+            <Button
+              variant="secondary"
+              onClick={() => setShowArchiveModal(false)}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleArchiveYear} variant="primary">
+              Confirm Archive
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={showResetModal}
+        onClose={() => setShowResetModal(false)}
+        title="Reset All Periods"
+      >
+        <div className="space-y-4">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <p className="text-sm text-red-800">
+              <strong>⚠️ DANGER:</strong> This will permanently delete:
+            </p>
+            <ul className="mt-2 ml-4 text-sm text-red-700 list-disc space-y-1">
+              <li>All collection periods ({state.collections.length} periods)</li>
+              <li>All loans ({state.loans.length} loans)</li>
+              <li>All repayments and penalties</li>
+              <li>This action CANNOT be undone!</li>
+            </ul>
+          </div>
+          <p className="text-sm text-gray-600">
+            Member information will be preserved. You can start creating new collection periods after reset.
+          </p>
+          <div className="flex justify-end space-x-3">
+            <Button
+              variant="secondary"
+              onClick={() => setShowResetModal(false)}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleResetPeriods} variant="danger">
+              Yes, Delete Everything
+            </Button>
           </div>
         </div>
       </Modal>

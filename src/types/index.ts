@@ -52,6 +52,24 @@ export interface CollectionPeriod {
   defaultContribution?: number; // per-period default contribution amount
 }
 
+export interface YearlyArchive {
+  year: number; // e.g., 2024
+  archivedDate: string; // when archive was created
+  summary: {
+    totalCollected: number;
+    totalDisbursed: number;
+    totalRepayments: number;
+    totalPenalties: number;
+    endingBalance: number;
+    activeMembers: number;
+    totalLoansIssued: number;
+  };
+  collections: CollectionPeriod[];
+  loans: Loan[];
+  repayments: Repayment[];
+  penalties: Penalty[];
+}
+
 export interface CoopState {
   beginningBalance: number;
   currentBalance: number;
@@ -61,4 +79,5 @@ export interface CoopState {
   repayments: Repayment[];
   penalties: Penalty[];
   selectedPeriod: string; // Currently selected period ID
+  archives: YearlyArchive[]; // Archived yearly data
 }
