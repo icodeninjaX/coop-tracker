@@ -150,20 +150,20 @@ function MembersContent() {
     totalMembers > 0 ? (totalPaid / totalMembers) * 100 : 0;
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 md:pb-8">
+    <div className="min-h-screen bg-neutral-50 pb-20 md:pb-8">
       <div className="container mx-auto max-w-6xl">
         {/* Mobile-Optimized Header */}
-        <div className="bg-white border-b border-gray-200 sticky top-0 z-10 px-4 py-4 md:relative md:bg-transparent md:border-0 md:px-6 md:pt-8">
+        <div className="bg-white border-b border-neutral-200 sticky top-0 z-10 px-4 py-4 md:relative md:bg-transparent md:border-0 md:px-6 md:pt-8">
           <div className="flex items-center justify-between mb-3 md:mb-4">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-                👥 Members
+              <h1 className="text-2xl md:text-3xl font-light text-neutral-900 tracking-tight">
+                Members
               </h1>
-              <p className="text-sm text-gray-500 mt-1 hidden md:block">
+              <p className="text-sm text-neutral-500 mt-1 hidden md:block font-light">
                 Manage your cooperative members and track their payments
               </p>
             </div>
-            <Badge variant="info" className="hidden md:inline-flex">
+            <Badge variant="neutral" className="hidden md:inline-flex text-xs font-normal">
               {totalMembers} members
             </Badge>
           </div>
@@ -178,7 +178,7 @@ function MembersContent() {
               className="w-full"
               icon={
                 <svg
-                  className="h-4 w-4 text-gray-400"
+                  className="h-4 w-4 text-neutral-400"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -198,105 +198,72 @@ function MembersContent() {
         {/* Horizontal Scrollable Stats - Mobile */}
         <div className="md:hidden px-4 py-4 overflow-x-auto">
           <div className="flex gap-3 pb-2">
-            <Card className="min-w-[140px] p-4 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-              <div className="flex flex-col items-center text-center">
-                <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center mb-2">
-                  <span className="text-white">👥</span>
-                </div>
-                <p className="text-blue-600 text-xs font-medium">Members</p>
-                <p className="text-xl font-bold text-blue-900">{totalMembers}</p>
-              </div>
-            </Card>
+            <div className="min-w-[140px] bg-white border border-neutral-200 rounded-lg p-4 transition-all duration-200">
+              <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
+                Members
+              </p>
+              <p className="text-2xl font-light text-neutral-900">{totalMembers}</p>
+            </div>
 
-            <Card className="min-w-[140px] p-4 bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-              <div className="flex flex-col items-center text-center">
-                <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center mb-2">
-                  <span className="text-white">💳</span>
-                </div>
-                <p className="text-green-600 text-xs font-medium">Paid</p>
-                <p className="text-xl font-bold text-green-900">
-                  {totalPaid}/{totalMembers}
-                </p>
-              </div>
-            </Card>
+            <div className="min-w-[140px] bg-white border border-neutral-200 rounded-lg p-4 transition-all duration-200">
+              <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
+                Paid
+              </p>
+              <p className="text-2xl font-light text-neutral-900">
+                {totalPaid}/{totalMembers}
+              </p>
+            </div>
 
-            <Card className="min-w-[140px] p-4 bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-              <div className="flex flex-col items-center text-center">
-                <div className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center mb-2">
-                  <span className="text-white">💰</span>
-                </div>
-                <p className="text-purple-600 text-xs font-medium">Collected</p>
-                <p className="text-xl font-bold text-purple-900">
-                  ₱{totalCollected.toLocaleString()}
-                </p>
-              </div>
-            </Card>
+            <div className="min-w-[140px] bg-white border border-neutral-200 rounded-lg p-4 transition-all duration-200">
+              <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
+                Collected
+              </p>
+              <p className="text-2xl font-light text-neutral-900">
+                ₱{totalCollected.toLocaleString()}
+              </p>
+            </div>
 
             {selectedPeriod && (
-              <Card className="min-w-[140px] p-4 bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
-                <div className="flex flex-col items-center text-center">
-                  <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center mb-2">
-                    <span className="text-white">📊</span>
-                  </div>
-                  <p className="text-orange-600 text-xs font-medium">Progress</p>
-                  <p className="text-xl font-bold text-orange-900">
-                    {Math.round(paymentProgress)}%
-                  </p>
-                </div>
-              </Card>
+              <div className="min-w-[140px] bg-white border border-neutral-200 rounded-lg p-4 transition-all duration-200">
+                <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
+                  Progress
+                </p>
+                <p className="text-2xl font-light text-neutral-900">
+                  {Math.round(paymentProgress)}%
+                </p>
+              </div>
             )}
           </div>
         </div>
 
         {/* Desktop Stats Grid */}
         <div className="hidden md:grid md:grid-cols-3 gap-6 mb-8 px-6">
-          <Card className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-blue-600 text-sm font-medium">
-                  Total Members
-                </p>
-                <p className="text-2xl font-bold text-blue-900">
-                  {totalMembers}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-xl">👥</span>
-              </div>
-            </div>
-          </Card>
+          <div className="bg-white border border-neutral-200 rounded-lg p-6 transition-all duration-200 hover:shadow-sm">
+            <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
+              Total Members
+            </p>
+            <p className="text-3xl font-light text-neutral-900">
+              {totalMembers}
+            </p>
+          </div>
 
-          <Card className="p-6 bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-green-600 text-sm font-medium">
-                  Payments Made
-                </p>
-                <p className="text-2xl font-bold text-green-900">
-                  {totalPaid} / {totalMembers}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-xl">💳</span>
-              </div>
-            </div>
-          </Card>
+          <div className="bg-white border border-neutral-200 rounded-lg p-6 transition-all duration-200 hover:shadow-sm">
+            <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
+              Payments Made
+            </p>
+            <p className="text-3xl font-light text-neutral-900">
+              {totalPaid} / {totalMembers}
+            </p>
+          </div>
 
-          <Card className="p-6 bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-purple-600 text-sm font-medium">
-                  Total Collected
-                </p>
-                <p className="text-2xl font-bold text-purple-900">
-                  ₱{totalCollected.toLocaleString()}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-xl">💰</span>
-              </div>
-            </div>
-          </Card>
+          <div className="bg-white border border-neutral-200 rounded-lg p-6 transition-all duration-200 hover:shadow-sm">
+            <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
+              Total Collected
+            </p>
+            <p className="text-3xl font-light text-neutral-900">
+              ₱{totalCollected.toLocaleString()}
+            </p>
+          </div>
         </div>
 
         {/* Mobile Period Selector */}
@@ -305,7 +272,7 @@ function MembersContent() {
             value={selectedPeriod}
             onChange={(e) => setSelectedPeriod(e.target.value)}
             options={[
-              { value: "", label: "📅 Select Period" },
+              { value: "", label: "Select Period" },
               ...state.collections.map((p) => ({
                 value: p.id,
                 label: `${format(new Date(p.date), "MMM d, yyyy")} - ₱${p.totalCollected.toLocaleString()}`,
@@ -319,7 +286,7 @@ function MembersContent() {
         <div className="hidden md:grid md:grid-cols-3 gap-6 mb-8 px-6">
           {/* Period Selection */}
           <Card className="p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <h3 className="text-lg font-light text-neutral-900 mb-4">
               Collection Period
             </h3>
             <Select
@@ -340,7 +307,7 @@ function MembersContent() {
 
           {/* Search */}
           <Card className="p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <h3 className="text-lg font-light text-neutral-900 mb-4">
               Search Members
             </h3>
             <Input
@@ -350,7 +317,7 @@ function MembersContent() {
               onChange={(e) => setQuery(e.target.value)}
               icon={
                 <svg
-                  className="h-4 w-4 text-gray-400"
+                  className="h-4 w-4 text-neutral-400"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -368,35 +335,30 @@ function MembersContent() {
 
           {/* Quick Actions */}
           <Card className="p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <h3 className="text-lg font-light text-neutral-900 mb-4">
               Quick Actions
             </h3>
             <div className="space-y-3">
-              <Button
+              <button
                 onClick={() => setShowAddMember(true)}
-                variant="primary"
-                className="w-full"
+                className="w-full px-5 py-2.5 bg-neutral-900 !text-white text-sm font-normal rounded-md hover:bg-neutral-800 transition-all duration-200"
               >
-                + Add Member
-              </Button>
+                Add Member
+              </button>
               {selectedPeriod && (
                 <div className="flex space-x-2">
-                  <Button
+                  <button
                     onClick={() => markAll(true)}
-                    variant="success"
-                    size="sm"
-                    className="flex-1"
+                    className="flex-1 px-4 py-2 border border-neutral-300 text-neutral-700 text-sm font-normal rounded-md hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200"
                   >
                     Mark All Paid
-                  </Button>
-                  <Button
+                  </button>
+                  <button
                     onClick={() => markAll(false)}
-                    variant="secondary"
-                    size="sm"
-                    className="flex-1"
+                    className="flex-1 px-4 py-2 border border-neutral-300 text-neutral-700 text-sm font-normal rounded-md hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200"
                   >
-                    Mark All Unpaid
-                  </Button>
+                    Clear All
+                  </button>
                 </div>
               )}
             </div>
@@ -407,20 +369,20 @@ function MembersContent() {
         {selectedPeriod && (
           <Card className="hidden md:block p-6 mb-8 mx-6">
             <div className="flex justify-between items-center mb-2">
-              <h3 className="text-lg font-semibold text-gray-900">
+              <h3 className="text-lg font-light text-neutral-900">
                 Payment Progress
               </h3>
-              <span className="text-sm font-medium text-gray-600">
+              <span className="text-sm font-normal text-neutral-600">
                 {Math.round(paymentProgress)}%
               </span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-3">
+            <div className="w-full bg-neutral-200 rounded-full h-3">
               <div
-                className="bg-green-500 h-3 rounded-full transition-all duration-500"
+                className="bg-neutral-900 h-3 rounded-full transition-all duration-500"
                 style={{ width: `${paymentProgress}%` }}
               />
             </div>
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-sm text-neutral-500 mt-2 font-light">
               {totalPaid} of {totalMembers} members have paid
             </p>
           </Card>
@@ -429,12 +391,12 @@ function MembersContent() {
         {/* Members List */}
         <div className="md:mx-6">
           <Card className="overflow-hidden md:rounded-lg rounded-none">
-            <div className="px-4 md:px-6 py-4 border-b border-gray-200 bg-white">
+            <div className="px-4 md:px-6 py-4 border-b border-neutral-200 bg-white">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg md:text-xl font-semibold text-gray-900">
-                  Members
+                <h2 className="text-lg md:text-xl font-light text-neutral-900">
+                  Members List
                 </h2>
-                <span className="text-xs md:text-sm text-gray-500">
+                <span className="text-xs md:text-sm text-neutral-500 font-light">
                   {members.length}
                   {query && ` / ${state.members.length}`}
                 </span>
@@ -458,7 +420,7 @@ function MembersContent() {
                 />
               </div>
             ) : (
-              <div className="divide-y divide-gray-200">
+              <div className="divide-y divide-neutral-200">
                 {members.map((member) => {
                   const isPaid = getIsPaid(member.id);
                   const payment = period?.payments.find(
@@ -468,13 +430,13 @@ function MembersContent() {
                   return (
                     <div
                       key={member.id}
-                      className="bg-white hover:bg-gray-50 transition-colors"
+                      className="bg-white hover:bg-neutral-50 transition-colors"
                     >
                       {editingMember?.id === member.id ? (
                         // Edit Mode
                         <div className="p-4 md:p-6 flex items-center space-x-3 md:space-x-4">
-                          <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
-                            <span className="text-white font-medium text-lg">
+                          <div className="w-12 h-12 bg-neutral-900 rounded-full flex items-center justify-center flex-shrink-0">
+                            <span className="text-white font-normal text-lg">
                               {editingMember.name[0]?.toUpperCase() || "?"}
                             </span>
                           </div>
@@ -519,23 +481,23 @@ function MembersContent() {
                           <div className="flex items-start md:items-center justify-between gap-3">
                             {/* Member Info */}
                             <div className="flex items-center gap-3 flex-1 min-w-0">
-                              <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
-                                <span className="text-white font-medium text-lg md:text-xl">
+                              <div className="w-12 h-12 md:w-14 md:h-14 bg-neutral-900 rounded-full flex items-center justify-center flex-shrink-0">
+                                <span className="text-white font-normal text-lg md:text-xl">
                                   {member.name[0]?.toUpperCase() || "?"}
                                 </span>
                               </div>
                               <div className="flex-1 min-w-0">
-                                <h3 className="font-semibold text-gray-900 text-base md:text-lg truncate">
+                                <h3 className="font-normal text-neutral-900 text-base md:text-lg truncate">
                                   {member.name}
                                 </h3>
                                 <div className="flex items-center gap-2 mt-1">
-                                  <p className="text-xs md:text-sm text-gray-500">
+                                  <p className="text-xs md:text-sm text-neutral-500">
                                     ID: {member.id}
                                   </p>
                                   {selectedPeriod && isPaid && (
                                     <>
-                                      <span className="text-gray-300">•</span>
-                                      <Badge variant="success" className="md:hidden">
+                                      <span className="text-neutral-300">•</span>
+                                      <Badge variant="neutral" className="md:hidden">
                                         Paid
                                       </Badge>
                                     </>
@@ -550,21 +512,20 @@ function MembersContent() {
                                 <>
                                   {isPaid ? (
                                     <>
-                                      <Badge variant="success">Paid</Badge>
-                                      <span className="font-semibold text-green-600">
+                                      <Badge variant="neutral">Paid</Badge>
+                                      <span className="font-normal text-neutral-900">
                                         ₱{payment?.amount?.toLocaleString() || 0}
                                       </span>
-                                      <Button
+                                      <button
                                         onClick={() => clearAmount(member.id)}
-                                        variant="secondary"
-                                        size="sm"
+                                        className="px-4 py-2 border border-neutral-300 text-neutral-700 text-sm font-normal rounded-md hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200"
                                       >
                                         Clear
-                                      </Button>
+                                      </button>
                                     </>
                                   ) : (
                                     <div className="flex items-center gap-3">
-                                      <Badge variant="error">Unpaid</Badge>
+                                      <Badge variant="neutral">Unpaid</Badge>
                                       <Input
                                         type="number"
                                         placeholder={
@@ -580,43 +541,40 @@ function MembersContent() {
                                         }
                                         className="w-32 text-sm"
                                       />
-                                      <Button
+                                      <button
                                         onClick={() => saveAmount(member.id)}
-                                        variant="success"
-                                        size="sm"
+                                        className="px-4 py-2 bg-neutral-900 !text-white text-sm font-normal rounded-md hover:bg-neutral-800 transition-all duration-200"
                                       >
                                         Pay
-                                      </Button>
+                                      </button>
                                     </div>
                                   )}
                                 </>
                               )}
-                              <Button
+                              <button
                                 onClick={() =>
                                   setEditingMember({
                                     id: member.id,
                                     name: member.name,
                                   })
                                 }
-                                variant="ghost"
-                                size="sm"
+                                className="px-4 py-2 border border-neutral-300 text-neutral-700 text-sm font-normal rounded-md hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200"
                               >
                                 Edit
-                              </Button>
-                              <Button
+                              </button>
+                              <button
                                 onClick={() =>
                                   deleteMember(member.id, member.name)
                                 }
-                                variant="danger"
-                                size="sm"
+                                className="px-4 py-2 border border-red-300 text-red-700 text-sm font-normal rounded-md hover:border-red-400 hover:bg-red-50 transition-all duration-200"
                               >
                                 Delete
-                              </Button>
+                              </button>
                             </div>
 
                             {/* Mobile Menu Button */}
                             <button
-                              className="md:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
+                              className="md:hidden p-2 hover:bg-neutral-100 rounded-lg transition-colors flex-shrink-0"
                               onClick={() => {
                                 // Toggle mobile actions menu
                                 const menu = document.getElementById(
@@ -628,7 +586,7 @@ function MembersContent() {
                               }}
                             >
                               <svg
-                                className="w-5 h-5 text-gray-600"
+                                className="w-5 h-5 text-neutral-600"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -646,15 +604,15 @@ function MembersContent() {
                           {/* Mobile Actions - Collapsible */}
                           <div
                             id={`mobile-menu-${member.id}`}
-                            className="hidden md:hidden mt-4 pt-4 border-t border-gray-100 space-y-3"
+                            className="hidden md:hidden mt-4 pt-4 border-t border-neutral-100 space-y-3"
                           >
                             {selectedPeriod && (
                               <div className="space-y-3">
                                 {isPaid ? (
-                                  <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                                  <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
                                     <div className="flex items-center gap-2">
-                                      <Badge variant="success">Paid</Badge>
-                                      <span className="font-semibold text-green-600">
+                                      <Badge variant="neutral">Paid</Badge>
+                                      <span className="font-normal text-neutral-900">
                                         ₱{payment?.amount?.toLocaleString() || 0}
                                       </span>
                                     </div>
@@ -669,7 +627,7 @@ function MembersContent() {
                                 ) : (
                                   <div className="space-y-2">
                                     <div className="flex items-center gap-2">
-                                      <Badge variant="error">Unpaid</Badge>
+                                      <Badge variant="neutral">Unpaid</Badge>
                                     </div>
                                     <div className="flex gap-2">
                                       <Input
@@ -687,43 +645,37 @@ function MembersContent() {
                                         }
                                         className="flex-1 text-base h-11"
                                       />
-                                      <Button
+                                      <button
                                         onClick={() => saveAmount(member.id)}
-                                        variant="success"
-                                        size="sm"
-                                        className="px-6 h-11"
+                                        className="px-6 h-11 bg-neutral-900 !text-white text-sm font-normal rounded-md hover:bg-neutral-800 transition-all duration-200"
                                       >
                                         Pay
-                                      </Button>
+                                      </button>
                                     </div>
                                   </div>
                                 )}
                               </div>
                             )}
                             <div className="flex gap-2">
-                              <Button
+                              <button
                                 onClick={() =>
                                   setEditingMember({
                                     id: member.id,
                                     name: member.name,
                                   })
                                 }
-                                variant="ghost"
-                                size="sm"
-                                className="flex-1 h-11"
+                                className="flex-1 h-11 px-4 py-2 border border-neutral-300 text-neutral-700 text-sm font-normal rounded-md hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200"
                               >
-                                ✏️ Edit
-                              </Button>
-                              <Button
+                                Edit
+                              </button>
+                              <button
                                 onClick={() =>
                                   deleteMember(member.id, member.name)
                                 }
-                                variant="danger"
-                                size="sm"
-                                className="flex-1 h-11"
+                                className="flex-1 h-11 px-4 py-2 border border-red-300 text-red-700 text-sm font-normal rounded-md hover:border-red-400 hover:bg-red-50 transition-all duration-200"
                               >
-                                🗑️ Delete
-                              </Button>
+                                Delete
+                              </button>
                             </div>
                           </div>
                         </div>
@@ -760,24 +712,20 @@ function MembersContent() {
 
       {/* Mobile Bottom Actions Bar */}
       {selectedPeriod && (
-        <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 z-10 shadow-lg">
+        <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-200 px-4 py-3 z-10 shadow-lg">
           <div className="flex gap-2">
-            <Button
+            <button
               onClick={() => markAll(true)}
-              variant="success"
-              size="sm"
-              className="flex-1 h-12 font-medium"
+              className="flex-1 h-12 px-4 py-2 border border-neutral-300 text-neutral-700 text-sm font-normal rounded-md hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200"
             >
-              ✓ Mark All Paid
-            </Button>
-            <Button
+              Mark All Paid
+            </button>
+            <button
               onClick={() => markAll(false)}
-              variant="secondary"
-              size="sm"
-              className="flex-1 h-12 font-medium"
+              className="flex-1 h-12 px-4 py-2 border border-neutral-300 text-neutral-700 text-sm font-normal rounded-md hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200"
             >
-              ✗ Clear All
-            </Button>
+              Clear All
+            </button>
           </div>
         </div>
       )}

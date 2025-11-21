@@ -8,7 +8,6 @@ import {
   Button,
   Input,
   Select,
-  Badge,
   Modal,
 } from "@/components/UI";
 
@@ -25,8 +24,6 @@ function HomeContent() {
   const [newPeriodDate, setNewPeriodDate] = useState<string>("");
   const [showNewLoanModal, setShowNewLoanModal] = useState(false);
   const [showNewPeriodModal, setShowNewPeriodModal] = useState(false);
-  const [showArchiveModal, setShowArchiveModal] = useState(false);
-  const [selectedYearToArchive, setSelectedYearToArchive] = useState<number | null>(null);
   const [showResetModal, setShowResetModal] = useState(false);
 
   const createLoan = () => {
@@ -118,33 +115,6 @@ function HomeContent() {
     });
   };
 
-  // Get available years that can be archived
-  const getAvailableYears = () => {
-    const years = new Set<number>();
-    state.collections.forEach((c) => {
-      years.add(new Date(c.date).getFullYear());
-    });
-    return Array.from(years).sort((a, b) => b - a); // Newest first
-  };
-
-  // Handle archiving a year
-  const handleArchiveYear = () => {
-    if (selectedYearToArchive === null) return;
-
-    dispatch({
-      type: "ARCHIVE_YEAR",
-      payload: { year: selectedYearToArchive },
-    });
-
-    setShowArchiveModal(false);
-    setSelectedYearToArchive(null);
-  };
-
-  const openArchiveModal = (year: number) => {
-    setSelectedYearToArchive(year);
-    setShowArchiveModal(true);
-  };
-
   // Handle resetting all periods
   const handleResetPeriods = () => {
     dispatch({ type: "RESET_PERIODS" });
@@ -158,35 +128,35 @@ function HomeContent() {
   const pendingLoans = state.loans.filter((l) => l.status === "PENDING").length;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto max-w-7xl px-4 py-6">
-        {/* Header + Actions - Single compact row */}
-        <div className="flex items-center justify-between mb-6 bg-white border border-gray-200 rounded-lg px-6 py-4">
+    <div className="min-h-screen bg-neutral-50">
+      <div className="container mx-auto max-w-7xl px-6 py-8">
+        {/* Header + Actions */}
+        <div className="flex items-center justify-between mb-10 pb-6 border-b border-neutral-200">
           <div>
-            <h1 className="text-2xl font-medium text-gray-900 tracking-tight">
+            <h1 className="text-3xl font-light text-neutral-900 tracking-tight mb-1">
               Dashboard
             </h1>
-            <p className="text-xs text-gray-500 mt-0.5">
-              {format(new Date(), "MMMM d, yyyy")} · {state.collections.length} periods
+            <p className="text-sm text-neutral-500 font-light">
+              {format(new Date(), "MMMM d, yyyy")} · {state.collections.length} {state.collections.length === 1 ? 'period' : 'periods'}
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <button
               onClick={() => setShowNewPeriodModal(true)}
-              className="px-4 py-2 bg-gray-900 text-white text-xs font-medium rounded hover:bg-gray-800 transition-colors"
+              className="px-5 py-2.5 bg-neutral-900 !text-white text-sm font-normal rounded-md hover:bg-neutral-800 transition-all duration-200"
             >
               New Period
             </button>
             <button
               onClick={() => setShowNewLoanModal(true)}
-              className="px-4 py-2 border border-gray-300 text-gray-700 text-xs font-medium rounded hover:bg-gray-50 transition-colors"
+              className="px-5 py-2.5 border border-neutral-300 text-neutral-700 text-sm font-normal rounded-md hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200"
             >
               New Loan
             </button>
             {state.collections.length > 0 && (
               <button
                 onClick={() => setShowResetModal(true)}
-                className="px-4 py-2 border border-red-300 text-red-600 text-xs font-medium rounded hover:bg-red-50 transition-colors"
+                className="px-5 py-2.5 border border-neutral-300 text-neutral-600 text-sm font-normal rounded-md hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200"
               >
                 Reset
               </button>
@@ -194,54 +164,52 @@ function HomeContent() {
           </div>
         </div>
 
-        {/* Stats Grid - 4 columns, compact */}
-        <div className="grid grid-cols-4 gap-3 mb-6">
-          <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <p className="text-[10px] uppercase tracking-wide text-gray-500 font-medium mb-1">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-4 gap-6 mb-12">
+          <div className="bg-white border border-neutral-200 rounded-lg p-6 transition-all duration-200 hover:shadow-sm">
+            <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
               Total Balance
             </p>
-            <p className="text-2xl font-semibold text-gray-900">
+            <p className="text-3xl font-light text-neutral-900">
               ₱{totalBalance.toLocaleString()}
             </p>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <p className="text-[10px] uppercase tracking-wide text-gray-500 font-medium mb-1">
+          <div className="bg-white border border-neutral-200 rounded-lg p-6 transition-all duration-200 hover:shadow-sm">
+            <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
               Members
             </p>
-            <p className="text-2xl font-semibold text-gray-900">
+            <p className="text-3xl font-light text-neutral-900">
               {totalMembers}
             </p>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <p className="text-[10px] uppercase tracking-wide text-gray-500 font-medium mb-1">
+          <div className="bg-white border border-neutral-200 rounded-lg p-6 transition-all duration-200 hover:shadow-sm">
+            <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
               Active Loans
             </p>
-            <p className="text-2xl font-semibold text-gray-900">
+            <p className="text-3xl font-light text-neutral-900">
               {activeLoans}
             </p>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <p className="text-[10px] uppercase tracking-wide text-gray-500 font-medium mb-1">
+          <div className="bg-white border border-neutral-200 rounded-lg p-6 transition-all duration-200 hover:shadow-sm">
+            <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
               Pending
             </p>
-            <p className="text-2xl font-semibold text-gray-900">
+            <p className="text-3xl font-light text-neutral-900">
               {pendingLoans}
             </p>
           </div>
         </div>
 
-        {/* Collection Periods - Grid layout */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-3 px-1">
-            <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
-              Collection Periods
-            </h2>
-          </div>
+        {/* Collection Periods */}
+        <div className="mb-12">
+          <h2 className="text-lg font-light text-neutral-900 mb-6">
+            Collection Periods
+          </h2>
           {state.collections.length > 0 ? (
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-4 gap-4">
               {state.collections.map((period) => (
                 <button
                   key={period.id}
@@ -251,145 +219,50 @@ function HomeContent() {
                       payload: { periodId: period.id },
                     })
                   }
-                  className={`p-4 rounded-lg border text-left transition-colors ${
+                  className={`p-5 rounded-lg border text-left transition-all duration-200 ${
                     selectedPeriod === period.id
-                      ? "border-gray-900 bg-gray-900 text-white"
-                      : "border-gray-200 bg-white hover:border-gray-300"
+                      ? "border-neutral-900 bg-neutral-900 text-white shadow-sm"
+                      : "border-neutral-200 bg-white hover:border-neutral-300 hover:shadow-sm"
                   }`}
                 >
-                  <p className={`text-[10px] uppercase tracking-wide font-medium mb-2 ${
-                    selectedPeriod === period.id ? "text-gray-300" : "text-gray-500"
+                  <p className={`text-xs uppercase tracking-wider font-normal mb-3 ${
+                    selectedPeriod === period.id ? "text-neutral-400" : "text-neutral-500"
                   }`}>
                     {format(new Date(period.date), "MMM d, yyyy")}
                   </p>
-                  <p className={`text-xl font-semibold mb-1 ${
-                    selectedPeriod === period.id ? "text-white" : "text-gray-900"
+                  <p className={`text-2xl font-light mb-2 ${
+                    selectedPeriod === period.id ? "text-white" : "text-neutral-900"
                   }`}>
                     ₱{period.totalCollected.toLocaleString()}
                   </p>
-                  <p className={`text-[10px] ${
-                    selectedPeriod === period.id ? "text-gray-400" : "text-gray-500"
+                  <p className={`text-xs font-light ${
+                    selectedPeriod === period.id ? "text-neutral-400" : "text-neutral-500"
                   }`}>
-                    {period.payments.length} payments
+                    {period.payments.length} {period.payments.length === 1 ? 'payment' : 'payments'}
                   </p>
                 </button>
               ))}
 
               <button
                 onClick={addNextCollectionPeriod}
-                className="p-4 rounded-lg border-2 border-dashed border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-colors flex flex-col items-center justify-center min-h-[112px]"
+                className="p-5 rounded-lg border border-dashed border-neutral-300 hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200 flex flex-col items-center justify-center min-h-[140px]"
               >
-                <span className="text-2xl text-gray-400 mb-1">+</span>
-                <span className="text-xs text-gray-500 font-medium">Add Period</span>
+                <span className="text-3xl text-neutral-400 mb-2 font-light">+</span>
+                <span className="text-sm text-neutral-600 font-light">Add Period</span>
               </button>
             </div>
           ) : (
-            <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
-              <p className="text-sm text-gray-500 mb-4">No periods yet</p>
+            <div className="bg-white border border-neutral-200 rounded-lg p-12 text-center">
+              <p className="text-sm text-neutral-500 font-light mb-6">No periods yet</p>
               <button
                 onClick={addNextCollectionPeriod}
-                className="px-4 py-2 bg-gray-900 text-white text-xs font-medium rounded hover:bg-gray-800 transition-colors"
+                className="px-5 py-2.5 bg-neutral-900 !text-white text-sm font-normal rounded-md hover:bg-neutral-800 transition-all duration-200"
               >
                 Create First Period
               </button>
             </div>
           )}
         </div>
-
-        {/* Year Management */}
-        {getAvailableYears().length > 0 && (
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-3 px-1">
-              <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
-                Years
-              </h2>
-            </div>
-            <div className="grid grid-cols-4 gap-3">
-              {getAvailableYears().map((year) => (
-                <div
-                  key={year}
-                  className="bg-white border border-gray-200 rounded-lg p-4"
-                >
-                  <p className="text-[10px] uppercase tracking-wide text-gray-500 font-medium mb-1">
-                    Year {year}
-                  </p>
-                  <p className="text-xl font-semibold text-gray-900 mb-3">
-                    {state.collections.filter(
-                      (c) => new Date(c.date).getFullYear() === year
-                    ).length} periods
-                  </p>
-                  <button
-                    onClick={() => openArchiveModal(year)}
-                    className="px-3 py-1.5 border border-gray-300 text-gray-600 text-[10px] font-medium rounded hover:bg-gray-50 transition-colors w-full"
-                  >
-                    Archive
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Archived Years */}
-        {state.archives.length > 0 && (
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-3 px-1">
-              <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
-                Archives
-              </h2>
-            </div>
-            <div className="space-y-3">
-              {state.archives
-                .sort((a, b) => b.year - a.year)
-                .map((archive) => (
-                  <div
-                    key={archive.year}
-                    className="bg-white border border-gray-200 rounded-lg p-5"
-                  >
-                    <div className="flex items-center justify-between mb-4">
-                      <div>
-                        <h3 className="text-base font-semibold text-gray-900">
-                          Year {archive.year}
-                        </h3>
-                        <p className="text-[10px] text-gray-500 mt-0.5">
-                          Archived {format(new Date(archive.archivedDate), "MMM d, yyyy")}
-                        </p>
-                      </div>
-                      <Badge variant="neutral" className="text-[10px]">
-                        Archived
-                      </Badge>
-                    </div>
-                    <div className="grid grid-cols-4 gap-3">
-                      <div className="bg-gray-50 border border-gray-100 rounded p-3">
-                        <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-1">Collected</p>
-                        <p className="text-base font-semibold text-gray-900">
-                          ₱{archive.summary.totalCollected.toLocaleString()}
-                        </p>
-                      </div>
-                      <div className="bg-gray-50 border border-gray-100 rounded p-3">
-                        <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-1">Disbursed</p>
-                        <p className="text-base font-semibold text-gray-900">
-                          ₱{archive.summary.totalDisbursed.toLocaleString()}
-                        </p>
-                      </div>
-                      <div className="bg-gray-50 border border-gray-100 rounded p-3">
-                        <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-1">Repayments</p>
-                        <p className="text-base font-semibold text-gray-900">
-                          ₱{archive.summary.totalRepayments.toLocaleString()}
-                        </p>
-                      </div>
-                      <div className="bg-gray-50 border border-gray-100 rounded p-3">
-                        <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-1">Balance</p>
-                        <p className="text-base font-semibold text-gray-900">
-                          ₱{archive.summary.endingBalance.toLocaleString()}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Modals */}
@@ -477,57 +350,66 @@ function HomeContent() {
           />
 
           {/* Loan Type Explanation */}
-          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <h4 className="font-semibold text-blue-900 mb-2">
+          <div className="p-5 bg-neutral-50 border border-neutral-200 rounded-lg">
+            <h4 className="font-normal text-neutral-900 mb-3 text-sm uppercase tracking-wider">
               Loan Type Information
             </h4>
             {newLoanPlan === "MONTHLY" ? (
-              <div className="text-sm text-blue-800">
-                <p className="mb-2">
-                  <strong>One-time Payment Loan:</strong>
+              <div className="text-sm text-neutral-700 font-light">
+                <p className="mb-3 font-normal text-neutral-900">
+                  One-time Payment Loan
                 </p>
-                <ul className="list-disc list-inside space-y-1">
-                  <li>
-                    Pay the full amount + interest after {newLoanTerms || 5}{" "}
-                    months
+                <ul className="space-y-2 ml-1">
+                  <li className="flex items-start">
+                    <span className="text-neutral-400 mr-2">•</span>
+                    <span>Pay the full amount + interest after {newLoanTerms || 5}{" "}
+                    months</span>
                   </li>
-                  <li>
-                    Interest: 4% per month × {newLoanTerms || 5} months ={" "}
-                    {(parseFloat(newLoanTerms) || 5) * 4}% total
+                  <li className="flex items-start">
+                    <span className="text-neutral-400 mr-2">•</span>
+                    <span>Interest: 4% per month × {newLoanTerms || 5} months ={" "}
+                    {(parseFloat(newLoanTerms) || 5) * 4}% total</span>
                   </li>
-                  <li>
-                    Example: ₱10,000 → Pay ₱
+                  <li className="flex items-start">
+                    <span className="text-neutral-400 mr-2">•</span>
+                    <span>Example: ₱10,000 → Pay ₱
                     {(
                       10000 *
                       (1 + 0.04 * (parseFloat(newLoanTerms) || 5))
                     ).toLocaleString()}{" "}
-                    after {newLoanTerms || 5} months
+                    after {newLoanTerms || 5} months</span>
                   </li>
                 </ul>
               </div>
             ) : (
-              <div className="text-sm text-blue-800">
-                <p className="mb-2">
-                  <strong>Per Cut-off Installment Loan:</strong>
+              <div className="text-sm text-neutral-700 font-light">
+                <p className="mb-3 font-normal text-neutral-900">
+                  Per Cut-off Installment Loan
                 </p>
-                <ul className="list-disc list-inside space-y-1">
-                  <li>Pay in installments every cut-off (2 times per month)</li>
-                  <li>
-                    Interest: 3% per month × {newLoanTerms || 5} months ={" "}
-                    {(parseFloat(newLoanTerms) || 5) * 3}% total
+                <ul className="space-y-2 ml-1">
+                  <li className="flex items-start">
+                    <span className="text-neutral-400 mr-2">•</span>
+                    <span>Pay in installments every cut-off (2 times per month)</span>
                   </li>
-                  <li>
-                    Total payments: {(parseFloat(newLoanTerms) || 5) * 2}{" "}
-                    installments
+                  <li className="flex items-start">
+                    <span className="text-neutral-400 mr-2">•</span>
+                    <span>Interest: 3% per month × {newLoanTerms || 5} months ={" "}
+                    {(parseFloat(newLoanTerms) || 5) * 3}% total</span>
                   </li>
-                  <li>
-                    Example: ₱10,000 → {(parseFloat(newLoanTerms) || 5) * 2}{" "}
+                  <li className="flex items-start">
+                    <span className="text-neutral-400 mr-2">•</span>
+                    <span>Total payments: {(parseFloat(newLoanTerms) || 5) * 2}{" "}
+                    installments</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-neutral-400 mr-2">•</span>
+                    <span>Example: ₱10,000 → {(parseFloat(newLoanTerms) || 5) * 2}{" "}
                     payments of ₱
                     {(
                       (10000 * (1 + 0.03 * (parseFloat(newLoanTerms) || 5))) /
                       ((parseFloat(newLoanTerms) || 5) * 2)
                     ).toFixed(0)}{" "}
-                    each
+                    each</span>
                   </li>
                 </ul>
               </div>
@@ -541,40 +423,6 @@ function HomeContent() {
               Cancel
             </Button>
             <Button onClick={createLoan}>Create Loan</Button>
-          </div>
-        </div>
-      </Modal>
-
-      <Modal
-        isOpen={showArchiveModal}
-        onClose={() => setShowArchiveModal(false)}
-        title="Archive Year"
-      >
-        <div className="space-y-4">
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <p className="text-sm text-yellow-800">
-              <strong>⚠️ Warning:</strong> Archiving year {selectedYearToArchive} will:
-            </p>
-            <ul className="mt-2 ml-4 text-sm text-yellow-700 list-disc space-y-1">
-              <li>Move all {selectedYearToArchive} collection periods to the archive</li>
-              <li>Remove {selectedYearToArchive} loans, repayments, and penalties from active view</li>
-              <li>Calculate and save year-end summary statistics</li>
-              <li>This action cannot be undone</li>
-            </ul>
-          </div>
-          <p className="text-sm text-gray-600">
-            The archived data will be safely stored and viewable in the &ldquo;Archived Years&rdquo; section.
-          </p>
-          <div className="flex justify-end space-x-3">
-            <Button
-              variant="secondary"
-              onClick={() => setShowArchiveModal(false)}
-            >
-              Cancel
-            </Button>
-            <Button onClick={handleArchiveYear} variant="primary">
-              Confirm Archive
-            </Button>
           </div>
         </div>
       </Modal>

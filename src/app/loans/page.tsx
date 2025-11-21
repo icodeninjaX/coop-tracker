@@ -61,10 +61,10 @@ const LoansPage = () => {
 
   if (!state) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-neutral-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-2 text-gray-600">Loading coop data...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neutral-600 mx-auto"></div>
+          <p className="mt-2 text-neutral-600 font-light">Loading coop data...</p>
         </div>
       </div>
     );
@@ -165,28 +165,28 @@ const LoansPage = () => {
     );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-neutral-50">
       <div className="container mx-auto max-w-6xl px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
         {/* Header Section */}
         <div className="mb-6 lg:mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">
-                💰 Loans
+              <h1 className="text-2xl sm:text-3xl font-light text-neutral-900 tracking-tight mb-1 sm:mb-2">
+                Loans
               </h1>
-              <p className="text-sm sm:text-base text-gray-600">
+              <p className="text-sm sm:text-base text-neutral-600 font-light">
                 Manage loan applications, approvals, and repayments
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-              <Badge variant="info" className="text-xs sm:text-sm">
+              <Badge variant="neutral" className="text-xs sm:text-sm font-normal">
                 {totalLoans} loans
               </Badge>
-              <Badge variant="warning" className="text-xs sm:text-sm">
+              <Badge variant="neutral" className="text-xs sm:text-sm font-normal">
                 {pendingLoans} pending
               </Badge>
               {selectedPeriod && (
-                <Badge variant="success" className="text-xs sm:text-sm">
+                <Badge variant="neutral" className="text-xs sm:text-sm font-normal">
                   {format(new Date(selectedPeriod), "MMM dd")}
                 </Badge>
               )}
@@ -196,76 +196,48 @@ const LoansPage = () => {
 
         {/* Stats Overview */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 lg:mb-8">
-          <Card className="p-4 sm:p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-blue-600 text-xs sm:text-sm font-medium">
-                  Total Loans
-                </p>
-                <p className="text-lg sm:text-2xl font-bold text-blue-900">
-                  {totalLoans}
-                </p>
-              </div>
-              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-blue-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-sm sm:text-xl">💰</span>
-              </div>
-            </div>
-          </Card>
+          <div className="bg-white border border-neutral-200 rounded-lg p-4 sm:p-6 transition-all duration-200 hover:shadow-sm">
+            <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
+              Total Loans
+            </p>
+            <p className="text-2xl sm:text-3xl font-light text-neutral-900">
+              {totalLoans}
+            </p>
+          </div>
 
-          <Card className="p-4 sm:p-6 bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-yellow-600 text-xs sm:text-sm font-medium">
-                  Pending
-                </p>
-                <p className="text-lg sm:text-2xl font-bold text-yellow-900">
-                  {pendingLoans}
-                </p>
-              </div>
-              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-yellow-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-sm sm:text-xl">⏳</span>
-              </div>
-            </div>
-          </Card>
+          <div className="bg-white border border-neutral-200 rounded-lg p-4 sm:p-6 transition-all duration-200 hover:shadow-sm">
+            <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
+              Pending
+            </p>
+            <p className="text-2xl sm:text-3xl font-light text-neutral-900">
+              {pendingLoans}
+            </p>
+          </div>
 
-          <Card className="p-4 sm:p-6 bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-green-600 text-xs sm:text-sm font-medium">
-                  Approved
-                </p>
-                <p className="text-lg sm:text-2xl font-bold text-green-900">
-                  {approvedLoans}
-                </p>
-              </div>
-              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-green-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-sm sm:text-xl">✅</span>
-              </div>
-            </div>
-          </Card>
+          <div className="bg-white border border-neutral-200 rounded-lg p-4 sm:p-6 transition-all duration-200 hover:shadow-sm">
+            <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
+              Approved
+            </p>
+            <p className="text-2xl sm:text-3xl font-light text-neutral-900">
+              {approvedLoans}
+            </p>
+          </div>
 
-          <Card className="p-4 sm:p-6 bg-gradient-to-br from-red-50 to-red-100 border-red-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-red-600 text-xs sm:text-sm font-medium">
-                  Outstanding
-                </p>
-                <p className="text-lg sm:text-2xl font-bold text-red-900">
-                  ₱{totalOutstanding.toLocaleString()}
-                </p>
-              </div>
-              <div className="w-8 h-8 sm:w-12 sm:h-12 bg-red-500 rounded-lg flex items-center justify-center">
-                <span className="text-white text-sm sm:text-xl">📊</span>
-              </div>
-            </div>
-          </Card>
+          <div className="bg-white border border-neutral-200 rounded-lg p-4 sm:p-6 transition-all duration-200 hover:shadow-sm">
+            <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
+              Outstanding
+            </p>
+            <p className="text-2xl sm:text-3xl font-light text-neutral-900">
+              ₱{totalOutstanding.toLocaleString()}
+            </p>
+          </div>
         </div>
 
         {/* Controls Section */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 lg:mb-8">
           {/* Period Selection */}
           <Card className="p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
+            <h3 className="text-base sm:text-lg font-light text-neutral-900 mb-3 sm:mb-4">
               Collection Period
             </h3>
             <Select
@@ -283,7 +255,7 @@ const LoansPage = () => {
 
           {/* Status Filter */}
           <Card className="p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
+            <h3 className="text-base sm:text-lg font-light text-neutral-900 mb-3 sm:mb-4">
               Status Filter
             </h3>
             <Select
@@ -301,7 +273,7 @@ const LoansPage = () => {
 
           {/* Search */}
           <Card className="p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
+            <h3 className="text-base sm:text-lg font-light text-neutral-900 mb-3 sm:mb-4">
               Search
             </h3>
             <Input
@@ -312,7 +284,7 @@ const LoansPage = () => {
               className="text-sm"
               icon={
                 <svg
-                  className="h-4 w-4 text-gray-400"
+                  className="h-4 w-4 text-neutral-400"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -330,27 +302,26 @@ const LoansPage = () => {
 
           {/* Quick Actions */}
           <Card className="p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
+            <h3 className="text-base sm:text-lg font-light text-neutral-900 mb-3 sm:mb-4">
               Quick Actions
             </h3>
-            <Button
+            <button
               onClick={() => setShowAddLoan(true)}
-              variant="primary"
-              className="w-full text-sm sm:text-base py-2 sm:py-3"
+              className="w-full px-5 py-2.5 bg-neutral-900 !text-white text-sm font-normal rounded-md hover:bg-neutral-800 transition-all duration-200"
             >
-              + Add Loan
-            </Button>
+              Add Loan
+            </button>
           </Card>
         </div>
 
         {/* Loans List */}
         <Card className="overflow-hidden shadow-sm">
-          <div className="p-4 sm:p-6 border-b border-gray-200">
+          <div className="p-4 sm:p-6 border-b border-neutral-200">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
+              <h2 className="text-lg sm:text-xl font-light text-neutral-900">
                 Loan Applications
               </h2>
-              <span className="text-xs sm:text-sm text-gray-500">
+              <span className="text-xs sm:text-sm text-neutral-500 font-light">
                 {loans.length} loans
                 {(selectedPeriod || selectedStatus || query) &&
                   ` (filtered from ${state.loans?.length || 0})`}

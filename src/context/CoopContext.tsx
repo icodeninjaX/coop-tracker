@@ -568,6 +568,7 @@ function coopReducer(state: CoopState, action: CoopAction): CoopState {
         collections: mergedCollections,
         repayments,
         penalties,
+        archives: action.payload.archives || [],
         // Preserve the current selected period if it exists and is valid
         selectedPeriod:
           action.payload.selectedPeriod || state.selectedPeriod || "",
