@@ -35,66 +35,63 @@ export default function AppNavigation() {
   const isActive = (path: string) => pathname === path;
 
   const navItems = [
-    { href: "/", label: "Dashboard", icon: "🏠" },
-    { href: "/members", label: "Members", icon: "👥" },
-    { href: "/loans", label: "Loans", icon: "💰" },
+    { href: "/", label: "Dashboard" },
+    { href: "/members", label: "Members" },
+    { href: "/loans", label: "Loans" },
   ];
 
   return (
     <>
-      {/* Modern app-like header */}
-      <header className="bg-white/80 backdrop-blur-lg border-b border-gray-200/50 sticky top-0 z-50 shadow-sm">
-        <nav className="container mx-auto max-w-6xl px-4 sm:px-6">
+      {/* Minimalist header */}
+      <header className="bg-white border-b border-neutral-200 sticky top-0 z-50">
+        <nav className="container mx-auto max-w-7xl px-6">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link
               href="/"
-              className="flex items-center space-x-2 text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent hover:from-indigo-700 hover:to-purple-700 transition-all duration-200"
+              className="text-lg font-light text-neutral-900 tracking-tight hover:text-neutral-700 transition-colors duration-200"
               onClick={closeMobileMenu}
             >
-              <span className="text-2xl">🏦</span>
-              <span>CoopTracker</span>
+              CoopTracker
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-1">
+            <div className="hidden md:flex items-center gap-1">
               {navItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 ${
+                  className={`px-4 py-2 rounded-md text-sm font-normal transition-all duration-200 ${
                     isActive(item.href)
-                      ? "bg-indigo-50 text-indigo-700 shadow-sm"
-                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                      ? "bg-neutral-900 text-white"
+                      : "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50"
                   }`}
                 >
-                  <span>{item.icon}</span>
-                  <span>{item.label}</span>
+                  {item.label}
                 </Link>
               ))}
             </div>
 
             {/* Desktop User Menu */}
-            <div className="hidden md:flex items-center space-x-4">
+            <div className="hidden md:flex items-center gap-4">
               {user && (
                 <>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
-                      <span className="text-white font-medium text-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-neutral-900 rounded-full flex items-center justify-center">
+                      <span className="text-white font-normal text-xs">
                         {user.email?.[0]?.toUpperCase() || "U"}
                       </span>
                     </div>
-                    <span className="text-sm font-medium text-gray-700">
+                    <span className="text-sm font-light text-neutral-700">
                       {user.email}
                     </span>
                   </div>
                   <button
                     onClick={handleSignOut}
                     disabled={isSigningOut}
-                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 disabled:opacity-50"
+                    className="px-4 py-2 border border-neutral-300 text-neutral-700 rounded-md text-sm font-normal hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200 disabled:opacity-50"
                   >
-                    <span>🚪</span>
-                    <span>{isSigningOut ? "Signing out..." : "Sign out"}</span>
+                    {isSigningOut ? "Signing out..." : "Sign out"}
                   </button>
                 </>
               )}
@@ -103,7 +100,7 @@ export default function AppNavigation() {
             {/* Mobile menu button */}
             <button
               onClick={toggleMobileMenu}
-              className="md:hidden p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200"
+              className="md:hidden p-2 rounded-md text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 transition-all duration-200"
               aria-label="Toggle menu"
             >
               <svg
@@ -144,48 +141,47 @@ export default function AppNavigation() {
         }`}
       >
         <div
-          className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+          className="absolute inset-0 bg-black/20"
           onClick={closeMobileMenu}
         />
         <div
-          className={`absolute top-16 left-4 right-4 bg-white rounded-2xl shadow-2xl border border-gray-200/50 transition-all duration-300 ${
+          className={`absolute top-16 left-4 right-4 bg-white rounded-lg shadow-lg border border-neutral-200 transition-all duration-300 ${
             isMobileMenuOpen
               ? "opacity-100 translate-y-0 scale-100"
               : "opacity-0 -translate-y-4 scale-95"
           }`}
         >
-          <div className="p-6">
+          <div className="p-4">
             {/* Mobile Navigation */}
-            <nav className="space-y-2 mb-6">
+            <nav className="space-y-1 mb-4">
               {navItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
                   onClick={closeMobileMenu}
-                  className={`flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
+                  className={`flex items-center px-4 py-2.5 rounded-md text-sm font-normal transition-all duration-200 ${
                     isActive(item.href)
-                      ? "bg-indigo-50 text-indigo-700"
-                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                      ? "bg-neutral-900 text-white"
+                      : "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50"
                   }`}
                 >
-                  <span className="text-lg">{item.icon}</span>
-                  <span>{item.label}</span>
+                  {item.label}
                 </Link>
               ))}
             </nav>
 
             {/* Mobile User Section */}
             {user && (
-              <div className="pt-6 border-t border-gray-200">
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
-                    <span className="text-white font-medium">
+              <div className="pt-4 border-t border-neutral-200">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-9 h-9 bg-neutral-900 rounded-full flex items-center justify-center">
+                    <span className="text-white font-normal text-sm">
                       {user.email?.[0]?.toUpperCase() || "U"}
                     </span>
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">Account</p>
-                    <p className="text-sm text-gray-500">{user.email}</p>
+                    <p className="text-sm font-normal text-neutral-900">Account</p>
+                    <p className="text-xs font-light text-neutral-500">{user.email}</p>
                   </div>
                 </div>
                 <button
@@ -194,10 +190,9 @@ export default function AppNavigation() {
                     handleSignOut();
                   }}
                   disabled={isSigningOut}
-                  className="w-full px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-all duration-200 flex items-center justify-center space-x-2 disabled:opacity-50"
+                  className="w-full px-4 py-2.5 border border-neutral-300 text-neutral-700 rounded-md text-sm font-normal hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200 disabled:opacity-50"
                 >
-                  <span>🚪</span>
-                  <span>{isSigningOut ? "Signing out..." : "Sign out"}</span>
+                  {isSigningOut ? "Signing out..." : "Sign out"}
                 </button>
               </div>
             )}

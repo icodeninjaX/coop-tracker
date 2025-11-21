@@ -129,34 +129,34 @@ function HomeContent() {
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      <div className="container mx-auto max-w-7xl px-6 py-8">
+      <div className="container mx-auto max-w-7xl px-3 sm:px-6 py-6 sm:py-8">
         {/* Header + Actions */}
-        <div className="flex items-center justify-between mb-10 pb-6 border-b border-neutral-200">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0 mb-6 sm:mb-10 pb-6 border-b border-neutral-200">
           <div>
-            <h1 className="text-3xl font-light text-neutral-900 tracking-tight mb-1">
+            <h1 className="text-2xl sm:text-3xl font-light text-neutral-900 tracking-tight mb-1">
               Dashboard
             </h1>
             <p className="text-sm text-neutral-500 font-light">
               {format(new Date(), "MMMM d, yyyy")} · {state.collections.length} {state.collections.length === 1 ? 'period' : 'periods'}
             </p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
             <button
               onClick={() => setShowNewPeriodModal(true)}
-              className="px-5 py-2.5 bg-neutral-900 !text-white text-sm font-normal rounded-md hover:bg-neutral-800 transition-all duration-200"
+              className="px-5 py-2.5 bg-neutral-900 !text-white text-sm font-normal rounded-md hover:bg-neutral-800 transition-all duration-200 min-h-[44px]"
             >
               New Period
             </button>
             <button
               onClick={() => setShowNewLoanModal(true)}
-              className="px-5 py-2.5 border border-neutral-300 text-neutral-700 text-sm font-normal rounded-md hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200"
+              className="px-5 py-2.5 border border-neutral-300 text-neutral-700 text-sm font-normal rounded-md hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200 min-h-[44px]"
             >
               New Loan
             </button>
             {state.collections.length > 0 && (
               <button
                 onClick={() => setShowResetModal(true)}
-                className="px-5 py-2.5 border border-neutral-300 text-neutral-600 text-sm font-normal rounded-md hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200"
+                className="px-5 py-2.5 border border-neutral-300 text-neutral-600 text-sm font-normal rounded-md hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200 min-h-[44px]"
               >
                 Reset
               </button>
@@ -165,98 +165,147 @@ function HomeContent() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-4 gap-6 mb-12">
-          <div className="bg-white border border-neutral-200 rounded-lg p-6 transition-all duration-200 hover:shadow-sm">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-8 sm:mb-12">
+          <div className="bg-white border border-neutral-200 rounded-lg p-4 sm:p-6 transition-all duration-200 hover:shadow-sm">
             <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
               Total Balance
             </p>
-            <p className="text-3xl font-light text-neutral-900">
+            <p className="text-2xl sm:text-3xl font-light text-neutral-900">
               ₱{totalBalance.toLocaleString()}
             </p>
           </div>
 
-          <div className="bg-white border border-neutral-200 rounded-lg p-6 transition-all duration-200 hover:shadow-sm">
+          <div className="bg-white border border-neutral-200 rounded-lg p-4 sm:p-6 transition-all duration-200 hover:shadow-sm">
             <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
               Members
             </p>
-            <p className="text-3xl font-light text-neutral-900">
+            <p className="text-2xl sm:text-3xl font-light text-neutral-900">
               {totalMembers}
             </p>
           </div>
 
-          <div className="bg-white border border-neutral-200 rounded-lg p-6 transition-all duration-200 hover:shadow-sm">
+          <div className="bg-white border border-neutral-200 rounded-lg p-4 sm:p-6 transition-all duration-200 hover:shadow-sm">
             <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
               Active Loans
             </p>
-            <p className="text-3xl font-light text-neutral-900">
+            <p className="text-2xl sm:text-3xl font-light text-neutral-900">
               {activeLoans}
             </p>
           </div>
 
-          <div className="bg-white border border-neutral-200 rounded-lg p-6 transition-all duration-200 hover:shadow-sm">
+          <div className="bg-white border border-neutral-200 rounded-lg p-4 sm:p-6 transition-all duration-200 hover:shadow-sm">
             <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
               Pending
             </p>
-            <p className="text-3xl font-light text-neutral-900">
+            <p className="text-2xl sm:text-3xl font-light text-neutral-900">
               {pendingLoans}
             </p>
           </div>
         </div>
 
         {/* Collection Periods */}
-        <div className="mb-12">
-          <h2 className="text-lg font-light text-neutral-900 mb-6">
+        <div className="mb-8 sm:mb-12">
+          <h2 className="text-base sm:text-lg font-light text-neutral-900 mb-4 sm:mb-6">
             Collection Periods
           </h2>
           {state.collections.length > 0 ? (
-            <div className="grid grid-cols-4 gap-4">
-              {state.collections.map((period) => (
-                <button
-                  key={period.id}
-                  onClick={() =>
-                    dispatch({
-                      type: "SET_SELECTED_PERIOD",
-                      payload: { periodId: period.id },
-                    })
-                  }
-                  className={`p-5 rounded-lg border text-left transition-all duration-200 ${
-                    selectedPeriod === period.id
-                      ? "border-neutral-900 bg-neutral-900 text-white shadow-sm"
-                      : "border-neutral-200 bg-white hover:border-neutral-300 hover:shadow-sm"
-                  }`}
-                >
-                  <p className={`text-xs uppercase tracking-wider font-normal mb-3 ${
-                    selectedPeriod === period.id ? "text-neutral-400" : "text-neutral-500"
-                  }`}>
-                    {format(new Date(period.date), "MMM d, yyyy")}
-                  </p>
-                  <p className={`text-2xl font-light mb-2 ${
-                    selectedPeriod === period.id ? "text-white" : "text-neutral-900"
-                  }`}>
-                    ₱{period.totalCollected.toLocaleString()}
-                  </p>
-                  <p className={`text-xs font-light ${
-                    selectedPeriod === period.id ? "text-neutral-400" : "text-neutral-500"
-                  }`}>
-                    {period.payments.length} {period.payments.length === 1 ? 'payment' : 'payments'}
-                  </p>
-                </button>
-              ))}
+            <>
+              {/* Mobile: Horizontal Scroll */}
+              <div className="md:hidden overflow-x-auto -mx-3 px-3 pb-2">
+                <div className="flex gap-3 min-w-min">
+                  {state.collections.map((period) => (
+                    <button
+                      key={period.id}
+                      onClick={() =>
+                        dispatch({
+                          type: "SET_SELECTED_PERIOD",
+                          payload: { periodId: period.id },
+                        })
+                      }
+                      className={`p-4 rounded-lg border text-left transition-all duration-200 min-w-[160px] flex-shrink-0 ${
+                        selectedPeriod === period.id
+                          ? "border-neutral-900 bg-neutral-900 text-white shadow-sm"
+                          : "border-neutral-200 bg-white hover:border-neutral-300 hover:shadow-sm"
+                      }`}
+                    >
+                      <p className={`text-xs uppercase tracking-wider font-normal mb-2 ${
+                        selectedPeriod === period.id ? "text-neutral-400" : "text-neutral-500"
+                      }`}>
+                        {format(new Date(period.date), "MMM d, yyyy")}
+                      </p>
+                      <p className={`text-xl font-light mb-1 ${
+                        selectedPeriod === period.id ? "text-white" : "text-neutral-900"
+                      }`}>
+                        ₱{period.totalCollected.toLocaleString()}
+                      </p>
+                      <p className={`text-xs font-light ${
+                        selectedPeriod === period.id ? "text-neutral-400" : "text-neutral-500"
+                      }`}>
+                        {period.payments.length} {period.payments.length === 1 ? 'payment' : 'payments'}
+                      </p>
+                    </button>
+                  ))}
 
-              <button
-                onClick={addNextCollectionPeriod}
-                className="p-5 rounded-lg border border-dashed border-neutral-300 hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200 flex flex-col items-center justify-center min-h-[140px]"
-              >
-                <span className="text-3xl text-neutral-400 mb-2 font-light">+</span>
-                <span className="text-sm text-neutral-600 font-light">Add Period</span>
-              </button>
-            </div>
+                  <button
+                    onClick={addNextCollectionPeriod}
+                    className="p-4 rounded-lg border border-dashed border-neutral-300 hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200 flex flex-col items-center justify-center min-w-[160px] min-h-[120px] flex-shrink-0"
+                  >
+                    <span className="text-2xl text-neutral-400 mb-1 font-light">+</span>
+                    <span className="text-xs text-neutral-600 font-light">Add Period</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Desktop: Grid */}
+              <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {state.collections.map((period) => (
+                  <button
+                    key={period.id}
+                    onClick={() =>
+                      dispatch({
+                        type: "SET_SELECTED_PERIOD",
+                        payload: { periodId: period.id },
+                      })
+                    }
+                    className={`p-5 rounded-lg border text-left transition-all duration-200 ${
+                      selectedPeriod === period.id
+                        ? "border-neutral-900 bg-neutral-900 text-white shadow-sm"
+                        : "border-neutral-200 bg-white hover:border-neutral-300 hover:shadow-sm"
+                    }`}
+                  >
+                    <p className={`text-xs uppercase tracking-wider font-normal mb-3 ${
+                      selectedPeriod === period.id ? "text-neutral-400" : "text-neutral-500"
+                    }`}>
+                      {format(new Date(period.date), "MMM d, yyyy")}
+                    </p>
+                    <p className={`text-2xl font-light mb-2 ${
+                      selectedPeriod === period.id ? "text-white" : "text-neutral-900"
+                    }`}>
+                      ₱{period.totalCollected.toLocaleString()}
+                    </p>
+                    <p className={`text-xs font-light ${
+                      selectedPeriod === period.id ? "text-neutral-400" : "text-neutral-500"
+                    }`}>
+                      {period.payments.length} {period.payments.length === 1 ? 'payment' : 'payments'}
+                    </p>
+                  </button>
+                ))}
+
+                <button
+                  onClick={addNextCollectionPeriod}
+                  className="p-5 rounded-lg border border-dashed border-neutral-300 hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200 flex flex-col items-center justify-center min-h-[140px]"
+                >
+                  <span className="text-3xl text-neutral-400 mb-2 font-light">+</span>
+                  <span className="text-sm text-neutral-600 font-light">Add Period</span>
+                </button>
+              </div>
+            </>
           ) : (
-            <div className="bg-white border border-neutral-200 rounded-lg p-12 text-center">
-              <p className="text-sm text-neutral-500 font-light mb-6">No periods yet</p>
+            <div className="bg-white border border-neutral-200 rounded-lg p-8 sm:p-12 text-center">
+              <p className="text-sm text-neutral-500 font-light mb-4 sm:mb-6">No periods yet</p>
               <button
                 onClick={addNextCollectionPeriod}
-                className="px-5 py-2.5 bg-neutral-900 !text-white text-sm font-normal rounded-md hover:bg-neutral-800 transition-all duration-200"
+                className="px-5 py-2.5 bg-neutral-900 !text-white text-sm font-normal rounded-md hover:bg-neutral-800 transition-all duration-200 min-h-[44px]"
               >
                 Create First Period
               </button>
@@ -278,7 +327,7 @@ function HomeContent() {
             value={newPeriodDate}
             onChange={(e) => setNewPeriodDate(e.target.value)}
           />
-          <div className="flex justify-end space-x-3">
+          <div className="flex flex-col sm:flex-row justify-end gap-3">
             <Button
               variant="secondary"
               onClick={() => setShowNewPeriodModal(false)}
@@ -415,7 +464,7 @@ function HomeContent() {
               </div>
             )}
           </div>
-          <div className="flex justify-end space-x-3">
+          <div className="flex flex-col sm:flex-row justify-end gap-3">
             <Button
               variant="secondary"
               onClick={() => setShowNewLoanModal(false)}
@@ -432,31 +481,49 @@ function HomeContent() {
         onClose={() => setShowResetModal(false)}
         title="Reset All Periods"
       >
-        <div className="space-y-4">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-sm text-red-800">
-              <strong>⚠️ DANGER:</strong> This will permanently delete:
+        <div className="space-y-6">
+          <div className="bg-neutral-50 border border-neutral-200 rounded-lg p-5">
+            <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-3">
+              Warning
             </p>
-            <ul className="mt-2 ml-4 text-sm text-red-700 list-disc space-y-1">
-              <li>All collection periods ({state.collections.length} periods)</li>
-              <li>All loans ({state.loans.length} loans)</li>
-              <li>All repayments and penalties</li>
-              <li>This action CANNOT be undone!</li>
+            <p className="text-sm text-neutral-900 font-light mb-4">
+              This will permanently delete:
+            </p>
+            <ul className="space-y-2 text-sm text-neutral-700 font-light">
+              <li className="flex items-start">
+                <span className="text-neutral-400 mr-2">•</span>
+                <span>All collection periods ({state.collections.length} {state.collections.length === 1 ? 'period' : 'periods'})</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-neutral-400 mr-2">•</span>
+                <span>All loans ({state.loans.length} {state.loans.length === 1 ? 'loan' : 'loans'})</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-neutral-400 mr-2">•</span>
+                <span>All repayments and penalties</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-neutral-400 mr-2">•</span>
+                <span>This action cannot be undone</span>
+              </li>
             </ul>
           </div>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-neutral-600 font-light">
             Member information will be preserved. You can start creating new collection periods after reset.
           </p>
-          <div className="flex justify-end space-x-3">
-            <Button
-              variant="secondary"
+          <div className="flex flex-col sm:flex-row justify-end gap-3 pt-2">
+            <button
               onClick={() => setShowResetModal(false)}
+              className="px-5 py-2.5 border border-neutral-300 text-neutral-700 text-sm font-normal rounded-md hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200 min-h-[44px]"
             >
               Cancel
-            </Button>
-            <Button onClick={handleResetPeriods} variant="danger">
-              Yes, Delete Everything
-            </Button>
+            </button>
+            <button
+              onClick={handleResetPeriods}
+              className="px-5 py-2.5 bg-neutral-900 !text-white text-sm font-normal rounded-md hover:bg-neutral-800 transition-all duration-200 min-h-[44px]"
+            >
+              Confirm Reset
+            </button>
           </div>
         </div>
       </Modal>

@@ -151,7 +151,7 @@ function MembersContent() {
 
   return (
     <div className="min-h-screen bg-neutral-50 pb-20 md:pb-8">
-      <div className="container mx-auto max-w-6xl">
+      <div className="container mx-auto max-w-7xl">
         {/* Mobile-Optimized Header */}
         <div className="bg-white border-b border-neutral-200 sticky top-0 z-10 px-4 py-4 md:relative md:bg-transparent md:border-0 md:px-6 md:pt-8">
           <div className="flex items-center justify-between mb-3 md:mb-4">

@@ -23,15 +23,15 @@ export const Button: React.FC<ButtonProps> = ({
 
   const variants = {
     primary:
-      "bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500 shadow-sm hover:shadow-md",
+      "bg-neutral-900 !text-white hover:bg-neutral-800 focus:ring-neutral-900 shadow-sm hover:shadow-md",
     secondary:
-      "bg-white text-gray-900 border border-gray-300 hover:bg-gray-50 focus:ring-indigo-500 shadow-sm hover:shadow-md",
+      "bg-white text-neutral-900 border border-neutral-300 hover:bg-neutral-50 focus:ring-neutral-900 shadow-sm hover:shadow-md",
     success:
-      "bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 shadow-sm hover:shadow-md",
+      "bg-green-600 !text-white hover:bg-green-700 focus:ring-green-500 shadow-sm hover:shadow-md",
     danger:
-      "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-sm hover:shadow-md",
+      "bg-red-600 !text-white hover:bg-red-700 focus:ring-red-500 shadow-sm hover:shadow-md",
     ghost:
-      "text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:ring-indigo-500",
+      "text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 focus:ring-neutral-900",
   };
 
   const sizes = {
@@ -130,7 +130,7 @@ export const Input: React.FC<InputProps> = ({
   return (
     <div className="space-y-1">
       {label && (
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-normal text-neutral-700">
           {label}
         </label>
       )}
@@ -142,7 +142,7 @@ export const Input: React.FC<InputProps> = ({
         )}
         <input
           className={clsx(
-            "block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200",
+            "block w-full px-4 py-3 border border-neutral-300 rounded-lg shadow-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all duration-200",
             icon && "pl-10",
             error && "border-red-300 focus:ring-red-500",
             className
@@ -172,13 +172,13 @@ export const Select: React.FC<SelectProps> = ({
   return (
     <div className="space-y-1">
       {label && (
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-normal text-neutral-700">
           {label}
         </label>
       )}
       <select
         className={clsx(
-          "block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white",
+          "block w-full px-4 py-3 border border-neutral-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all duration-200 bg-white",
           error && "border-red-300 focus:ring-red-500",
           className
         )}
