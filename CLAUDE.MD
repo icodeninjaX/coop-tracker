@@ -296,11 +296,122 @@ dispatch({
 - On app load, `loadCoopState(userId)` fetches user's data
 - Debounced saving prevents excessive database writes
 
-### 3. Responsive Design
-- Mobile-first approach using Tailwind CSS
-- Breakpoints: `sm:` (640px), `md:` (768px), `lg:` (1024px)
-- Navigation collapses to hamburger menu on mobile
-- Tables transform to card layouts on small screens
+### 3. Mobile-First Responsive Design
+
+**Philosophy:**
+- Mobile-first approach: Design for mobile screens first, then enhance for larger screens
+- Touch-friendly interactions with minimum 44px touch targets
+- Progressive enhancement: Add complexity only for larger screens
+- Consistent patterns across all pages
+
+**Tailwind Breakpoints:**
+```
+Base:   < 640px   (Mobile phones)
+sm:     ≥ 640px   (Large phones, small tablets)
+md:     ≥ 768px   (Tablets)
+lg:     ≥ 1024px  (Desktops, large tablets)
+```
+
+**Key Mobile Patterns:**
+
+1. **Navigation (AppNavigation.tsx)**
+   - Hamburger menu on mobile (`< md:`)
+   - Full horizontal nav on desktop (`≥ md:`)
+   - Sticky header with backdrop blur
+   - Animated menu transitions
+   - Mobile menu overlay with touch-optimized spacing
+
+2. **Grid Layouts**
+   - Stats: `grid-cols-2 lg:grid-cols-4` (2 columns mobile, 4 desktop)
+   - Collection Periods: Horizontal scroll on mobile, grid on desktop
+   - Loan Cards: `grid-cols-1 sm:grid-cols-2 lg:grid-cols-4`
+   - Member Cards: Single column mobile, multi-column desktop
+
+3. **Horizontal Scroll Pattern (Mobile)**
+   ```jsx
+   {/* Mobile: Horizontal Scroll */}
+   <div className="md:hidden overflow-x-auto -mx-3 px-3 pb-2">
+     <div className="flex gap-3 min-w-min">
+       {items.map(item => (
+         <div className="min-w-[160px] flex-shrink-0">
+           {/* Item content */}
+         </div>
+       ))}
+     </div>
+   </div>
+
+   {/* Desktop: Grid */}
+   <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+     {/* Same items in grid */}
+   </div>
+   ```
+
+4. **Button Layouts**
+   - Stack vertically on mobile: `flex-col sm:flex-row`
+   - Modal actions: Full width on mobile, auto-width on desktop
+   - Minimum touch target: `min-h-[44px]`
+   - Gap spacing: `gap-2 sm:gap-3`
+
+5. **Typography Scaling**
+   - Headers: `text-2xl sm:text-3xl`
+   - Body text: `text-sm sm:text-base`
+   - Stats: `text-xl sm:text-2xl lg:text-3xl`
+   - Progressive scaling for readability
+
+6. **Spacing Patterns**
+   - Padding: `px-3 sm:px-6` (less on mobile)
+   - Margins: `mb-6 sm:mb-10` (less on mobile)
+   - Gaps: `gap-3 sm:gap-4 lg:gap-6` (progressive)
+   - Container: `max-w-7xl mx-auto`
+
+7. **Touch Targets**
+   - All interactive elements: **Minimum 44x44px**
+   - Buttons: `min-h-[44px]`
+   - Icon buttons: `h-12 w-12` (48px)
+   - Adequate spacing between clickable elements
+
+8. **Mobile-Specific Components**
+   - **Floating Action Button (FAB)**: `fixed bottom-20 right-4`
+   - **Bottom Action Bar**: `fixed bottom-0 inset-x-0`
+   - **Collapsible Menus**: Expandable member/loan actions
+   - **Sticky Headers**: Search and filter bars
+
+9. **Modals**
+   - Full-screen on mobile: `max-h-[95vh]`
+   - Rounded top corners: `rounded-t-3xl sm:rounded-2xl`
+   - Slide-up animation from bottom
+   - Larger close buttons on mobile: `h-6 w-6 sm:h-5 sm:w-5`
+   - Stacked action buttons: `flex-col sm:flex-row`
+
+**Page-Specific Patterns:**
+
+**Dashboard (page.tsx):**
+- Header actions stack on mobile
+- 2-column stats grid on mobile, 4 on desktop
+- Collection periods: Horizontal scroll (mobile) vs Grid (desktop)
+- All modals have responsive button layouts
+
+**Members Page (members/page.tsx):**
+- Sticky search header on mobile
+- Horizontal scrollable stats
+- Collapsible member action menus
+- FAB for adding members (mobile only)
+- Bottom action bar for bulk operations
+
+**Loans Page (loans/page.tsx):**
+- Responsive loan cards
+- Stacked approve/reject buttons on mobile
+- 2-column grid on mobile, 4 on desktop for stats
+- Full-width forms on mobile
+
+**Testing Mobile Responsiveness:**
+1. Use browser DevTools responsive mode
+2. Test breakpoints: 375px (iPhone), 768px (iPad), 1024px (Desktop)
+3. Verify touch targets are at least 44px
+4. Test horizontal scroll on actual mobile devices
+5. Verify modals work well on small screens
+6. Check text readability at all sizes
+7. Test landscape orientation on tablets
 
 ### 4. Collection Period Management
 - Default schedule: 10th and 25th of each month
@@ -370,6 +481,22 @@ dispatch({
    - Make changes on device A
    - Verify changes appear on device B after refresh
 
+6. **Mobile Responsiveness**
+   - Test on mobile devices (375px width minimum)
+   - Verify stats grid shows 2 columns on mobile
+   - Test horizontal scroll for collection periods
+   - Verify all buttons stack vertically on mobile
+   - Check touch targets are minimum 44px
+   - Test modals slide up properly from bottom
+   - Verify FAB button appears on Members page (mobile only)
+   - Test hamburger menu navigation
+
+7. **Tablet & Desktop Views**
+   - Test at 768px (tablet) - verify 2-column layouts
+   - Test at 1024px+ (desktop) - verify 4-column grids
+   - Ensure navigation shows full horizontal menu
+   - Verify no horizontal scroll on large screens
+
 ## Environment Variables
 
 **.env.local** (required for production):
@@ -410,6 +537,183 @@ npm start
 - **Dates:** ISO 8601 format (YYYY-MM-DD) for consistency
 - **IDs:** UUID v4 for unique identifiers
 
+## Design System
+
+### Color Palette (Minimalist Neutral)
+
+**Primary Colors:**
+```
+neutral-900   #171717   Primary buttons, headings, selected states
+neutral-800   #262626   Hover states for dark buttons
+neutral-700   #404040   Secondary text
+neutral-600   #525252   Tertiary text, disabled states
+```
+
+**Backgrounds & Borders:**
+```
+neutral-50    #fafafa   Page background
+white         #ffffff   Card backgrounds
+neutral-200   #e5e5e5   Borders, dividers
+neutral-300   #d4d4d4   Hover borders
+neutral-400   #a3a3a3   Icons, placeholders
+```
+
+**Accent Colors:**
+```
+green-500     #22c55e   Success states, paid badges
+red-500       #ef4444   Danger, delete actions
+yellow-500    #eab308   Warning states
+blue-500      #3b82f6   Links, info states
+```
+
+### Typography (Poppins Font Family)
+
+**Font Weights:**
+```
+font-light    300   Body text, descriptions, secondary info
+font-normal   400   Labels, buttons, regular text
+font-medium   500   (Rarely used)
+font-semibold 600   (Rarely used)
+```
+
+**Text Sizes (Responsive):**
+```
+Headings (h1):   text-2xl sm:text-3xl (24px → 30px)
+Headings (h2):   text-base sm:text-lg (16px → 18px)
+Body text:       text-sm sm:text-base (14px → 16px)
+Stats (large):   text-xl sm:text-2xl lg:text-3xl (20px → 24px → 30px)
+Labels:          text-xs (12px)
+Uppercase:       text-xs uppercase tracking-wider
+```
+
+### Component Patterns
+
+**Cards:**
+```jsx
+<div className="bg-white border border-neutral-200 rounded-lg p-4 sm:p-6
+                hover:shadow-sm transition-all duration-200">
+  {/* Content */}
+</div>
+```
+
+**Buttons (Primary):**
+```jsx
+<button className="px-5 py-2.5 bg-neutral-900 text-white text-sm
+                   font-normal rounded-md hover:bg-neutral-800
+                   transition-all duration-200 min-h-[44px]">
+  Button Text
+</button>
+```
+
+**Buttons (Secondary):**
+```jsx
+<button className="px-5 py-2.5 border border-neutral-300 text-neutral-700
+                   text-sm font-normal rounded-md hover:border-neutral-400
+                   hover:bg-neutral-50 transition-all duration-200 min-h-[44px]">
+  Button Text
+</button>
+```
+
+**Input Fields:**
+```jsx
+<input className="w-full px-4 py-3 border border-neutral-200 rounded-md
+                  focus:ring-2 focus:ring-neutral-900 focus:border-transparent
+                  text-sm font-light" />
+```
+
+**Badges:**
+```jsx
+// Success
+<span className="px-3 py-1 bg-green-50 text-green-700 border border-green-200
+                 rounded-full text-xs font-normal">
+  Active
+</span>
+
+// Warning
+<span className="px-3 py-1 bg-yellow-50 text-yellow-700 border border-yellow-200
+                 rounded-full text-xs font-normal">
+  Pending
+</span>
+
+// Danger
+<span className="px-3 py-1 bg-red-50 text-red-700 border border-red-200
+                 rounded-full text-xs font-normal">
+  Rejected
+</span>
+```
+
+### Animation & Transitions
+
+**Standard Transition:**
+```
+transition-all duration-200
+```
+
+**Hover Effects:**
+- Cards: `hover:shadow-sm`
+- Buttons: `hover:bg-neutral-800` or `hover:border-neutral-400`
+- Links: `hover:text-neutral-900`
+
+**Mobile Menu Animation:**
+- Slide from top
+- Backdrop blur: `backdrop-blur-sm`
+- Fade overlay: `bg-neutral-900/20`
+
+### Layout Patterns
+
+**Container:**
+```jsx
+<div className="container mx-auto max-w-7xl px-3 sm:px-6 py-6 sm:py-8">
+  {/* Page content */}
+</div>
+```
+
+**Section Spacing:**
+```
+mb-8 sm:mb-12      Between major sections
+mb-4 sm:mb-6       Between subsections
+gap-3 sm:gap-4     Between related items
+```
+
+**Border Patterns:**
+```
+border border-neutral-200          Standard borders
+border-b border-neutral-200        Bottom border (headers)
+border-dashed border-neutral-300   Dashed borders (add buttons)
+```
+
+### Accessibility Guidelines
+
+1. **Touch Targets:** Minimum 44x44px for all interactive elements
+2. **Color Contrast:** All text meets WCAG AA standards
+3. **Focus States:** Visible focus rings on all interactive elements
+4. **Semantic HTML:** Proper heading hierarchy, button vs link usage
+5. **ARIA Labels:** Added where needed for screen readers
+6. **Keyboard Navigation:** All functionality accessible via keyboard
+
+### UI Component Library (UI.tsx)
+
+The app uses a centralized component library at `src/components/UI.tsx`:
+
+- **Button:** Variants (primary, secondary, danger), sizes (sm, md, lg)
+- **Input:** Text, number, date inputs with labels
+- **Select:** Dropdown with label and options
+- **Modal:** Responsive modal with size variants (sm, md, lg)
+- **Card:** Container with optional variants
+- **Badge:** Status badges with variants (success, warning, danger)
+
+**Usage Example:**
+```jsx
+import { Button, Input, Modal, Badge } from "@/components/UI";
+
+<Button variant="primary" size="md">Save</Button>
+<Input label="Name" value={name} onChange={handleChange} />
+<Modal isOpen={show} onClose={handleClose} title="Add Member">
+  {/* Modal content */}
+</Modal>
+<Badge variant="success">Paid</Badge>
+```
+
 ## Future Enhancement Ideas
 
 - Export financial reports (PDF/Excel)
@@ -429,6 +733,7 @@ npm start
 
 ---
 
-**Last Updated:** 2025-11-19
+**Last Updated:** 2025-11-21
 **Project Version:** 0.1.0
 **Next.js Version:** 15.4.6
+**Design System:** Minimalist Neutral with Mobile-First Responsive Design
