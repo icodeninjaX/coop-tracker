@@ -539,31 +539,61 @@ npm start
 
 ## Design System
 
-### Color Palette (Minimalist Neutral)
+### Color Palette (Minimalist Pastel)
 
-**Primary Colors:**
+**Primary Colors (Indigo/Purple):**
 ```
-neutral-900   #171717   Primary buttons, headings, selected states
-neutral-800   #262626   Hover states for dark buttons
-neutral-700   #404040   Secondary text
-neutral-600   #525252   Tertiary text, disabled states
-```
-
-**Backgrounds & Borders:**
-```
-neutral-50    #fafafa   Page background
-white         #ffffff   Card backgrounds
-neutral-200   #e5e5e5   Borders, dividers
-neutral-300   #d4d4d4   Hover borders
-neutral-400   #a3a3a3   Icons, placeholders
+indigo-900    #312e81   Primary text, headings
+indigo-800    #3730a3   Secondary text, labels
+indigo-700    #4338ca   Tertiary text, links
+indigo-600    #4f46e5   Body text, labels
+indigo-400    #818cf8   Icons, accents
+indigo-300    #a5b4fc   Primary buttons, active states
+indigo-200    #c7d2fe   Borders, dividers
+indigo-100    #e0e7ff   Hover backgrounds
+indigo-50     #eef2ff   Page background tint
+purple-200    #e9d5ff   Accent borders
+purple-50     #faf5ff   Accent background tint
 ```
 
-**Accent Colors:**
+**Background Gradients:**
 ```
-green-500     #22c55e   Success states, paid badges
-red-500       #ef4444   Danger, delete actions
-yellow-500    #eab308   Warning states
-blue-500      #3b82f6   Links, info states
+Main pages:   bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50
+Cards:        bg-white/80 backdrop-blur-sm
+Navigation:   bg-gradient-to-r from-indigo-50 to-purple-50
+```
+
+**Success (Emerald/Green):**
+```
+emerald-900   #064e3b   Success text
+emerald-800   #065f46   Success labels
+emerald-600   #059669   Success body
+emerald-300   #6ee7b7   Success button backgrounds
+emerald-200   #a7f3d0   Success borders
+emerald-100   #d1fae5   Success backgrounds
+emerald-50    #ecfdf5   Success tint
+```
+
+**Warning (Amber/Yellow):**
+```
+amber-900     #78350f   Warning text
+amber-800     #92400e   Warning labels
+amber-600     #d97706   Warning body
+amber-200     #fde68a   Warning borders
+amber-100     #fef3c7   Warning backgrounds
+amber-50      #fffbeb   Warning tint
+```
+
+**Danger (Rose/Pink):**
+```
+rose-900      #881337   Error text
+rose-800      #9f1239   Error labels
+rose-700      #be123c   Error body
+rose-300      #fda4af   Error button backgrounds
+rose-200      #fecdd3   Error borders
+rose-100      #ffe4e6   Error backgrounds
+rose-50       #fff1f2   Error tint
+pink-50       #fdf2f8   Accent tint
 ```
 
 ### Typography (Poppins Font Family)
@@ -590,16 +620,28 @@ Uppercase:       text-xs uppercase tracking-wider
 
 **Cards:**
 ```jsx
-<div className="bg-white border border-neutral-200 rounded-lg p-4 sm:p-6
-                hover:shadow-sm transition-all duration-200">
+<div className="bg-white/80 backdrop-blur-sm border-2 border-indigo-200 rounded-xl p-4 sm:p-6
+                hover:shadow-md hover:border-indigo-300 transition-all duration-200">
   {/* Content */}
 </div>
 ```
 
+**Stat Cards (Multi-color):**
+```jsx
+// Indigo variant
+<div className="bg-white/80 backdrop-blur-sm border-2 border-indigo-200 rounded-xl p-4 sm:p-6
+                hover:shadow-md hover:border-indigo-300">
+  <p className="text-xs uppercase tracking-wider text-indigo-600 mb-2">Label</p>
+  <p className="text-2xl sm:text-3xl font-semibold text-indigo-900">Value</p>
+</div>
+
+// Purple, Emerald, Amber variants follow same pattern with respective colors
+```
+
 **Buttons (Primary):**
 ```jsx
-<button className="px-5 py-2.5 bg-neutral-900 text-white text-sm
-                   font-normal rounded-md hover:bg-neutral-800
+<button className="px-5 py-2.5 bg-indigo-300 text-indigo-900 text-sm
+                   font-normal rounded-md hover:bg-indigo-400 shadow-sm
                    transition-all duration-200 min-h-[44px]">
   Button Text
 </button>
@@ -607,38 +649,62 @@ Uppercase:       text-xs uppercase tracking-wider
 
 **Buttons (Secondary):**
 ```jsx
-<button className="px-5 py-2.5 border border-neutral-300 text-neutral-700
-                   text-sm font-normal rounded-md hover:border-neutral-400
-                   hover:bg-neutral-50 transition-all duration-200 min-h-[44px]">
+<button className="px-5 py-2.5 border-2 border-indigo-200 text-indigo-800
+                   text-sm font-normal rounded-md hover:border-indigo-300
+                   hover:bg-indigo-50 transition-all duration-200 min-h-[44px]">
   Button Text
+</button>
+```
+
+**Buttons (Success):**
+```jsx
+<button className="px-5 py-2.5 bg-emerald-200 text-emerald-800 text-sm
+                   font-normal rounded-md hover:bg-emerald-300 shadow-sm
+                   transition-all duration-200 min-h-[44px]">
+  Approve
+</button>
+```
+
+**Buttons (Danger):**
+```jsx
+<button className="px-5 py-2.5 bg-rose-200 text-rose-800 text-sm
+                   font-normal rounded-md hover:bg-rose-300 shadow-sm
+                   transition-all duration-200 min-h-[44px]">
+  Delete
 </button>
 ```
 
 **Input Fields:**
 ```jsx
-<input className="w-full px-4 py-3 border border-neutral-200 rounded-md
-                  focus:ring-2 focus:ring-neutral-900 focus:border-transparent
-                  text-sm font-light" />
+<input className="w-full px-4 py-3 border-2 border-indigo-200 rounded-lg
+                  focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400
+                  placeholder-indigo-300 bg-white text-sm font-light" />
 ```
 
 **Badges:**
 ```jsx
 // Success
-<span className="px-3 py-1 bg-green-50 text-green-700 border border-green-200
+<span className="px-3 py-1 bg-emerald-100 text-emerald-800 border border-emerald-200
                  rounded-full text-xs font-normal">
   Active
 </span>
 
 // Warning
-<span className="px-3 py-1 bg-yellow-50 text-yellow-700 border border-yellow-200
+<span className="px-3 py-1 bg-amber-100 text-amber-800 border border-amber-200
                  rounded-full text-xs font-normal">
   Pending
 </span>
 
 // Danger
-<span className="px-3 py-1 bg-red-50 text-red-700 border border-red-200
+<span className="px-3 py-1 bg-rose-100 text-rose-800 border border-rose-200
                  rounded-full text-xs font-normal">
   Rejected
+</span>
+
+// Info
+<span className="px-3 py-1 bg-indigo-100 text-indigo-800 border border-indigo-200
+                 rounded-full text-xs font-normal">
+  Info
 </span>
 ```
 
@@ -650,14 +716,15 @@ transition-all duration-200
 ```
 
 **Hover Effects:**
-- Cards: `hover:shadow-sm`
-- Buttons: `hover:bg-neutral-800` or `hover:border-neutral-400`
-- Links: `hover:text-neutral-900`
+- Cards: `hover:shadow-md hover:border-indigo-300`
+- Primary Buttons: `hover:bg-indigo-400`
+- Secondary Buttons: `hover:border-indigo-300 hover:bg-indigo-50`
+- Links: `hover:text-indigo-900`
 
 **Mobile Menu Animation:**
 - Slide from top
 - Backdrop blur: `backdrop-blur-sm`
-- Fade overlay: `bg-neutral-900/20`
+- Fade overlay: `bg-indigo-900/20`
 
 ### Layout Patterns
 
@@ -677,9 +744,9 @@ gap-3 sm:gap-4     Between related items
 
 **Border Patterns:**
 ```
-border border-neutral-200          Standard borders
-border-b border-neutral-200        Bottom border (headers)
-border-dashed border-neutral-300   Dashed borders (add buttons)
+border-2 border-indigo-200                Standard borders
+border-b-2 border-indigo-200              Bottom border (headers)
+border-2 border-dashed border-indigo-300  Dashed borders (add buttons)
 ```
 
 ### Accessibility Guidelines
@@ -733,7 +800,7 @@ import { Button, Input, Modal, Badge } from "@/components/UI";
 
 ---
 
-**Last Updated:** 2025-11-21
+**Last Updated:** 2025-11-22
 **Project Version:** 0.1.0
 **Next.js Version:** 15.4.6
-**Design System:** Minimalist Neutral with Mobile-First Responsive Design
+**Design System:** Minimalist Pastel with Mobile-First Responsive Design

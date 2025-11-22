@@ -49,32 +49,32 @@ export default function AuthForm() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-2 text-gray-600">Loading...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-400 mx-auto"></div>
+          <p className="mt-2 text-sm font-light text-indigo-800">Loading...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
+          <h2 className="mt-6 text-center text-2xl sm:text-3xl font-semibold text-indigo-900">
             {mode === "signin"
               ? "Sign in to your account"
               : mode === "signup"
               ? "Create your account"
               : "Reset your password"}
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-center text-sm sm:text-base font-light text-indigo-700">
             Coop Tracking System
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6 bg-white/80 backdrop-blur-sm p-6 sm:p-8 rounded-2xl border-2 border-indigo-200 shadow-lg" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
               <label htmlFor="email" className="sr-only">
@@ -86,7 +86,7 @@ export default function AuthForm() {
                 type="email"
                 autoComplete="email"
                 required
-                className="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="w-full px-4 py-3 border-2 border-indigo-200 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 text-sm font-light placeholder-indigo-300 bg-white"
                 placeholder="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -106,7 +106,7 @@ export default function AuthForm() {
                     mode === "signin" ? "current-password" : "new-password"
                   }
                   required
-                  className="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  className="w-full px-4 py-3 border-2 border-indigo-200 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 text-sm font-light placeholder-indigo-300 bg-white"
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -116,13 +116,13 @@ export default function AuthForm() {
           </div>
 
           {error && (
-            <div className="text-red-600 text-sm text-center bg-red-50 p-3 rounded-md">
+            <div className="text-rose-800 text-sm font-light text-center bg-rose-50 border-2 border-rose-200 p-3 rounded-lg">
               {error}
             </div>
           )}
 
           {message && (
-            <div className="text-green-600 text-sm text-center bg-green-50 p-3 rounded-md">
+            <div className="text-emerald-800 text-sm font-light text-center bg-emerald-50 border-2 border-emerald-200 p-3 rounded-lg">
               {message}
             </div>
           )}
@@ -132,15 +132,15 @@ export default function AuthForm() {
               type="submit"
               disabled={isSubmitting}
               className={clsx(
-                "group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500",
+                "w-full flex justify-center px-5 py-2.5 border border-transparent text-sm font-normal rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition-all duration-200 min-h-[44px] shadow-md",
                 isSubmitting
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-indigo-600 hover:bg-indigo-700"
+                  ? "bg-indigo-200 cursor-not-allowed text-indigo-600"
+                  : "bg-indigo-300 text-indigo-900 hover:bg-indigo-400"
               )}
             >
               {isSubmitting ? (
                 <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-900 mr-2"></div>
                   Loading...
                 </div>
               ) : mode === "signin" ? (
@@ -153,19 +153,19 @@ export default function AuthForm() {
             </button>
           </div>
 
-          <div className="flex items-center justify-between text-sm">
+          <div className="flex items-center justify-between text-sm font-light">
             {mode === "signin" ? (
               <>
                 <button
                   type="button"
-                  className="text-indigo-600 hover:text-indigo-500"
+                  className="text-indigo-700 hover:text-indigo-900 transition-all duration-200 underline decoration-indigo-200 hover:decoration-indigo-400"
                   onClick={() => setMode("reset")}
                 >
                   Forgot password?
                 </button>
                 <button
                   type="button"
-                  className="text-indigo-600 hover:text-indigo-500"
+                  className="text-indigo-700 hover:text-indigo-900 transition-all duration-200 underline decoration-indigo-200 hover:decoration-indigo-400"
                   onClick={() => setMode("signup")}
                 >
                   Create account
@@ -174,7 +174,7 @@ export default function AuthForm() {
             ) : (
               <button
                 type="button"
-                className="text-indigo-600 hover:text-indigo-500 mx-auto"
+                className="text-indigo-700 hover:text-indigo-900 transition-all duration-200 mx-auto underline decoration-indigo-200 hover:decoration-indigo-400"
                 onClick={() => setMode("signin")}
               >
                 Back to sign in

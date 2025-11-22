@@ -23,15 +23,15 @@ export const Button: React.FC<ButtonProps> = ({
 
   const variants = {
     primary:
-      "bg-neutral-900 !text-white hover:bg-neutral-800 focus:ring-neutral-900 shadow-sm hover:shadow-md",
+      "bg-indigo-300 !text-indigo-900 hover:bg-indigo-400 focus:ring-indigo-400 shadow-sm hover:shadow-md",
     secondary:
-      "bg-white text-neutral-900 border border-neutral-300 hover:bg-neutral-50 focus:ring-neutral-900 shadow-sm hover:shadow-md",
+      "bg-white text-indigo-800 border-2 border-indigo-200 hover:bg-indigo-50 hover:border-indigo-300 focus:ring-indigo-300 shadow-sm hover:shadow-md",
     success:
-      "bg-green-600 !text-white hover:bg-green-700 focus:ring-green-500 shadow-sm hover:shadow-md",
+      "bg-emerald-200 !text-emerald-800 hover:bg-emerald-300 focus:ring-emerald-300 shadow-sm hover:shadow-md",
     danger:
-      "bg-red-600 !text-white hover:bg-red-700 focus:ring-red-500 shadow-sm hover:shadow-md",
+      "bg-rose-200 !text-rose-800 hover:bg-rose-300 focus:ring-rose-300 shadow-sm hover:shadow-md",
     ghost:
-      "text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 focus:ring-neutral-900",
+      "text-indigo-700 hover:bg-indigo-100 hover:text-indigo-900 focus:ring-indigo-300",
   };
 
   const sizes = {
@@ -89,8 +89,8 @@ export const Card: React.FC<CardProps> = ({
 }) => {
   const baseClasses = "bg-white rounded-xl border transition-all duration-200";
   const elevatedClasses = elevated
-    ? "border-gray-200/50 shadow-lg hover:shadow-xl"
-    : "border-gray-200 shadow-sm hover:shadow-md";
+    ? "border-indigo-200/50 shadow-lg hover:shadow-xl"
+    : "border-indigo-200 shadow-sm hover:shadow-md";
 
   const paddings = {
     none: "",
@@ -130,7 +130,7 @@ export const Input: React.FC<InputProps> = ({
   return (
     <div className="space-y-1">
       {label && (
-        <label className="block text-sm font-normal text-neutral-700">
+        <label className="block text-sm font-normal text-indigo-800">
           {label}
         </label>
       )}
@@ -142,15 +142,15 @@ export const Input: React.FC<InputProps> = ({
         )}
         <input
           className={clsx(
-            "block w-full px-4 py-3 border border-neutral-300 rounded-lg shadow-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all duration-200",
+            "block w-full px-4 py-3 border-2 border-indigo-200 rounded-lg shadow-sm placeholder-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 transition-all duration-200 bg-white",
             icon && "pl-10",
-            error && "border-red-300 focus:ring-red-500",
+            error && "border-rose-300 focus:ring-rose-300",
             className
           )}
           {...props}
         />
       </div>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-rose-600">{error}</p>}
     </div>
   );
 };
@@ -172,14 +172,14 @@ export const Select: React.FC<SelectProps> = ({
   return (
     <div className="space-y-1">
       {label && (
-        <label className="block text-sm font-normal text-neutral-700">
+        <label className="block text-sm font-normal text-indigo-800">
           {label}
         </label>
       )}
       <select
         className={clsx(
-          "block w-full px-4 py-3 border border-neutral-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all duration-200 bg-white",
-          error && "border-red-300 focus:ring-red-500",
+          "block w-full px-4 py-3 border-2 border-indigo-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 transition-all duration-200 bg-white",
+          error && "border-rose-300 focus:ring-rose-300",
           className
         )}
         {...props}
@@ -190,7 +190,7 @@ export const Select: React.FC<SelectProps> = ({
           </option>
         ))}
       </select>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-rose-600">{error}</p>}
     </div>
   );
 };
@@ -208,11 +208,11 @@ export const Badge: React.FC<BadgeProps> = ({
   className,
 }) => {
   const variants = {
-    success: "bg-green-100 text-green-800",
-    warning: "bg-yellow-100 text-yellow-800",
-    error: "bg-red-100 text-red-800",
-    neutral: "bg-gray-100 text-gray-800",
-    info: "bg-blue-100 text-blue-800",
+    success: "bg-emerald-100 text-emerald-800 border border-emerald-200",
+    warning: "bg-amber-100 text-amber-800 border border-amber-200",
+    error: "bg-rose-100 text-rose-800 border border-rose-200",
+    neutral: "bg-slate-100 text-slate-800 border border-slate-200",
+    info: "bg-indigo-100 text-indigo-800 border border-indigo-200",
   };
 
   return (
@@ -231,7 +231,7 @@ export const Badge: React.FC<BadgeProps> = ({
 // Loading Skeleton Component
 export const Skeleton: React.FC<{ className?: string }> = ({ className }) => {
   return (
-    <div className={clsx("animate-pulse bg-gray-200 rounded", className)} />
+    <div className={clsx("animate-pulse bg-indigo-100 rounded", className)} />
   );
 };
 
@@ -252,11 +252,11 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   return (
     <div className="text-center py-12">
       {icon && (
-        <div className="mx-auto h-12 w-12 text-gray-400 mb-4">{icon}</div>
+        <div className="mx-auto h-12 w-12 text-indigo-300 mb-4">{icon}</div>
       )}
-      <h3 className="text-lg font-medium text-gray-900 mb-2">{title}</h3>
+      <h3 className="text-lg font-medium text-indigo-900 mb-2">{title}</h3>
       {description && (
-        <p className="text-gray-500 mb-6 max-w-sm mx-auto">{description}</p>
+        <p className="text-indigo-600 mb-6 max-w-sm mx-auto">{description}</p>
       )}
       {action && action}
     </div>
@@ -292,12 +292,12 @@ export const Modal: React.FC<ModalProps> = ({
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex min-h-screen items-end sm:items-center justify-center p-0 sm:p-4">
         <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
+          className="fixed inset-0 bg-indigo-900/30 backdrop-blur-sm transition-opacity"
           onClick={onClose}
         />
         <div
           className={clsx(
-            "relative w-full bg-white shadow-2xl p-4 sm:p-6 overflow-y-auto transition-all duration-300",
+            "relative w-full bg-white border-2 border-indigo-200 shadow-2xl p-4 sm:p-6 overflow-y-auto transition-all duration-300",
             "rounded-t-3xl sm:rounded-2xl", // More rounded top on mobile, fully rounded on desktop
             "max-h-[95vh] sm:max-h-[90vh]", // Nearly full screen on mobile
             "animate-in slide-in-from-bottom sm:slide-in-from-bottom-0", // Slide up animation on mobile
@@ -306,10 +306,10 @@ export const Modal: React.FC<ModalProps> = ({
         >
           {title && (
             <div className="flex items-center justify-between mb-4 sm:mb-6">
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-900">{title}</h3>
+              <h3 className="text-lg sm:text-xl font-semibold text-indigo-900">{title}</h3>
               <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-gray-100 transition-colors touch-manipulation"
+                className="text-indigo-400 hover:text-indigo-600 p-2 rounded-lg hover:bg-indigo-50 transition-colors touch-manipulation"
               >
                 <svg
                   className="h-6 w-6 sm:h-5 sm:w-5"

@@ -150,20 +150,20 @@ function MembersContent() {
     totalMembers > 0 ? (totalPaid / totalMembers) * 100 : 0;
 
   return (
-    <div className="min-h-screen bg-neutral-50 pb-20 md:pb-8">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 pb-20 md:pb-8">
       <div className="container mx-auto max-w-7xl">
         {/* Mobile-Optimized Header */}
-        <div className="bg-white border-b border-neutral-200 sticky top-0 z-10 px-4 py-4 md:relative md:bg-transparent md:border-0 md:px-6 md:pt-8">
+        <div className="bg-white/80 backdrop-blur-sm border-b-2 border-indigo-200 sticky top-0 z-10 px-4 py-4 md:relative md:bg-transparent md:border-0 md:px-6 md:pt-8">
           <div className="flex items-center justify-between mb-3 md:mb-4">
             <div>
-              <h1 className="text-2xl md:text-3xl font-light text-neutral-900 tracking-tight">
+              <h1 className="text-2xl md:text-3xl font-semibold text-indigo-900 tracking-tight">
                 Members
               </h1>
-              <p className="text-sm text-neutral-500 mt-1 hidden md:block font-light">
+              <p className="text-sm text-indigo-600 mt-1 hidden md:block font-light">
                 Manage your cooperative members and track their payments
               </p>
             </div>
-            <Badge variant="neutral" className="hidden md:inline-flex text-xs font-normal">
+            <Badge variant="info" className="hidden md:inline-flex text-xs font-normal">
               {totalMembers} members
             </Badge>
           </div>
@@ -198,37 +198,37 @@ function MembersContent() {
         {/* Horizontal Scrollable Stats - Mobile */}
         <div className="md:hidden px-4 py-4 overflow-x-auto">
           <div className="flex gap-3 pb-2">
-            <div className="min-w-[140px] bg-white border border-neutral-200 rounded-lg p-4 transition-all duration-200">
-              <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
+            <div className="min-w-[140px] bg-white/80 backdrop-blur-sm border-2 border-indigo-200 rounded-xl p-4 transition-all duration-200 hover:shadow-md">
+              <p className="text-xs uppercase tracking-wider text-indigo-600 font-normal mb-2">
                 Members
               </p>
-              <p className="text-2xl font-light text-neutral-900">{totalMembers}</p>
+              <p className="text-2xl font-semibold text-indigo-900">{totalMembers}</p>
             </div>
 
-            <div className="min-w-[140px] bg-white border border-neutral-200 rounded-lg p-4 transition-all duration-200">
-              <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
+            <div className="min-w-[140px] bg-white/80 backdrop-blur-sm border-2 border-emerald-200 rounded-xl p-4 transition-all duration-200 hover:shadow-md">
+              <p className="text-xs uppercase tracking-wider text-emerald-600 font-normal mb-2">
                 Paid
               </p>
-              <p className="text-2xl font-light text-neutral-900">
+              <p className="text-2xl font-semibold text-emerald-900">
                 {totalPaid}/{totalMembers}
               </p>
             </div>
 
-            <div className="min-w-[140px] bg-white border border-neutral-200 rounded-lg p-4 transition-all duration-200">
-              <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
+            <div className="min-w-[140px] bg-white/80 backdrop-blur-sm border-2 border-purple-200 rounded-xl p-4 transition-all duration-200 hover:shadow-md">
+              <p className="text-xs uppercase tracking-wider text-purple-600 font-normal mb-2">
                 Collected
               </p>
-              <p className="text-2xl font-light text-neutral-900">
+              <p className="text-2xl font-semibold text-purple-900">
                 ₱{totalCollected.toLocaleString()}
               </p>
             </div>
 
             {selectedPeriod && (
-              <div className="min-w-[140px] bg-white border border-neutral-200 rounded-lg p-4 transition-all duration-200">
-                <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
+              <div className="min-w-[140px] bg-white/80 backdrop-blur-sm border-2 border-amber-200 rounded-xl p-4 transition-all duration-200 hover:shadow-md">
+                <p className="text-xs uppercase tracking-wider text-amber-600 font-normal mb-2">
                   Progress
                 </p>
-                <p className="text-2xl font-light text-neutral-900">
+                <p className="text-2xl font-semibold text-amber-900">
                   {Math.round(paymentProgress)}%
                 </p>
               </div>
@@ -238,29 +238,29 @@ function MembersContent() {
 
         {/* Desktop Stats Grid */}
         <div className="hidden md:grid md:grid-cols-3 gap-6 mb-8 px-6">
-          <div className="bg-white border border-neutral-200 rounded-lg p-6 transition-all duration-200 hover:shadow-sm">
-            <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
+          <div className="bg-white/80 backdrop-blur-sm border-2 border-indigo-200 rounded-xl p-6 transition-all duration-200 hover:shadow-md hover:border-indigo-300">
+            <p className="text-xs uppercase tracking-wider text-indigo-600 font-normal mb-2">
               Total Members
             </p>
-            <p className="text-3xl font-light text-neutral-900">
+            <p className="text-3xl font-semibold text-indigo-900">
               {totalMembers}
             </p>
           </div>
 
-          <div className="bg-white border border-neutral-200 rounded-lg p-6 transition-all duration-200 hover:shadow-sm">
-            <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
+          <div className="bg-white/80 backdrop-blur-sm border-2 border-emerald-200 rounded-xl p-6 transition-all duration-200 hover:shadow-md hover:border-emerald-300">
+            <p className="text-xs uppercase tracking-wider text-emerald-600 font-normal mb-2">
               Payments Made
             </p>
-            <p className="text-3xl font-light text-neutral-900">
+            <p className="text-3xl font-semibold text-emerald-900">
               {totalPaid} / {totalMembers}
             </p>
           </div>
 
-          <div className="bg-white border border-neutral-200 rounded-lg p-6 transition-all duration-200 hover:shadow-sm">
-            <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
+          <div className="bg-white/80 backdrop-blur-sm border-2 border-purple-200 rounded-xl p-6 transition-all duration-200 hover:shadow-md hover:border-purple-300">
+            <p className="text-xs uppercase tracking-wider text-purple-600 font-normal mb-2">
               Total Collected
             </p>
-            <p className="text-3xl font-light text-neutral-900">
+            <p className="text-3xl font-semibold text-purple-900">
               ₱{totalCollected.toLocaleString()}
             </p>
           </div>
@@ -286,7 +286,7 @@ function MembersContent() {
         <div className="hidden md:grid md:grid-cols-3 gap-6 mb-8 px-6">
           {/* Period Selection */}
           <Card className="p-6">
-            <h3 className="text-lg font-light text-neutral-900 mb-4">
+            <h3 className="text-lg font-normal text-indigo-900 mb-4">
               Collection Period
             </h3>
             <Select
@@ -307,7 +307,7 @@ function MembersContent() {
 
           {/* Search */}
           <Card className="p-6">
-            <h3 className="text-lg font-light text-neutral-900 mb-4">
+            <h3 className="text-lg font-normal text-indigo-900 mb-4">
               Search Members
             </h3>
             <Input
@@ -317,7 +317,7 @@ function MembersContent() {
               onChange={(e) => setQuery(e.target.value)}
               icon={
                 <svg
-                  className="h-4 w-4 text-neutral-400"
+                  className="h-4 w-4 text-indigo-400"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -335,13 +335,13 @@ function MembersContent() {
 
           {/* Quick Actions */}
           <Card className="p-6">
-            <h3 className="text-lg font-light text-neutral-900 mb-4">
+            <h3 className="text-lg font-normal text-indigo-900 mb-4">
               Quick Actions
             </h3>
             <div className="space-y-3">
               <button
                 onClick={() => setShowAddMember(true)}
-                className="w-full px-5 py-2.5 bg-neutral-900 !text-white text-sm font-normal rounded-md hover:bg-neutral-800 transition-all duration-200"
+                className="w-full px-5 py-2.5 bg-indigo-300 text-indigo-900 text-sm font-normal rounded-md hover:bg-indigo-400 shadow-sm transition-all duration-200 min-h-[44px]"
               >
                 Add Member
               </button>
@@ -349,13 +349,13 @@ function MembersContent() {
                 <div className="flex space-x-2">
                   <button
                     onClick={() => markAll(true)}
-                    className="flex-1 px-4 py-2 border border-neutral-300 text-neutral-700 text-sm font-normal rounded-md hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200"
+                    className="flex-1 px-4 py-2 border-2 border-indigo-200 text-indigo-800 text-sm font-normal rounded-md hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200 min-h-[44px]"
                   >
                     Mark All Paid
                   </button>
                   <button
                     onClick={() => markAll(false)}
-                    className="flex-1 px-4 py-2 border border-neutral-300 text-neutral-700 text-sm font-normal rounded-md hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200"
+                    className="flex-1 px-4 py-2 border-2 border-indigo-200 text-indigo-800 text-sm font-normal rounded-md hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200 min-h-[44px]"
                   >
                     Clear All
                   </button>
@@ -369,20 +369,20 @@ function MembersContent() {
         {selectedPeriod && (
           <Card className="hidden md:block p-6 mb-8 mx-6">
             <div className="flex justify-between items-center mb-2">
-              <h3 className="text-lg font-light text-neutral-900">
+              <h3 className="text-lg font-normal text-indigo-900">
                 Payment Progress
               </h3>
-              <span className="text-sm font-normal text-neutral-600">
+              <span className="text-sm font-normal text-indigo-600">
                 {Math.round(paymentProgress)}%
               </span>
             </div>
-            <div className="w-full bg-neutral-200 rounded-full h-3">
+            <div className="w-full bg-indigo-100 rounded-full h-3">
               <div
-                className="bg-neutral-900 h-3 rounded-full transition-all duration-500"
+                className="bg-indigo-400 h-3 rounded-full transition-all duration-500"
                 style={{ width: `${paymentProgress}%` }}
               />
             </div>
-            <p className="text-sm text-neutral-500 mt-2 font-light">
+            <p className="text-sm text-indigo-600 mt-2 font-light">
               {totalPaid} of {totalMembers} members have paid
             </p>
           </Card>
@@ -391,12 +391,12 @@ function MembersContent() {
         {/* Members List */}
         <div className="md:mx-6">
           <Card className="overflow-hidden md:rounded-lg rounded-none">
-            <div className="px-4 md:px-6 py-4 border-b border-neutral-200 bg-white">
+            <div className="px-4 md:px-6 py-4 border-b-2 border-indigo-200 bg-white/80 backdrop-blur-sm">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg md:text-xl font-light text-neutral-900">
+                <h2 className="text-lg md:text-xl font-normal text-indigo-900">
                   Members List
                 </h2>
-                <span className="text-xs md:text-sm text-neutral-500 font-light">
+                <span className="text-xs md:text-sm text-indigo-600 font-light">
                   {members.length}
                   {query && ` / ${state.members.length}`}
                 </span>
@@ -420,7 +420,7 @@ function MembersContent() {
                 />
               </div>
             ) : (
-              <div className="divide-y divide-neutral-200">
+              <div className="divide-y divide-indigo-100">
                 {members.map((member) => {
                   const isPaid = getIsPaid(member.id);
                   const payment = period?.payments.find(
@@ -430,12 +430,12 @@ function MembersContent() {
                   return (
                     <div
                       key={member.id}
-                      className="bg-white hover:bg-neutral-50 transition-colors"
+                      className="bg-white hover:bg-indigo-50/50 transition-colors"
                     >
                       {editingMember?.id === member.id ? (
                         // Edit Mode
                         <div className="p-4 md:p-6 flex items-center space-x-3 md:space-x-4">
-                          <div className="w-12 h-12 bg-neutral-900 rounded-full flex items-center justify-center flex-shrink-0">
+                          <div className="w-12 h-12 bg-indigo-400 rounded-full flex items-center justify-center flex-shrink-0">
                             <span className="text-white font-normal text-lg">
                               {editingMember.name[0]?.toUpperCase() || "?"}
                             </span>
@@ -481,17 +481,17 @@ function MembersContent() {
                           <div className="flex items-start md:items-center justify-between gap-3">
                             {/* Member Info */}
                             <div className="flex items-center gap-3 flex-1 min-w-0">
-                              <div className="w-12 h-12 md:w-14 md:h-14 bg-neutral-900 rounded-full flex items-center justify-center flex-shrink-0">
+                              <div className="w-12 h-12 md:w-14 md:h-14 bg-indigo-400 rounded-full flex items-center justify-center flex-shrink-0">
                                 <span className="text-white font-normal text-lg md:text-xl">
                                   {member.name[0]?.toUpperCase() || "?"}
                                 </span>
                               </div>
                               <div className="flex-1 min-w-0">
-                                <h3 className="font-normal text-neutral-900 text-base md:text-lg truncate">
+                                <h3 className="font-normal text-indigo-900 text-base md:text-lg truncate">
                                   {member.name}
                                 </h3>
                                 <div className="flex items-center gap-2 mt-1">
-                                  <p className="text-xs md:text-sm text-neutral-500">
+                                  <p className="text-xs md:text-sm text-indigo-600">
                                     ID: {member.id}
                                   </p>
                                   {selectedPeriod && isPaid && (
@@ -512,20 +512,20 @@ function MembersContent() {
                                 <>
                                   {isPaid ? (
                                     <>
-                                      <Badge variant="neutral">Paid</Badge>
-                                      <span className="font-normal text-neutral-900">
+                                      <Badge variant="success">Paid</Badge>
+                                      <span className="font-normal text-indigo-900">
                                         ₱{payment?.amount?.toLocaleString() || 0}
                                       </span>
                                       <button
                                         onClick={() => clearAmount(member.id)}
-                                        className="px-4 py-2 border border-neutral-300 text-neutral-700 text-sm font-normal rounded-md hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200"
+                                        className="px-4 py-2 border-2 border-indigo-200 text-indigo-800 text-sm font-normal rounded-md hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200 min-h-[44px]"
                                       >
                                         Clear
                                       </button>
                                     </>
                                   ) : (
                                     <div className="flex items-center gap-3">
-                                      <Badge variant="neutral">Unpaid</Badge>
+                                      <Badge variant="warning">Unpaid</Badge>
                                       <Input
                                         type="number"
                                         placeholder={
@@ -543,7 +543,7 @@ function MembersContent() {
                                       />
                                       <button
                                         onClick={() => saveAmount(member.id)}
-                                        className="px-4 py-2 bg-neutral-900 !text-white text-sm font-normal rounded-md hover:bg-neutral-800 transition-all duration-200"
+                                        className="px-4 py-2 bg-indigo-300 text-indigo-900 text-sm font-normal rounded-md hover:bg-indigo-400 shadow-sm transition-all duration-200 min-h-[44px]"
                                       >
                                         Pay
                                       </button>
@@ -558,7 +558,7 @@ function MembersContent() {
                                     name: member.name,
                                   })
                                 }
-                                className="px-4 py-2 border border-neutral-300 text-neutral-700 text-sm font-normal rounded-md hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200"
+                                className="px-4 py-2 border-2 border-indigo-200 text-indigo-800 text-sm font-normal rounded-md hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200 min-h-[44px]"
                               >
                                 Edit
                               </button>
@@ -566,7 +566,7 @@ function MembersContent() {
                                 onClick={() =>
                                   deleteMember(member.id, member.name)
                                 }
-                                className="px-4 py-2 border border-red-300 text-red-700 text-sm font-normal rounded-md hover:border-red-400 hover:bg-red-50 transition-all duration-200"
+                                className="px-4 py-2 bg-rose-200 text-rose-800 text-sm font-normal rounded-md hover:bg-rose-300 shadow-sm transition-all duration-200 min-h-[44px]"
                               >
                                 Delete
                               </button>
@@ -574,7 +574,7 @@ function MembersContent() {
 
                             {/* Mobile Menu Button */}
                             <button
-                              className="md:hidden p-2 hover:bg-neutral-100 rounded-lg transition-colors flex-shrink-0"
+                              className="md:hidden p-2 hover:bg-indigo-100 rounded-lg transition-colors flex-shrink-0"
                               onClick={() => {
                                 // Toggle mobile actions menu
                                 const menu = document.getElementById(
@@ -586,7 +586,7 @@ function MembersContent() {
                               }}
                             >
                               <svg
-                                className="w-5 h-5 text-neutral-600"
+                                className="w-5 h-5 text-indigo-600"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -604,15 +604,15 @@ function MembersContent() {
                           {/* Mobile Actions - Collapsible */}
                           <div
                             id={`mobile-menu-${member.id}`}
-                            className="hidden md:hidden mt-4 pt-4 border-t border-neutral-100 space-y-3"
+                            className="hidden md:hidden mt-4 pt-4 border-t border-indigo-100 space-y-3"
                           >
                             {selectedPeriod && (
                               <div className="space-y-3">
                                 {isPaid ? (
-                                  <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
+                                  <div className="flex items-center justify-between p-3 bg-emerald-50 rounded-lg border border-emerald-200">
                                     <div className="flex items-center gap-2">
-                                      <Badge variant="neutral">Paid</Badge>
-                                      <span className="font-normal text-neutral-900">
+                                      <Badge variant="success">Paid</Badge>
+                                      <span className="font-normal text-indigo-900">
                                         ₱{payment?.amount?.toLocaleString() || 0}
                                       </span>
                                     </div>
@@ -627,7 +627,7 @@ function MembersContent() {
                                 ) : (
                                   <div className="space-y-2">
                                     <div className="flex items-center gap-2">
-                                      <Badge variant="neutral">Unpaid</Badge>
+                                      <Badge variant="warning">Unpaid</Badge>
                                     </div>
                                     <div className="flex gap-2">
                                       <Input
@@ -647,7 +647,7 @@ function MembersContent() {
                                       />
                                       <button
                                         onClick={() => saveAmount(member.id)}
-                                        className="px-6 h-11 bg-neutral-900 !text-white text-sm font-normal rounded-md hover:bg-neutral-800 transition-all duration-200"
+                                        className="px-6 h-11 bg-indigo-300 text-indigo-900 text-sm font-normal rounded-md hover:bg-indigo-400 shadow-sm transition-all duration-200"
                                       >
                                         Pay
                                       </button>
@@ -664,7 +664,7 @@ function MembersContent() {
                                     name: member.name,
                                   })
                                 }
-                                className="flex-1 h-11 px-4 py-2 border border-neutral-300 text-neutral-700 text-sm font-normal rounded-md hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200"
+                                className="flex-1 h-11 px-4 py-2 border-2 border-indigo-200 text-indigo-800 text-sm font-normal rounded-md hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200"
                               >
                                 Edit
                               </button>
@@ -672,7 +672,7 @@ function MembersContent() {
                                 onClick={() =>
                                   deleteMember(member.id, member.name)
                                 }
-                                className="flex-1 h-11 px-4 py-2 border border-red-300 text-red-700 text-sm font-normal rounded-md hover:border-red-400 hover:bg-red-50 transition-all duration-200"
+                                className="flex-1 h-11 px-4 py-2 bg-rose-200 text-rose-800 text-sm font-normal rounded-md hover:bg-rose-300 shadow-sm transition-all duration-200"
                               >
                                 Delete
                               </button>
@@ -692,7 +692,7 @@ function MembersContent() {
       {/* Floating Action Button - Mobile Only */}
       <button
         onClick={() => setShowAddMember(true)}
-        className="md:hidden fixed bottom-20 right-4 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center z-20 active:scale-95"
+        className="md:hidden fixed bottom-20 right-4 w-14 h-14 bg-indigo-400 hover:bg-indigo-500 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center z-20 active:scale-95"
         aria-label="Add Member"
       >
         <svg
@@ -712,17 +712,17 @@ function MembersContent() {
 
       {/* Mobile Bottom Actions Bar */}
       {selectedPeriod && (
-        <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-200 px-4 py-3 z-10 shadow-lg">
+        <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-sm border-t-2 border-indigo-200 px-4 py-3 z-10 shadow-lg">
           <div className="flex gap-2">
             <button
               onClick={() => markAll(true)}
-              className="flex-1 h-12 px-4 py-2 border border-neutral-300 text-neutral-700 text-sm font-normal rounded-md hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200"
+              className="flex-1 h-12 px-4 py-2 border-2 border-indigo-200 text-indigo-800 text-sm font-normal rounded-md hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200"
             >
               Mark All Paid
             </button>
             <button
               onClick={() => markAll(false)}
-              className="flex-1 h-12 px-4 py-2 border border-neutral-300 text-neutral-700 text-sm font-normal rounded-md hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200"
+              className="flex-1 h-12 px-4 py-2 border-2 border-indigo-200 text-indigo-800 text-sm font-normal rounded-md hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200"
             >
               Clear All
             </button>

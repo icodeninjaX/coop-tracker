@@ -128,35 +128,35 @@ function HomeContent() {
   const pendingLoans = state.loans.filter((l) => l.status === "PENDING").length;
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
       <div className="container mx-auto max-w-7xl px-3 sm:px-6 py-6 sm:py-8">
         {/* Header + Actions */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0 mb-6 sm:mb-10 pb-6 border-b border-neutral-200">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0 mb-6 sm:mb-10 pb-6 border-b-2 border-indigo-200">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-light text-neutral-900 tracking-tight mb-1">
+            <h1 className="text-2xl sm:text-3xl font-semibold text-indigo-900 tracking-tight mb-1">
               Dashboard
             </h1>
-            <p className="text-sm text-neutral-500 font-light">
+            <p className="text-sm text-indigo-600 font-light">
               {format(new Date(), "MMMM d, yyyy")} · {state.collections.length} {state.collections.length === 1 ? 'period' : 'periods'}
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
             <button
               onClick={() => setShowNewPeriodModal(true)}
-              className="px-5 py-2.5 bg-neutral-900 !text-white text-sm font-normal rounded-md hover:bg-neutral-800 transition-all duration-200 min-h-[44px]"
+              className="px-5 py-2.5 bg-indigo-300 !text-indigo-900 text-sm font-normal rounded-md hover:bg-indigo-400 transition-all duration-200 min-h-[44px] shadow-sm"
             >
               New Period
             </button>
             <button
               onClick={() => setShowNewLoanModal(true)}
-              className="px-5 py-2.5 border border-neutral-300 text-neutral-700 text-sm font-normal rounded-md hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200 min-h-[44px]"
+              className="px-5 py-2.5 border-2 border-indigo-200 text-indigo-800 text-sm font-normal rounded-md hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200 min-h-[44px]"
             >
               New Loan
             </button>
             {state.collections.length > 0 && (
               <button
                 onClick={() => setShowResetModal(true)}
-                className="px-5 py-2.5 border border-neutral-300 text-neutral-600 text-sm font-normal rounded-md hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200 min-h-[44px]"
+                className="px-5 py-2.5 border-2 border-rose-200 text-rose-700 text-sm font-normal rounded-md hover:border-rose-300 hover:bg-rose-50 transition-all duration-200 min-h-[44px]"
               >
                 Reset
               </button>
@@ -166,38 +166,38 @@ function HomeContent() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-8 sm:mb-12">
-          <div className="bg-white border border-neutral-200 rounded-lg p-4 sm:p-6 transition-all duration-200 hover:shadow-sm">
-            <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
+          <div className="bg-white/80 backdrop-blur-sm border-2 border-indigo-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-indigo-300">
+            <p className="text-xs uppercase tracking-wider text-indigo-600 font-normal mb-2">
               Total Balance
             </p>
-            <p className="text-2xl sm:text-3xl font-light text-neutral-900">
+            <p className="text-2xl sm:text-3xl font-semibold text-indigo-900">
               ₱{totalBalance.toLocaleString()}
             </p>
           </div>
 
-          <div className="bg-white border border-neutral-200 rounded-lg p-4 sm:p-6 transition-all duration-200 hover:shadow-sm">
-            <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
+          <div className="bg-white/80 backdrop-blur-sm border-2 border-purple-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-purple-300">
+            <p className="text-xs uppercase tracking-wider text-purple-600 font-normal mb-2">
               Members
             </p>
-            <p className="text-2xl sm:text-3xl font-light text-neutral-900">
+            <p className="text-2xl sm:text-3xl font-semibold text-purple-900">
               {totalMembers}
             </p>
           </div>
 
-          <div className="bg-white border border-neutral-200 rounded-lg p-4 sm:p-6 transition-all duration-200 hover:shadow-sm">
-            <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
+          <div className="bg-white/80 backdrop-blur-sm border-2 border-emerald-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-emerald-300">
+            <p className="text-xs uppercase tracking-wider text-emerald-600 font-normal mb-2">
               Active Loans
             </p>
-            <p className="text-2xl sm:text-3xl font-light text-neutral-900">
+            <p className="text-2xl sm:text-3xl font-semibold text-emerald-900">
               {activeLoans}
             </p>
           </div>
 
-          <div className="bg-white border border-neutral-200 rounded-lg p-4 sm:p-6 transition-all duration-200 hover:shadow-sm">
-            <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
+          <div className="bg-white/80 backdrop-blur-sm border-2 border-amber-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-amber-300">
+            <p className="text-xs uppercase tracking-wider text-amber-600 font-normal mb-2">
               Pending
             </p>
-            <p className="text-2xl sm:text-3xl font-light text-neutral-900">
+            <p className="text-2xl sm:text-3xl font-semibold text-amber-900">
               {pendingLoans}
             </p>
           </div>
@@ -205,7 +205,7 @@ function HomeContent() {
 
         {/* Collection Periods */}
         <div className="mb-8 sm:mb-12">
-          <h2 className="text-base sm:text-lg font-light text-neutral-900 mb-4 sm:mb-6">
+          <h2 className="text-base sm:text-lg font-semibold text-indigo-900 mb-4 sm:mb-6">
             Collection Periods
           </h2>
           {state.collections.length > 0 ? (
@@ -222,24 +222,24 @@ function HomeContent() {
                           payload: { periodId: period.id },
                         })
                       }
-                      className={`p-4 rounded-lg border text-left transition-all duration-200 min-w-[160px] flex-shrink-0 ${
+                      className={`p-4 rounded-xl border-2 text-left transition-all duration-200 min-w-[160px] flex-shrink-0 ${
                         selectedPeriod === period.id
-                          ? "border-neutral-900 bg-neutral-900 text-white shadow-sm"
-                          : "border-neutral-200 bg-white hover:border-neutral-300 hover:shadow-sm"
+                          ? "border-indigo-400 bg-indigo-300 text-indigo-900 shadow-md"
+                          : "border-indigo-200 bg-white/80 hover:border-indigo-300 hover:shadow-sm"
                       }`}
                     >
                       <p className={`text-xs uppercase tracking-wider font-normal mb-2 ${
-                        selectedPeriod === period.id ? "text-neutral-400" : "text-neutral-500"
+                        selectedPeriod === period.id ? "text-indigo-700" : "text-indigo-600"
                       }`}>
                         {format(new Date(period.date), "MMM d, yyyy")}
                       </p>
-                      <p className={`text-xl font-light mb-1 ${
-                        selectedPeriod === period.id ? "text-white" : "text-neutral-900"
+                      <p className={`text-xl font-semibold mb-1 ${
+                        selectedPeriod === period.id ? "text-indigo-900" : "text-indigo-900"
                       }`}>
                         ₱{period.totalCollected.toLocaleString()}
                       </p>
                       <p className={`text-xs font-light ${
-                        selectedPeriod === period.id ? "text-neutral-400" : "text-neutral-500"
+                        selectedPeriod === period.id ? "text-indigo-700" : "text-indigo-600"
                       }`}>
                         {period.payments.length} {period.payments.length === 1 ? 'payment' : 'payments'}
                       </p>
@@ -248,10 +248,10 @@ function HomeContent() {
 
                   <button
                     onClick={addNextCollectionPeriod}
-                    className="p-4 rounded-lg border border-dashed border-neutral-300 hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200 flex flex-col items-center justify-center min-w-[160px] min-h-[120px] flex-shrink-0"
+                    className="p-4 rounded-xl border-2 border-dashed border-indigo-300 hover:border-indigo-400 hover:bg-indigo-50 transition-all duration-200 flex flex-col items-center justify-center min-w-[160px] min-h-[120px] flex-shrink-0"
                   >
-                    <span className="text-2xl text-neutral-400 mb-1 font-light">+</span>
-                    <span className="text-xs text-neutral-600 font-light">Add Period</span>
+                    <span className="text-2xl text-indigo-400 mb-1 font-light">+</span>
+                    <span className="text-xs text-indigo-700 font-normal">Add Period</span>
                   </button>
                 </div>
               </div>
@@ -267,24 +267,24 @@ function HomeContent() {
                         payload: { periodId: period.id },
                       })
                     }
-                    className={`p-5 rounded-lg border text-left transition-all duration-200 ${
+                    className={`p-5 rounded-xl border-2 text-left transition-all duration-200 ${
                       selectedPeriod === period.id
-                        ? "border-neutral-900 bg-neutral-900 text-white shadow-sm"
-                        : "border-neutral-200 bg-white hover:border-neutral-300 hover:shadow-sm"
+                        ? "border-indigo-400 bg-indigo-300 text-indigo-900 shadow-md"
+                        : "border-indigo-200 bg-white/80 hover:border-indigo-300 hover:shadow-sm"
                     }`}
                   >
                     <p className={`text-xs uppercase tracking-wider font-normal mb-3 ${
-                      selectedPeriod === period.id ? "text-neutral-400" : "text-neutral-500"
+                      selectedPeriod === period.id ? "text-indigo-700" : "text-indigo-600"
                     }`}>
                       {format(new Date(period.date), "MMM d, yyyy")}
                     </p>
-                    <p className={`text-2xl font-light mb-2 ${
-                      selectedPeriod === period.id ? "text-white" : "text-neutral-900"
+                    <p className={`text-2xl font-semibold mb-2 ${
+                      selectedPeriod === period.id ? "text-indigo-900" : "text-indigo-900"
                     }`}>
                       ₱{period.totalCollected.toLocaleString()}
                     </p>
                     <p className={`text-xs font-light ${
-                      selectedPeriod === period.id ? "text-neutral-400" : "text-neutral-500"
+                      selectedPeriod === period.id ? "text-indigo-700" : "text-indigo-600"
                     }`}>
                       {period.payments.length} {period.payments.length === 1 ? 'payment' : 'payments'}
                     </p>
@@ -293,19 +293,19 @@ function HomeContent() {
 
                 <button
                   onClick={addNextCollectionPeriod}
-                  className="p-5 rounded-lg border border-dashed border-neutral-300 hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200 flex flex-col items-center justify-center min-h-[140px]"
+                  className="p-5 rounded-xl border-2 border-dashed border-indigo-300 hover:border-indigo-400 hover:bg-indigo-50 transition-all duration-200 flex flex-col items-center justify-center min-h-[140px]"
                 >
-                  <span className="text-3xl text-neutral-400 mb-2 font-light">+</span>
-                  <span className="text-sm text-neutral-600 font-light">Add Period</span>
+                  <span className="text-3xl text-indigo-400 mb-2 font-light">+</span>
+                  <span className="text-sm text-indigo-700 font-normal">Add Period</span>
                 </button>
               </div>
             </>
           ) : (
-            <div className="bg-white border border-neutral-200 rounded-lg p-8 sm:p-12 text-center">
-              <p className="text-sm text-neutral-500 font-light mb-4 sm:mb-6">No periods yet</p>
+            <div className="bg-white/80 border-2 border-indigo-200 rounded-xl p-8 sm:p-12 text-center">
+              <p className="text-sm text-indigo-600 font-light mb-4 sm:mb-6">No periods yet</p>
               <button
                 onClick={addNextCollectionPeriod}
-                className="px-5 py-2.5 bg-neutral-900 !text-white text-sm font-normal rounded-md hover:bg-neutral-800 transition-all duration-200 min-h-[44px]"
+                className="px-5 py-2.5 bg-indigo-300 !text-indigo-900 text-sm font-normal rounded-md hover:bg-indigo-400 transition-all duration-200 min-h-[44px] shadow-sm"
               >
                 Create First Period
               </button>
@@ -399,28 +399,28 @@ function HomeContent() {
           />
 
           {/* Loan Type Explanation */}
-          <div className="p-5 bg-neutral-50 border border-neutral-200 rounded-lg">
-            <h4 className="font-normal text-neutral-900 mb-3 text-sm uppercase tracking-wider">
+          <div className="p-5 bg-indigo-50 border-2 border-indigo-200 rounded-lg">
+            <h4 className="font-normal text-indigo-900 mb-3 text-sm uppercase tracking-wider">
               Loan Type Information
             </h4>
             {newLoanPlan === "MONTHLY" ? (
-              <div className="text-sm text-neutral-700 font-light">
-                <p className="mb-3 font-normal text-neutral-900">
+              <div className="text-sm text-indigo-700 font-light">
+                <p className="mb-3 font-normal text-indigo-900">
                   One-time Payment Loan
                 </p>
                 <ul className="space-y-2 ml-1">
                   <li className="flex items-start">
-                    <span className="text-neutral-400 mr-2">•</span>
+                    <span className="text-indigo-400 mr-2">•</span>
                     <span>Pay the full amount + interest after {newLoanTerms || 5}{" "}
                     months</span>
                   </li>
                   <li className="flex items-start">
-                    <span className="text-neutral-400 mr-2">•</span>
+                    <span className="text-indigo-400 mr-2">•</span>
                     <span>Interest: 4% per month × {newLoanTerms || 5} months ={" "}
                     {(parseFloat(newLoanTerms) || 5) * 4}% total</span>
                   </li>
                   <li className="flex items-start">
-                    <span className="text-neutral-400 mr-2">•</span>
+                    <span className="text-indigo-400 mr-2">•</span>
                     <span>Example: ₱10,000 → Pay ₱
                     {(
                       10000 *
@@ -431,27 +431,27 @@ function HomeContent() {
                 </ul>
               </div>
             ) : (
-              <div className="text-sm text-neutral-700 font-light">
-                <p className="mb-3 font-normal text-neutral-900">
+              <div className="text-sm text-indigo-700 font-light">
+                <p className="mb-3 font-normal text-indigo-900">
                   Per Cut-off Installment Loan
                 </p>
                 <ul className="space-y-2 ml-1">
                   <li className="flex items-start">
-                    <span className="text-neutral-400 mr-2">•</span>
+                    <span className="text-indigo-400 mr-2">•</span>
                     <span>Pay in installments every cut-off (2 times per month)</span>
                   </li>
                   <li className="flex items-start">
-                    <span className="text-neutral-400 mr-2">•</span>
+                    <span className="text-indigo-400 mr-2">•</span>
                     <span>Interest: 3% per month × {newLoanTerms || 5} months ={" "}
                     {(parseFloat(newLoanTerms) || 5) * 3}% total</span>
                   </li>
                   <li className="flex items-start">
-                    <span className="text-neutral-400 mr-2">•</span>
+                    <span className="text-indigo-400 mr-2">•</span>
                     <span>Total payments: {(parseFloat(newLoanTerms) || 5) * 2}{" "}
                     installments</span>
                   </li>
                   <li className="flex items-start">
-                    <span className="text-neutral-400 mr-2">•</span>
+                    <span className="text-indigo-400 mr-2">•</span>
                     <span>Example: ₱10,000 → {(parseFloat(newLoanTerms) || 5) * 2}{" "}
                     payments of ₱
                     {(
@@ -482,45 +482,45 @@ function HomeContent() {
         title="Reset All Periods"
       >
         <div className="space-y-6">
-          <div className="bg-neutral-50 border border-neutral-200 rounded-lg p-5">
-            <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-3">
+          <div className="bg-rose-50 border-2 border-rose-200 rounded-lg p-5">
+            <p className="text-xs uppercase tracking-wider text-rose-700 font-normal mb-3">
               Warning
             </p>
-            <p className="text-sm text-neutral-900 font-light mb-4">
+            <p className="text-sm text-rose-900 font-light mb-4">
               This will permanently delete:
             </p>
-            <ul className="space-y-2 text-sm text-neutral-700 font-light">
+            <ul className="space-y-2 text-sm text-rose-800 font-light">
               <li className="flex items-start">
-                <span className="text-neutral-400 mr-2">•</span>
+                <span className="text-rose-400 mr-2">•</span>
                 <span>All collection periods ({state.collections.length} {state.collections.length === 1 ? 'period' : 'periods'})</span>
               </li>
               <li className="flex items-start">
-                <span className="text-neutral-400 mr-2">•</span>
+                <span className="text-rose-400 mr-2">•</span>
                 <span>All loans ({state.loans.length} {state.loans.length === 1 ? 'loan' : 'loans'})</span>
               </li>
               <li className="flex items-start">
-                <span className="text-neutral-400 mr-2">•</span>
+                <span className="text-rose-400 mr-2">•</span>
                 <span>All repayments and penalties</span>
               </li>
               <li className="flex items-start">
-                <span className="text-neutral-400 mr-2">•</span>
+                <span className="text-rose-400 mr-2">•</span>
                 <span>This action cannot be undone</span>
               </li>
             </ul>
           </div>
-          <p className="text-sm text-neutral-600 font-light">
+          <p className="text-sm text-indigo-700 font-light">
             Member information will be preserved. You can start creating new collection periods after reset.
           </p>
           <div className="flex flex-col sm:flex-row justify-end gap-3 pt-2">
             <button
               onClick={() => setShowResetModal(false)}
-              className="px-5 py-2.5 border border-neutral-300 text-neutral-700 text-sm font-normal rounded-md hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200 min-h-[44px]"
+              className="px-5 py-2.5 border-2 border-indigo-200 text-indigo-800 text-sm font-normal rounded-md hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200 min-h-[44px]"
             >
               Cancel
             </button>
             <button
               onClick={handleResetPeriods}
-              className="px-5 py-2.5 bg-neutral-900 !text-white text-sm font-normal rounded-md hover:bg-neutral-800 transition-all duration-200 min-h-[44px]"
+              className="px-5 py-2.5 bg-rose-300 text-rose-900 text-sm font-normal rounded-md hover:bg-rose-400 shadow-sm transition-all duration-200 min-h-[44px]"
             >
               Confirm Reset
             </button>

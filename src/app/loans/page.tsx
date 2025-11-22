@@ -61,10 +61,10 @@ const LoansPage = () => {
 
   if (!state) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-neutral-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neutral-600 mx-auto"></div>
-          <p className="mt-2 text-neutral-600 font-light">Loading coop data...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
+          <p className="mt-2 text-indigo-600 font-light">Loading coop data...</p>
         </div>
       </div>
     );
@@ -165,24 +165,24 @@ const LoansPage = () => {
     );
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
       <div className="container mx-auto max-w-7xl px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
         {/* Header Section */}
         <div className="mb-6 lg:mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-light text-neutral-900 tracking-tight mb-1 sm:mb-2">
+              <h1 className="text-2xl sm:text-3xl font-semibold text-indigo-900 tracking-tight mb-1 sm:mb-2">
                 Loans
               </h1>
-              <p className="text-sm sm:text-base text-neutral-600 font-light">
+              <p className="text-sm sm:text-base text-indigo-600 font-light">
                 Manage loan applications, approvals, and repayments
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-              <Badge variant="neutral" className="text-xs sm:text-sm font-normal">
+              <Badge variant="info" className="text-xs sm:text-sm font-normal">
                 {totalLoans} loans
               </Badge>
-              <Badge variant="neutral" className="text-xs sm:text-sm font-normal">
+              <Badge variant="warning" className="text-xs sm:text-sm font-normal">
                 {pendingLoans} pending
               </Badge>
               {selectedPeriod && (
@@ -196,38 +196,38 @@ const LoansPage = () => {
 
         {/* Stats Overview */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 lg:mb-8">
-          <div className="bg-white border border-neutral-200 rounded-lg p-4 sm:p-6 transition-all duration-200 hover:shadow-sm">
-            <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
+          <div className="bg-white/80 backdrop-blur-sm border-2 border-indigo-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-indigo-300">
+            <p className="text-xs uppercase tracking-wider text-indigo-600 font-normal mb-2">
               Total Loans
             </p>
-            <p className="text-2xl sm:text-3xl font-light text-neutral-900">
+            <p className="text-2xl sm:text-3xl font-semibold text-indigo-900">
               {totalLoans}
             </p>
           </div>
 
-          <div className="bg-white border border-neutral-200 rounded-lg p-4 sm:p-6 transition-all duration-200 hover:shadow-sm">
-            <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
+          <div className="bg-white/80 backdrop-blur-sm border-2 border-amber-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-amber-300">
+            <p className="text-xs uppercase tracking-wider text-amber-600 font-normal mb-2">
               Pending
             </p>
-            <p className="text-2xl sm:text-3xl font-light text-neutral-900">
+            <p className="text-2xl sm:text-3xl font-semibold text-amber-900">
               {pendingLoans}
             </p>
           </div>
 
-          <div className="bg-white border border-neutral-200 rounded-lg p-4 sm:p-6 transition-all duration-200 hover:shadow-sm">
-            <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
+          <div className="bg-white/80 backdrop-blur-sm border-2 border-emerald-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-emerald-300">
+            <p className="text-xs uppercase tracking-wider text-emerald-600 font-normal mb-2">
               Approved
             </p>
-            <p className="text-2xl sm:text-3xl font-light text-neutral-900">
+            <p className="text-2xl sm:text-3xl font-semibold text-emerald-900">
               {approvedLoans}
             </p>
           </div>
 
-          <div className="bg-white border border-neutral-200 rounded-lg p-4 sm:p-6 transition-all duration-200 hover:shadow-sm">
-            <p className="text-xs uppercase tracking-wider text-neutral-500 font-normal mb-2">
+          <div className="bg-white/80 backdrop-blur-sm border-2 border-purple-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-purple-300">
+            <p className="text-xs uppercase tracking-wider text-purple-600 font-normal mb-2">
               Outstanding
             </p>
-            <p className="text-2xl sm:text-3xl font-light text-neutral-900">
+            <p className="text-2xl sm:text-3xl font-semibold text-purple-900">
               ₱{totalOutstanding.toLocaleString()}
             </p>
           </div>
@@ -237,7 +237,7 @@ const LoansPage = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 lg:mb-8">
           {/* Period Selection */}
           <Card className="p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-light text-neutral-900 mb-3 sm:mb-4">
+            <h3 className="text-base sm:text-lg font-semibold text-indigo-900 mb-3 sm:mb-4">
               Collection Period
             </h3>
             <Select
@@ -255,7 +255,7 @@ const LoansPage = () => {
 
           {/* Status Filter */}
           <Card className="p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-light text-neutral-900 mb-3 sm:mb-4">
+            <h3 className="text-base sm:text-lg font-semibold text-indigo-900 mb-3 sm:mb-4">
               Status Filter
             </h3>
             <Select
@@ -273,7 +273,7 @@ const LoansPage = () => {
 
           {/* Search */}
           <Card className="p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-light text-neutral-900 mb-3 sm:mb-4">
+            <h3 className="text-base sm:text-lg font-semibold text-indigo-900 mb-3 sm:mb-4">
               Search
             </h3>
             <Input
@@ -284,7 +284,7 @@ const LoansPage = () => {
               className="text-sm"
               icon={
                 <svg
-                  className="h-4 w-4 text-neutral-400"
+                  className="h-4 w-4 text-indigo-400"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -302,12 +302,12 @@ const LoansPage = () => {
 
           {/* Quick Actions */}
           <Card className="p-4 sm:p-6">
-            <h3 className="text-base sm:text-lg font-light text-neutral-900 mb-3 sm:mb-4">
+            <h3 className="text-base sm:text-lg font-semibold text-indigo-900 mb-3 sm:mb-4">
               Quick Actions
             </h3>
             <button
               onClick={() => setShowAddLoan(true)}
-              className="w-full px-5 py-2.5 bg-neutral-900 !text-white text-sm font-normal rounded-md hover:bg-neutral-800 transition-all duration-200"
+              className="w-full px-5 py-2.5 bg-indigo-300 text-indigo-900 text-sm font-normal rounded-md hover:bg-indigo-400 shadow-sm transition-all duration-200"
             >
               Add Loan
             </button>
@@ -316,12 +316,12 @@ const LoansPage = () => {
 
         {/* Loans List */}
         <Card className="overflow-hidden shadow-sm">
-          <div className="p-4 sm:p-6 border-b border-neutral-200">
+          <div className="p-4 sm:p-6 border-b-2 border-indigo-200">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-              <h2 className="text-lg sm:text-xl font-light text-neutral-900">
+              <h2 className="text-lg sm:text-xl font-semibold text-indigo-900">
                 Loan Applications
               </h2>
-              <span className="text-xs sm:text-sm text-neutral-500 font-light">
+              <span className="text-xs sm:text-sm text-indigo-600 font-light">
                 {loans.length} loans
                 {(selectedPeriod || selectedStatus || query) &&
                   ` (filtered from ${state.loans?.length || 0})`}
@@ -346,7 +346,7 @@ const LoansPage = () => {
               />
             </div>
           ) : (
-            <div className="divide-y divide-neutral-200">
+            <div className="divide-y divide-indigo-100">
               {loans.map((loan) => {
                 const member = (state.members || []).find(
                   (m) => m.id === loan.memberId
@@ -379,20 +379,20 @@ const LoansPage = () => {
                 return (
                   <div
                     key={loan.id}
-                    className="p-4 sm:p-6 hover:bg-neutral-50 transition-colors"
+                    className="p-4 sm:p-6 hover:bg-indigo-50/30 transition-colors"
                   >
                     <div className="flex flex-col space-y-4">
                       {/* Header with Member Info and Status */}
                       <div className="flex items-start justify-between">
                         <div className="flex items-start space-x-3">
-                          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-neutral-900 rounded-full flex items-center justify-center flex-shrink-0">
-                            <span className="text-white text-sm sm:text-base font-normal">
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-indigo-300 rounded-full flex items-center justify-center flex-shrink-0">
+                            <span className="text-indigo-900 text-sm sm:text-base font-semibold">
                               {member?.name[0]?.toUpperCase() || "?"}
                             </span>
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-                              <h3 className="text-base sm:text-lg font-normal text-neutral-900 truncate">
+                              <h3 className="text-base sm:text-lg font-semibold text-indigo-900 truncate">
                                 {member?.name || "Unknown Member"}
                               </h3>
                               <Badge
@@ -428,20 +428,20 @@ const LoansPage = () => {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm sm:text-base">
                         <div className="space-y-2 sm:space-y-3">
                           <div className="flex justify-between">
-                            <span className="text-neutral-600 font-light">Amount:</span>
-                            <span className="font-normal text-neutral-900">
+                            <span className="text-indigo-600 font-light">Amount:</span>
+                            <span className="font-normal text-indigo-900">
                               ₱{loan.amount.toLocaleString()}
                             </span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-neutral-600 font-light">Rate:</span>
-                            <span className="font-normal text-neutral-900">
+                            <span className="text-indigo-600 font-light">Rate:</span>
+                            <span className="font-normal text-indigo-900">
                               {(interestRate * 100).toFixed(1)}%/month
                             </span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-neutral-600 font-light">Date:</span>
-                            <span className="font-normal text-neutral-900">
+                            <span className="text-indigo-600 font-light">Date:</span>
+                            <span className="font-normal text-indigo-900">
                               {format(new Date(loan.dateIssued), "MMM d, yyyy")}
                             </span>
                           </div>
@@ -449,27 +449,27 @@ const LoansPage = () => {
 
                         <div className="space-y-2 sm:space-y-3">
                           <div className="flex justify-between">
-                            <span className="text-neutral-600 font-light">Plan:</span>
-                            <span className="font-normal text-neutral-900 text-right">
+                            <span className="text-indigo-600 font-light">Plan:</span>
+                            <span className="font-normal text-indigo-900 text-right">
                               {loan.repaymentPlan === "MONTHLY"
                                 ? "One-time"
                                 : "Installments"}
                             </span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-neutral-600 font-light">Terms:</span>
-                            <span className="font-normal text-neutral-900">
+                            <span className="text-indigo-600 font-light">Terms:</span>
+                            <span className="font-normal text-indigo-900">
                               {termCount} months
                             </span>
                           </div>
                           {installment && (
                             <div className="flex justify-between">
-                              <span className="text-neutral-600 font-light">
+                              <span className="text-indigo-600 font-light">
                                 {loan.repaymentPlan === "MONTHLY"
                                   ? "Total Due:"
                                   : "Per Cut-off:"}
                               </span>
-                              <span className="font-normal text-neutral-900">
+                              <span className="font-normal text-indigo-900">
                                 ₱{installment.toFixed(2)}
                               </span>
                             </div>
@@ -479,17 +479,17 @@ const LoansPage = () => {
 
                       {/* Payment Information - Only for approved loans */}
                       {loan.status === "APPROVED" && (
-                        <div className="bg-neutral-50 border border-neutral-200 rounded-lg p-4 space-y-3">
+                        <div className="bg-indigo-50 border-2 border-indigo-200 rounded-lg p-4 space-y-3">
                           <div className="grid grid-cols-2 gap-4 text-sm">
                             <div>
-                              <span className="text-neutral-600 font-light">Repaid:</span>
-                              <div className="font-normal text-green-600">
+                              <span className="text-indigo-600 font-light">Repaid:</span>
+                              <div className="font-semibold text-emerald-700">
                                 ₱{totalRepayments.toLocaleString()}
                               </div>
                             </div>
                             <div>
-                              <span className="text-neutral-600 font-light">Balance:</span>
-                              <div className="font-normal text-red-600">
+                              <span className="text-indigo-600 font-light">Balance:</span>
+                              <div className="font-semibold text-rose-700">
                                 ₱{remainingBalance.toLocaleString()}
                               </div>
                             </div>
@@ -498,9 +498,9 @@ const LoansPage = () => {
                           {remainingBalance > 0 && (
                             <>
                               {/* Progress Bar */}
-                              <div className="w-full bg-neutral-200 rounded-full h-2">
+                              <div className="w-full bg-indigo-200 rounded-full h-2">
                                 <div
-                                  className="bg-neutral-900 h-2 rounded-full transition-all duration-500"
+                                  className="bg-indigo-600 h-2 rounded-full transition-all duration-500"
                                   style={{ width: `${repaymentProgress}%` }}
                                 />
                               </div>
@@ -531,7 +531,7 @@ const LoansPage = () => {
                                     !repaymentAmount[loan.id] ||
                                     parseFloat(repaymentAmount[loan.id]) <= 0
                                   }
-                                  className="whitespace-nowrap px-4 py-2.5 !bg-neutral-900 !text-white text-sm font-normal rounded-md hover:bg-neutral-800 transition-all duration-200 disabled:cursor-not-allowed"
+                                  className="whitespace-nowrap px-4 py-2.5 bg-emerald-300 text-emerald-900 text-sm font-normal rounded-md hover:bg-emerald-400 shadow-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                   Add Payment
                                 </button>
@@ -554,13 +554,13 @@ const LoansPage = () => {
                         <div className="flex flex-col sm:flex-row gap-3 pt-3">
                           <button
                             onClick={() => approveLoan(loan.id)}
-                            className="flex-1 px-5 py-2.5 bg-neutral-900 !text-white text-sm font-normal rounded-md hover:bg-neutral-800 transition-all duration-200"
+                            className="flex-1 px-5 py-2.5 bg-emerald-300 text-emerald-900 text-sm font-normal rounded-md hover:bg-emerald-400 shadow-sm transition-all duration-200"
                           >
                             Approve
                           </button>
                           <button
                             onClick={() => rejectLoan(loan.id)}
-                            className="flex-1 px-5 py-2.5 border border-neutral-300 text-neutral-700 text-sm font-normal rounded-md hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200"
+                            className="flex-1 px-5 py-2.5 bg-rose-300 text-rose-900 text-sm font-normal rounded-md hover:bg-rose-400 shadow-sm transition-all duration-200"
                           >
                             Reject
                           </button>
@@ -650,27 +650,27 @@ const LoansPage = () => {
           />
 
           {/* Loan Type Explanation */}
-          <div className="p-4 sm:p-5 bg-neutral-50 border border-neutral-200 rounded-lg">
-            <h4 className="font-normal text-neutral-900 mb-3 text-sm uppercase tracking-wider">
+          <div className="p-4 sm:p-5 bg-indigo-50 border-2 border-indigo-200 rounded-lg">
+            <h4 className="font-normal text-indigo-900 mb-3 text-sm uppercase tracking-wider">
               Loan Type Information
             </h4>
             {newLoanPlan === "MONTHLY" ? (
-              <div className="text-xs sm:text-sm text-neutral-700 font-light">
-                <p className="mb-3 font-normal text-neutral-900">
+              <div className="text-xs sm:text-sm text-indigo-700 font-light">
+                <p className="mb-3 font-normal text-indigo-900">
                   One-time Payment Loan
                 </p>
                 <ul className="space-y-2 ml-1">
                   <li className="flex items-start">
-                    <span className="text-neutral-400 mr-2">•</span>
+                    <span className="text-indigo-400 mr-2">•</span>
                     <span>Pay full amount + interest after {newLoanTerms || 5} months</span>
                   </li>
                   <li className="flex items-start">
-                    <span className="text-neutral-400 mr-2">•</span>
+                    <span className="text-indigo-400 mr-2">•</span>
                     <span>Interest: 4%/month × {newLoanTerms || 5} months ={" "}
                     {(parseFloat(newLoanTerms) || 5) * 4}% total</span>
                   </li>
                   <li className="flex items-start">
-                    <span className="text-neutral-400 mr-2">•</span>
+                    <span className="text-indigo-400 mr-2">•</span>
                     <span className="break-words">Example: ₱10,000 → Pay ₱
                     {(
                       10000 *
@@ -681,27 +681,27 @@ const LoansPage = () => {
                 </ul>
               </div>
             ) : (
-              <div className="text-xs sm:text-sm text-neutral-700 font-light">
-                <p className="mb-3 font-normal text-neutral-900">
+              <div className="text-xs sm:text-sm text-indigo-700 font-light">
+                <p className="mb-3 font-normal text-indigo-900">
                   Per Cut-off Installment Loan
                 </p>
                 <ul className="space-y-2 ml-1">
                   <li className="flex items-start">
-                    <span className="text-neutral-400 mr-2">•</span>
+                    <span className="text-indigo-400 mr-2">•</span>
                     <span>Pay in installments every cut-off (2 times/month)</span>
                   </li>
                   <li className="flex items-start">
-                    <span className="text-neutral-400 mr-2">•</span>
+                    <span className="text-indigo-400 mr-2">•</span>
                     <span>Interest: 3%/month × {newLoanTerms || 5} months ={" "}
                     {(parseFloat(newLoanTerms) || 5) * 3}% total</span>
                   </li>
                   <li className="flex items-start">
-                    <span className="text-neutral-400 mr-2">•</span>
+                    <span className="text-indigo-400 mr-2">•</span>
                     <span>Total payments: {(parseFloat(newLoanTerms) || 5) * 2}{" "}
                     installments</span>
                   </li>
                   <li className="flex items-start">
-                    <span className="text-neutral-400 mr-2">•</span>
+                    <span className="text-indigo-400 mr-2">•</span>
                     <span className="break-words">Example: ₱10,000 → {(parseFloat(newLoanTerms) || 5) * 2}{" "}
                     payments of ₱
                     {(

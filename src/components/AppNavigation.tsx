@@ -42,14 +42,14 @@ export default function AppNavigation() {
 
   return (
     <>
-      {/* Minimalist header */}
-      <header className="bg-white border-b border-neutral-200 sticky top-0 z-50">
+      {/* Minimalist header with pastel design */}
+      <header className="bg-gradient-to-r from-indigo-50 to-purple-50 border-b-2 border-indigo-200 sticky top-0 z-50 backdrop-blur-sm">
         <nav className="container mx-auto max-w-7xl px-6">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link
               href="/"
-              className="text-lg font-light text-neutral-900 tracking-tight hover:text-neutral-700 transition-colors duration-200"
+              className="text-lg font-semibold text-indigo-900 tracking-tight hover:text-indigo-700 transition-colors duration-200"
               onClick={closeMobileMenu}
             >
               CoopTracker
@@ -63,8 +63,8 @@ export default function AppNavigation() {
                   href={item.href}
                   className={`px-4 py-2 rounded-md text-sm font-normal transition-all duration-200 ${
                     isActive(item.href)
-                      ? "bg-neutral-900 text-white"
-                      : "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50"
+                      ? "bg-indigo-300 text-indigo-900"
+                      : "text-indigo-700 hover:text-indigo-900 hover:bg-indigo-100"
                   }`}
                 >
                   {item.label}
@@ -77,19 +77,19 @@ export default function AppNavigation() {
               {user && (
                 <>
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-neutral-900 rounded-full flex items-center justify-center">
-                      <span className="text-white font-normal text-xs">
+                    <div className="w-8 h-8 bg-indigo-300 rounded-full flex items-center justify-center">
+                      <span className="text-indigo-900 font-semibold text-xs">
                         {user.email?.[0]?.toUpperCase() || "U"}
                       </span>
                     </div>
-                    <span className="text-sm font-light text-neutral-700">
+                    <span className="text-sm font-light text-indigo-800">
                       {user.email}
                     </span>
                   </div>
                   <button
                     onClick={handleSignOut}
                     disabled={isSigningOut}
-                    className="px-4 py-2 border border-neutral-300 text-neutral-700 rounded-md text-sm font-normal hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200 disabled:opacity-50"
+                    className="px-4 py-2 border-2 border-indigo-200 text-indigo-800 rounded-md text-sm font-normal hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200 disabled:opacity-50"
                   >
                     {isSigningOut ? "Signing out..." : "Sign out"}
                   </button>
@@ -100,7 +100,7 @@ export default function AppNavigation() {
             {/* Mobile menu button */}
             <button
               onClick={toggleMobileMenu}
-              className="md:hidden p-2 rounded-md text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 transition-all duration-200"
+              className="md:hidden p-2 rounded-md text-indigo-700 hover:text-indigo-900 hover:bg-indigo-100 transition-all duration-200"
               aria-label="Toggle menu"
             >
               <svg
@@ -141,11 +141,11 @@ export default function AppNavigation() {
         }`}
       >
         <div
-          className="absolute inset-0 bg-black/20"
+          className="absolute inset-0 bg-indigo-900/20"
           onClick={closeMobileMenu}
         />
         <div
-          className={`absolute top-16 left-4 right-4 bg-white rounded-lg shadow-lg border border-neutral-200 transition-all duration-300 ${
+          className={`absolute top-16 left-4 right-4 bg-white rounded-lg shadow-lg border-2 border-indigo-200 transition-all duration-300 ${
             isMobileMenuOpen
               ? "opacity-100 translate-y-0 scale-100"
               : "opacity-0 -translate-y-4 scale-95"
@@ -161,8 +161,8 @@ export default function AppNavigation() {
                   onClick={closeMobileMenu}
                   className={`flex items-center px-4 py-2.5 rounded-md text-sm font-normal transition-all duration-200 ${
                     isActive(item.href)
-                      ? "bg-neutral-900 text-white"
-                      : "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50"
+                      ? "bg-indigo-300 text-indigo-900"
+                      : "text-indigo-700 hover:text-indigo-900 hover:bg-indigo-100"
                   }`}
                 >
                   {item.label}
@@ -172,16 +172,16 @@ export default function AppNavigation() {
 
             {/* Mobile User Section */}
             {user && (
-              <div className="pt-4 border-t border-neutral-200">
+              <div className="pt-4 border-t-2 border-indigo-200">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-9 h-9 bg-neutral-900 rounded-full flex items-center justify-center">
-                    <span className="text-white font-normal text-sm">
+                  <div className="w-9 h-9 bg-indigo-300 rounded-full flex items-center justify-center">
+                    <span className="text-indigo-900 font-semibold text-sm">
                       {user.email?.[0]?.toUpperCase() || "U"}
                     </span>
                   </div>
                   <div>
-                    <p className="text-sm font-normal text-neutral-900">Account</p>
-                    <p className="text-xs font-light text-neutral-500">{user.email}</p>
+                    <p className="text-sm font-normal text-indigo-900">Account</p>
+                    <p className="text-xs font-light text-indigo-600">{user.email}</p>
                   </div>
                 </div>
                 <button
@@ -190,7 +190,7 @@ export default function AppNavigation() {
                     handleSignOut();
                   }}
                   disabled={isSigningOut}
-                  className="w-full px-4 py-2.5 border border-neutral-300 text-neutral-700 rounded-md text-sm font-normal hover:border-neutral-400 hover:bg-neutral-50 transition-all duration-200 disabled:opacity-50"
+                  className="w-full px-4 py-2.5 border-2 border-indigo-200 text-indigo-800 rounded-md text-sm font-normal hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200 disabled:opacity-50"
                 >
                   {isSigningOut ? "Signing out..." : "Sign out"}
                 </button>
