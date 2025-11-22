@@ -115,59 +115,57 @@ const MemberDetailPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
       <div className="container mx-auto max-w-7xl px-3 sm:px-6 py-6 sm:py-8">
         {/* Header */}
-        <div className="mb-6 lg:mb-8">
+        <div className="mb-4 sm:mb-6 lg:mb-8">
           <Button
             variant="secondary"
             size="sm"
             onClick={() => router.push("/members")}
-            className="mb-4"
+            className="mb-3 sm:mb-4"
           >
             ← Back to Members
           </Button>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-indigo-300 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-indigo-900 text-2xl sm:text-3xl font-semibold">
-                  {member.name[0]?.toUpperCase() || "?"}
-                </span>
-              </div>
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-semibold text-indigo-900 tracking-tight">
-                  {member.name}
-                </h1>
-                <p className="text-sm sm:text-base text-indigo-600 font-light">
-                  Member #{member.id}
-                </p>
-              </div>
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-indigo-300 rounded-full flex items-center justify-center flex-shrink-0">
+              <span className="text-indigo-900 text-xl sm:text-2xl lg:text-3xl font-semibold">
+                {member.name[0]?.toUpperCase() || "?"}
+              </span>
+            </div>
+            <div className="min-w-0 flex-1">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-indigo-900 tracking-tight truncate">
+                {member.name}
+              </h1>
+              <p className="text-xs sm:text-sm lg:text-base text-indigo-600 font-light">
+                Member #{member.id}
+              </p>
             </div>
           </div>
         </div>
 
         {/* Summary Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 lg:mb-8">
-          <div className="bg-white/80 backdrop-blur-sm border-2 border-indigo-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-indigo-300">
-            <p className="text-xs uppercase tracking-wider text-indigo-600 font-normal mb-2">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6 lg:mb-8">
+          <div className="bg-white/80 backdrop-blur-sm border-2 border-indigo-200 rounded-xl p-3 sm:p-4 lg:p-6 transition-all duration-200 hover:shadow-md hover:border-indigo-300">
+            <p className="text-xs uppercase tracking-wider text-indigo-600 font-normal mb-1 sm:mb-2">
               Total Contributed
             </p>
-            <p className="text-xl sm:text-2xl lg:text-3xl font-semibold text-indigo-900">
+            <p className="text-base sm:text-xl lg:text-2xl xl:text-3xl font-semibold text-indigo-900 break-all">
               ₱{totalContributions.toLocaleString()}
             </p>
           </div>
 
-          <div className="bg-white/80 backdrop-blur-sm border-2 border-purple-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-purple-300">
-            <p className="text-xs uppercase tracking-wider text-purple-600 font-normal mb-2">
+          <div className="bg-white/80 backdrop-blur-sm border-2 border-purple-200 rounded-xl p-3 sm:p-4 lg:p-6 transition-all duration-200 hover:shadow-md hover:border-purple-300">
+            <p className="text-xs uppercase tracking-wider text-purple-600 font-normal mb-1 sm:mb-2">
               Total Borrowed
             </p>
-            <p className="text-xl sm:text-2xl lg:text-3xl font-semibold text-purple-900">
+            <p className="text-base sm:text-xl lg:text-2xl xl:text-3xl font-semibold text-purple-900 break-all">
               ₱{loanTotals.totalBorrowed.toLocaleString()}
             </p>
           </div>
 
-          <div className="bg-white/80 backdrop-blur-sm border-2 border-emerald-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-emerald-300">
-            <p className="text-xs uppercase tracking-wider text-emerald-600 font-normal mb-2">
+          <div className="bg-white/80 backdrop-blur-sm border-2 border-emerald-200 rounded-xl p-3 sm:p-4 lg:p-6 transition-all duration-200 hover:shadow-md hover:border-emerald-300">
+            <p className="text-xs uppercase tracking-wider text-emerald-600 font-normal mb-1 sm:mb-2">
               Payment Compliance
             </p>
-            <p className="text-xl sm:text-2xl lg:text-3xl font-semibold text-emerald-900">
+            <p className="text-base sm:text-xl lg:text-2xl xl:text-3xl font-semibold text-emerald-900">
               {complianceRate.toFixed(0)}%
             </p>
           </div>
@@ -175,17 +173,17 @@ const MemberDetailPage = () => {
           <div
             className={`bg-white/80 backdrop-blur-sm border-2 ${
               netPosition >= 0 ? "border-emerald-200" : "border-rose-200"
-            } rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md ${
+            } rounded-xl p-3 sm:p-4 lg:p-6 transition-all duration-200 hover:shadow-md ${
               netPosition >= 0 ? "hover:border-emerald-300" : "hover:border-rose-300"
             }`}
           >
-            <p className="text-xs uppercase tracking-wider text-indigo-600 font-normal mb-2">
+            <p className="text-xs uppercase tracking-wider text-indigo-600 font-normal mb-1 sm:mb-2">
               Net Position
             </p>
             <p
-              className={`text-xl sm:text-2xl lg:text-3xl font-semibold ${
+              className={`text-base sm:text-xl lg:text-2xl xl:text-3xl font-semibold ${
                 netPosition >= 0 ? "text-emerald-900" : "text-rose-900"
-              }`}
+              } break-all`}
             >
               ₱{netPosition.toLocaleString()}
             </p>

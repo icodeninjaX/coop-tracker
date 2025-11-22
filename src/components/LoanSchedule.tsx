@@ -120,8 +120,8 @@ export default function LoanSchedule({ loan, repayments }: LoanScheduleProps) {
 
   return (
     <div className="mt-4 border-t-2 border-indigo-200 pt-4">
-      <div className="flex items-center justify-between mb-3">
-        <h4 className="text-sm font-semibold text-indigo-900 uppercase tracking-wider">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+        <h4 className="text-xs sm:text-sm font-semibold text-indigo-900 uppercase tracking-wider">
           Payment Schedule
         </h4>
         <span className="text-xs text-indigo-600 font-light">

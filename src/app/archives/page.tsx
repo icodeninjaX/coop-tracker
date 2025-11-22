@@ -33,11 +33,11 @@ const ArchivesPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
       <div className="container mx-auto max-w-7xl px-3 sm:px-6 py-6 sm:py-8">
         {/* Header */}
-        <div className="mb-6 lg:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-semibold text-indigo-900 tracking-tight mb-2">
+        <div className="mb-4 sm:mb-6 lg:mb-8">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-indigo-900 tracking-tight mb-1 sm:mb-2">
             Archives
           </h1>
-          <p className="text-sm sm:text-base text-indigo-600 font-light">
+          <p className="text-xs sm:text-sm lg:text-base text-indigo-600 font-light">
             Historical yearly data and financial records
           </p>
         </div>
@@ -92,49 +92,49 @@ const ArchivesPage = () => {
                 </button>
 
                 {/* Summary Stats - Always Visible */}
-                <div className="p-4 sm:p-6 bg-indigo-50/30">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-                    <div className="bg-white/80 border-2 border-indigo-200 rounded-lg p-3 sm:p-4">
+                <div className="p-3 sm:p-4 lg:p-6 bg-indigo-50/30">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3 lg:gap-4">
+                    <div className="bg-white/80 border-2 border-indigo-200 rounded-lg p-2.5 sm:p-3 lg:p-4">
                       <p className="text-xs uppercase tracking-wider text-indigo-600 font-normal mb-1">
                         Total Collected
                       </p>
-                      <p className="text-base sm:text-lg font-semibold text-indigo-900">
+                      <p className="text-sm sm:text-base lg:text-lg font-semibold text-indigo-900 break-all">
                         ₱{archive.summary.totalCollected.toLocaleString()}
                       </p>
                     </div>
 
-                    <div className="bg-white/80 border-2 border-rose-200 rounded-lg p-3 sm:p-4">
+                    <div className="bg-white/80 border-2 border-rose-200 rounded-lg p-2.5 sm:p-3 lg:p-4">
                       <p className="text-xs uppercase tracking-wider text-rose-600 font-normal mb-1">
                         Total Disbursed
                       </p>
-                      <p className="text-base sm:text-lg font-semibold text-rose-900">
+                      <p className="text-sm sm:text-base lg:text-lg font-semibold text-rose-900 break-all">
                         ₱{archive.summary.totalDisbursed.toLocaleString()}
                       </p>
                     </div>
 
-                    <div className="bg-white/80 border-2 border-purple-200 rounded-lg p-3 sm:p-4">
+                    <div className="bg-white/80 border-2 border-purple-200 rounded-lg p-2.5 sm:p-3 lg:p-4">
                       <p className="text-xs uppercase tracking-wider text-purple-600 font-normal mb-1">
                         Total Repayments
                       </p>
-                      <p className="text-base sm:text-lg font-semibold text-purple-900">
+                      <p className="text-sm sm:text-base lg:text-lg font-semibold text-purple-900 break-all">
                         ₱{archive.summary.totalRepayments.toLocaleString()}
                       </p>
                     </div>
 
-                    <div className="bg-white/80 border-2 border-emerald-200 rounded-lg p-3 sm:p-4">
+                    <div className="bg-white/80 border-2 border-emerald-200 rounded-lg p-2.5 sm:p-3 lg:p-4">
                       <p className="text-xs uppercase tracking-wider text-emerald-600 font-normal mb-1">
                         Ending Balance
                       </p>
-                      <p className="text-base sm:text-lg font-semibold text-emerald-900">
+                      <p className="text-sm sm:text-base lg:text-lg font-semibold text-emerald-900 break-all">
                         ₱{archive.summary.endingBalance.toLocaleString()}
                       </p>
                     </div>
 
-                    <div className="bg-white/80 border-2 border-amber-200 rounded-lg p-3 sm:p-4 col-span-2 sm:col-span-1">
+                    <div className="bg-white/80 border-2 border-amber-200 rounded-lg p-2.5 sm:p-3 lg:p-4 col-span-2 sm:col-span-1">
                       <p className="text-xs uppercase tracking-wider text-amber-600 font-normal mb-1">
                         Loans Issued
                       </p>
-                      <p className="text-base sm:text-lg font-semibold text-amber-900">
+                      <p className="text-sm sm:text-base lg:text-lg font-semibold text-amber-900">
                         {archive.summary.totalLoansIssued}
                       </p>
                     </div>
@@ -143,14 +143,14 @@ const ArchivesPage = () => {
 
                 {/* Expandable Details */}
                 {expandedYear === archive.year && (
-                  <div className="p-4 sm:p-6 border-t-2 border-indigo-200">
+                  <div className="p-3 sm:p-4 lg:p-6 border-t-2 border-indigo-200">
                     {/* Collection Periods */}
-                    <div className="mb-6">
-                      <h3 className="text-base sm:text-lg font-semibold text-indigo-900 mb-3 sm:mb-4">
+                    <div className="mb-4 sm:mb-6">
+                      <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-indigo-900 mb-2 sm:mb-3 lg:mb-4">
                         Collection Periods ({archive.collections.length})
                       </h3>
                       {archive.collections.length === 0 ? (
-                        <p className="text-sm text-indigo-600 font-light">
+                        <p className="text-xs sm:text-sm text-indigo-600 font-light">
                           No collection periods in this archive.
                         </p>
                       ) : (
@@ -164,18 +164,18 @@ const ArchivesPage = () => {
                             .map((period) => (
                               <div
                                 key={period.id}
-                                className="flex items-center justify-between p-3 sm:p-4 border-2 border-indigo-200 rounded-lg hover:bg-indigo-50/30 transition-colors"
+                                className="flex items-center justify-between p-2.5 sm:p-3 lg:p-4 border-2 border-indigo-200 rounded-lg hover:bg-indigo-50/30 transition-colors"
                               >
-                                <div>
-                                  <p className="text-sm sm:text-base font-semibold text-indigo-900">
+                                <div className="min-w-0 flex-1 pr-2">
+                                  <p className="text-xs sm:text-sm lg:text-base font-semibold text-indigo-900 truncate">
                                     {format(new Date(period.date), "MMMM d, yyyy")}
                                   </p>
-                                  <p className="text-xs sm:text-sm text-indigo-600 font-light">
+                                  <p className="text-xs text-indigo-600 font-light">
                                     {period.payments.length} payments
                                   </p>
                                 </div>
-                                <div className="text-right">
-                                  <p className="text-sm sm:text-base font-semibold text-indigo-900">
+                                <div className="text-right flex-shrink-0">
+                                  <p className="text-xs sm:text-sm lg:text-base font-semibold text-indigo-900">
                                     ₱{period.totalCollected.toLocaleString()}
                                   </p>
                                 </div>
@@ -186,16 +186,16 @@ const ArchivesPage = () => {
                     </div>
 
                     {/* Loans */}
-                    <div className="mb-6">
-                      <h3 className="text-base sm:text-lg font-semibold text-indigo-900 mb-3 sm:mb-4">
+                    <div className="mb-4 sm:mb-6">
+                      <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-indigo-900 mb-2 sm:mb-3 lg:mb-4">
                         Loans ({archive.loans.length})
                       </h3>
                       {archive.loans.length === 0 ? (
-                        <p className="text-sm text-indigo-600 font-light">
+                        <p className="text-xs sm:text-sm text-indigo-600 font-light">
                           No loans in this archive.
                         </p>
                       ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
                           {archive.loans
                             .sort(
                               (a, b) =>
@@ -205,10 +205,10 @@ const ArchivesPage = () => {
                             .map((loan) => (
                               <div
                                 key={loan.id}
-                                className="border-2 border-indigo-200 rounded-lg p-3 sm:p-4 hover:bg-indigo-50/30 transition-colors"
+                                className="border-2 border-indigo-200 rounded-lg p-2.5 sm:p-3 lg:p-4 hover:bg-indigo-50/30 transition-colors"
                               >
-                                <div className="flex items-start justify-between mb-2">
-                                  <p className="text-sm font-semibold text-indigo-900">
+                                <div className="flex items-start justify-between mb-1.5 sm:mb-2">
+                                  <p className="text-xs sm:text-sm font-semibold text-indigo-900">
                                     Member #{loan.memberId}
                                   </p>
                                   <Badge
@@ -226,7 +226,7 @@ const ArchivesPage = () => {
                                     {loan.status}
                                   </Badge>
                                 </div>
-                                <div className="space-y-1 text-xs sm:text-sm">
+                                <div className="space-y-1 text-xs">
                                   <div className="flex justify-between">
                                     <span className="text-indigo-600 font-light">
                                       Amount:
@@ -252,11 +252,11 @@ const ArchivesPage = () => {
 
                     {/* Repayments */}
                     <div>
-                      <h3 className="text-base sm:text-lg font-semibold text-indigo-900 mb-3 sm:mb-4">
+                      <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-indigo-900 mb-2 sm:mb-3 lg:mb-4">
                         Repayments ({archive.repayments.length})
                       </h3>
                       {archive.repayments.length === 0 ? (
-                        <p className="text-sm text-indigo-600 font-light">
+                        <p className="text-xs sm:text-sm text-indigo-600 font-light">
                           No repayments in this archive.
                         </p>
                       ) : (
@@ -271,23 +271,23 @@ const ArchivesPage = () => {
                             .map((repayment) => (
                               <div
                                 key={repayment.id}
-                                className="flex items-center justify-between p-3 border-2 border-indigo-200 rounded-lg text-xs sm:text-sm"
+                                className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0 p-2.5 sm:p-3 border-2 border-indigo-200 rounded-lg text-xs"
                               >
-                                <div>
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
                                   <span className="text-indigo-900 font-normal">
                                     Member #{repayment.memberId}
                                   </span>
-                                  <span className="text-indigo-600 font-light ml-2">
+                                  <span className="text-indigo-600 font-light text-xs">
                                     {format(new Date(repayment.date), "MMM d, yyyy")}
                                   </span>
                                 </div>
-                                <span className="text-emerald-700 font-semibold">
+                                <span className="text-emerald-700 font-semibold text-sm sm:text-xs">
                                   ₱{repayment.amount.toLocaleString()}
                                 </span>
                               </div>
                             ))}
                           {archive.repayments.length > 10 && (
-                            <p className="text-xs text-indigo-600 font-light text-center pt-2">
+                            <p className="text-xs text-indigo-600 font-light text-center pt-1 sm:pt-2">
                               Showing 10 of {archive.repayments.length} repayments
                             </p>
                           )}
