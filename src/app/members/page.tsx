@@ -3,6 +3,7 @@
 import { useCoop } from "@/context/CoopContext";
 import { useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
+import { useRouter } from "next/navigation";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import {
   Button,
@@ -16,6 +17,7 @@ import {
 
 function MembersContent() {
   const { state, dispatch } = useCoop();
+  const router = useRouter();
   const [selectedPeriod, setSelectedPeriod] = useState<string>("");
   const [query, setQuery] = useState<string>("");
   const [amounts, setAmounts] = useState<Record<number, string>>({});
@@ -552,6 +554,12 @@ function MembersContent() {
                                 </>
                               )}
                               <button
+                                onClick={() => router.push(`/members/${member.id}`)}
+                                className="px-4 py-2 bg-purple-200 text-purple-800 text-sm font-normal rounded-md hover:bg-purple-300 shadow-sm transition-all duration-200 min-h-[44px]"
+                              >
+                                View Details
+                              </button>
+                              <button
                                 onClick={() =>
                                   setEditingMember({
                                     id: member.id,
@@ -656,6 +664,12 @@ function MembersContent() {
                                 )}
                               </div>
                             )}
+                            <button
+                              onClick={() => router.push(`/members/${member.id}`)}
+                              className="w-full h-11 px-4 py-2 bg-purple-200 text-purple-800 text-sm font-normal rounded-md hover:bg-purple-300 shadow-sm transition-all duration-200"
+                            >
+                              View Details
+                            </button>
                             <div className="flex gap-2">
                               <button
                                 onClick={() =>

@@ -14,6 +14,7 @@ import {
   Modal,
 } from "@/components/UI";
 import { Loan, Repayment } from "@/types";
+import LoanSchedule from "@/components/LoanSchedule";
 
 const LoansPage = () => {
   const { state, dispatch } = useCoop();
@@ -575,6 +576,12 @@ const LoansPage = () => {
                           </Badge>
                         </div>
                       )}
+
+                      {/* Payment Schedule */}
+                      <LoanSchedule
+                        loan={loan}
+                        repayments={state.repayments || []}
+                      />
                     </div>
                   </div>
                 );
