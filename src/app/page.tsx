@@ -10,6 +10,21 @@ import {
   Select,
   Modal,
 } from "@/components/UI";
+import {
+  exportCollectionsToCSV,
+  exportPaymentsToCSV,
+  exportLoansToCSV,
+  exportRepaymentsToCSV,
+  exportMembersToCSV,
+  exportPenaltiesToCSV,
+  exportFinancialSummaryToCSV,
+  exportFullStateToJSON,
+  exportCollectionsToJSON,
+  exportLoansToJSON,
+  exportArchivesToJSON,
+  exportComprehensiveReport,
+  importStateFromJSON,
+} from "@/lib/exportUtils";
 
 function HomeContent() {
   const { state, dispatch } = useCoop();
@@ -25,6 +40,12 @@ function HomeContent() {
   const [showNewLoanModal, setShowNewLoanModal] = useState(false);
   const [showNewPeriodModal, setShowNewPeriodModal] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importFile, setImportFile] = useState<File | null>(null);
+  const [importError, setImportError] = useState<string>("");
+  const [amounts, setAmounts] = useState<Record<number, string>>({});
 
   const createLoan = () => {
     if (!newLoanMemberId || !newLoanAmount) return;
@@ -65,44 +86,56 @@ function HomeContent() {
     setShowNewPeriodModal(false);
   };
 
-  // Function to generate the next collection period automatically
+  // Function to generate the next collection period automatically (15th and 30th)
   const addNextCollectionPeriod = () => {
-    const latestPeriod = state.collections
-      .map(p => new Date(p.date))
-      .sort((a, b) => b.getTime() - a.getTime())[0];
+    // Get the latest period by date
+    const sortedPeriods = [...state.collections].sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+    const latestPeriod = sortedPeriods[0];
 
-    let nextDate: Date;
+    let nextPeriodId: string;
 
     if (!latestPeriod) {
-      // If no periods exist, start with today
-      nextDate = new Date();
-    } else {
-      // Get the day of the month from the latest period
-      const day = latestPeriod.getDate();
+      // If no periods exist, start with the next 15th or 30th
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = today.getMonth() + 1; // 1-indexed
+      const day = today.getDate();
 
-      // Cooperative collection pattern: typically 10th and 25th of each month
-      if (day <= 10) {
-        // If latest was around 10th, next should be 25th of same month
-        nextDate = new Date(latestPeriod.getFullYear(), latestPeriod.getMonth(), 25);
-      } else if (day <= 25) {
-        // If latest was around 25th, next should be 10th of next month
-        nextDate = new Date(latestPeriod.getFullYear(), latestPeriod.getMonth() + 1, 10);
+      if (day < 15) {
+        // Next period is 15th of current month
+        nextPeriodId = `${year}-${String(month).padStart(2, '0')}-15`;
+      } else if (day < 30) {
+        // Next period is 30th of current month
+        nextPeriodId = `${year}-${String(month).padStart(2, '0')}-30`;
       } else {
-        // If latest was end of month, next should be 10th of next month
-        nextDate = new Date(latestPeriod.getFullYear(), latestPeriod.getMonth() + 1, 10);
+        // Next period is 15th of next month
+        const nextMonth = month === 12 ? 1 : month + 1;
+        const nextYear = month === 12 ? year + 1 : year;
+        nextPeriodId = `${nextYear}-${String(nextMonth).padStart(2, '0')}-15`;
       }
+    } else {
+      // Parse the latest period date (YYYY-MM-DD format)
+      const [year, month, day] = latestPeriod.date.split('-').map(Number);
 
-      // If the calculated date is in the past or same as latest, move to next period
-      if (nextDate <= latestPeriod) {
-        if (day <= 10) {
-          nextDate = new Date(latestPeriod.getFullYear(), latestPeriod.getMonth(), 25);
-        } else {
-          nextDate = new Date(latestPeriod.getFullYear(), latestPeriod.getMonth() + 1, 10);
-        }
+      // Cooperative collection pattern: alternate between 15th and 30th
+      if (day === 15) {
+        // If latest was 15th, next should be 30th of same month
+        nextPeriodId = `${year}-${String(month).padStart(2, '0')}-30`;
+      } else if (day === 30 || day === 31 || day >= 28) {
+        // If latest was 30th or end of month, next should be 15th of next month
+        const nextMonth = month === 12 ? 1 : month + 1;
+        const nextYear = month === 12 ? year + 1 : year;
+        nextPeriodId = `${nextYear}-${String(nextMonth).padStart(2, '0')}-15`;
+      } else if (day < 15) {
+        // If latest was before 15th, next should be 15th of same month
+        nextPeriodId = `${year}-${String(month).padStart(2, '0')}-15`;
+      } else {
+        // If latest was between 15th and 30th, next should be 30th of same month
+        nextPeriodId = `${year}-${String(month).padStart(2, '0')}-30`;
       }
     }
-
-    const nextPeriodId = nextDate.toISOString().split('T')[0];
 
     dispatch({
       type: "ADD_COLLECTION_PERIOD",
@@ -119,6 +152,140 @@ function HomeContent() {
   const handleResetPeriods = () => {
     dispatch({ type: "RESET_PERIODS" });
     setShowResetModal(false);
+  };
+
+  // Export handlers
+  const handleExportCollectionsCSV = () => {
+    exportCollectionsToCSV(state.collections);
+  };
+
+  const handleExportPaymentsCSV = () => {
+    exportPaymentsToCSV(state.collections, state.members);
+  };
+
+  const handleExportLoansCSV = () => {
+    exportLoansToCSV(state.loans, state.members);
+  };
+
+  const handleExportRepaymentsCSV = () => {
+    exportRepaymentsToCSV(state.repayments, state.members, state.loans);
+  };
+
+  const handleExportMembersCSV = () => {
+    exportMembersToCSV(state.members);
+  };
+
+  const handleExportPenaltiesCSV = () => {
+    exportPenaltiesToCSV(state.penalties, state.loans, state.members);
+  };
+
+  const handleExportFinancialSummaryCSV = () => {
+    exportFinancialSummaryToCSV(state);
+  };
+
+  const handleExportFullBackup = () => {
+    exportFullStateToJSON(state);
+  };
+
+  const handleExportCollectionsJSON = () => {
+    exportCollectionsToJSON(state.collections);
+  };
+
+  const handleExportLoansJSON = () => {
+    exportLoansToJSON(state.loans);
+  };
+
+  const handleExportArchivesJSON = () => {
+    exportArchivesToJSON(state.archives);
+  };
+
+  const handleExportComprehensiveReport = () => {
+    exportComprehensiveReport(state);
+  };
+
+  // Import handler
+  const handleImportState = async () => {
+    if (!importFile) return;
+
+    setImportError("");
+    try {
+      const importedState = await importStateFromJSON(importFile);
+      dispatch({ type: "LOAD_STATE", payload: importedState });
+      setShowImportModal(false);
+      setImportFile(null);
+    } catch (error) {
+      setImportError(error instanceof Error ? error.message : "Failed to import file");
+    }
+  };
+
+  // Payment management functions
+  const currentPeriod = state.collections.find(c => c.id === selectedPeriod);
+
+  const handlePeriodClick = (periodId: string) => {
+    dispatch({
+      type: "SET_SELECTED_PERIOD",
+      payload: { periodId },
+    });
+    setShowPaymentModal(true);
+  };
+
+  const getIsPaid = (memberId: number) =>
+    !!currentPeriod?.payments.some((p) => p.memberId === memberId);
+
+  const savePayment = (memberId: number) => {
+    if (!selectedPeriod || !currentPeriod) return;
+    const raw = amounts[memberId];
+    const amt =
+      raw === undefined || raw === ""
+        ? currentPeriod.defaultContribution ?? 0
+        : parseFloat(raw);
+    dispatch({
+      type: "UPSERT_PAYMENT",
+      payload: {
+        memberId,
+        collectionPeriod: selectedPeriod,
+        amount: isNaN(amt) ? currentPeriod.defaultContribution ?? 0 : amt,
+        date: new Date().toISOString(),
+      },
+    });
+  };
+
+  const clearPayment = (memberId: number) => {
+    if (!selectedPeriod) return;
+    dispatch({
+      type: "REMOVE_PAYMENT",
+      payload: { memberId, collectionPeriod: selectedPeriod },
+    });
+    setAmounts((prev) => {
+      const copy = { ...prev };
+      delete copy[memberId];
+      return copy;
+    });
+  };
+
+  const markAllPayments = (paid: boolean) => {
+    if (!selectedPeriod || !currentPeriod) return;
+    const paidSet = new Set(currentPeriod.payments.map((p) => p.memberId));
+    state.members.forEach((m) => {
+      const isPaid = paidSet.has(m.id);
+      if (paid && !isPaid) {
+        const amt = currentPeriod.defaultContribution ?? 0;
+        dispatch({
+          type: "ADD_PAYMENT",
+          payload: {
+            memberId: m.id,
+            amount: amt,
+            date: new Date().toISOString(),
+            collectionPeriod: selectedPeriod,
+          },
+        });
+      } else if (!paid && isPaid) {
+        dispatch({
+          type: "REMOVE_PAYMENT",
+          payload: { memberId: m.id, collectionPeriod: selectedPeriod },
+        });
+      }
+    });
   };
 
   // Get current period data
@@ -141,6 +308,18 @@ function HomeContent() {
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+            <button
+              onClick={() => setShowExportModal(true)}
+              className="px-5 py-2.5 bg-emerald-300 text-emerald-900 text-sm font-normal rounded-md hover:bg-emerald-400 transition-all duration-200 min-h-[44px] shadow-sm"
+            >
+              Export
+            </button>
+            <button
+              onClick={() => setShowImportModal(true)}
+              className="px-5 py-2.5 bg-purple-300 text-purple-900 text-sm font-normal rounded-md hover:bg-purple-400 transition-all duration-200 min-h-[44px] shadow-sm"
+            >
+              Import
+            </button>
             <button
               onClick={() => setShowNewPeriodModal(true)}
               className="px-5 py-2.5 bg-indigo-300 !text-indigo-900 text-sm font-normal rounded-md hover:bg-indigo-400 transition-all duration-200 min-h-[44px] shadow-sm"
@@ -216,12 +395,7 @@ function HomeContent() {
                   {state.collections.map((period) => (
                     <button
                       key={period.id}
-                      onClick={() =>
-                        dispatch({
-                          type: "SET_SELECTED_PERIOD",
-                          payload: { periodId: period.id },
-                        })
-                      }
+                      onClick={() => handlePeriodClick(period.id)}
                       className={`p-4 rounded-xl border-2 text-left transition-all duration-200 min-w-[160px] flex-shrink-0 ${
                         selectedPeriod === period.id
                           ? "border-indigo-400 bg-indigo-300 text-indigo-900 shadow-md"
@@ -261,12 +435,7 @@ function HomeContent() {
                 {state.collections.map((period) => (
                   <button
                     key={period.id}
-                    onClick={() =>
-                      dispatch({
-                        type: "SET_SELECTED_PERIOD",
-                        payload: { periodId: period.id },
-                      })
-                    }
+                    onClick={() => handlePeriodClick(period.id)}
                     className={`p-5 rounded-xl border-2 text-left transition-all duration-200 ${
                       selectedPeriod === period.id
                         ? "border-indigo-400 bg-indigo-300 text-indigo-900 shadow-md"
@@ -526,6 +695,343 @@ function HomeContent() {
             </button>
           </div>
         </div>
+      </Modal>
+
+      {/* Export Modal */}
+      <Modal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        title="Export & Backup Data"
+        size="lg"
+      >
+        <div className="space-y-6">
+          {/* CSV Exports */}
+          <div>
+            <h3 className="text-xs uppercase tracking-wider text-indigo-600 font-semibold mb-3">
+              CSV Exports
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button
+                onClick={handleExportCollectionsCSV}
+                className="px-4 py-3 border-2 border-indigo-200 text-indigo-800 text-sm font-normal rounded-lg hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200 text-left"
+              >
+                <div className="font-semibold mb-1">Collections</div>
+                <div className="text-xs text-indigo-600">Export collection periods summary</div>
+              </button>
+              <button
+                onClick={handleExportPaymentsCSV}
+                className="px-4 py-3 border-2 border-indigo-200 text-indigo-800 text-sm font-normal rounded-lg hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200 text-left"
+              >
+                <div className="font-semibold mb-1">Payments</div>
+                <div className="text-xs text-indigo-600">Export all payment records</div>
+              </button>
+              <button
+                onClick={handleExportLoansCSV}
+                className="px-4 py-3 border-2 border-indigo-200 text-indigo-800 text-sm font-normal rounded-lg hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200 text-left"
+              >
+                <div className="font-semibold mb-1">Loans</div>
+                <div className="text-xs text-indigo-600">Export all loan records</div>
+              </button>
+              <button
+                onClick={handleExportRepaymentsCSV}
+                className="px-4 py-3 border-2 border-indigo-200 text-indigo-800 text-sm font-normal rounded-lg hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200 text-left"
+              >
+                <div className="font-semibold mb-1">Repayments</div>
+                <div className="text-xs text-indigo-600">Export all repayment records</div>
+              </button>
+              <button
+                onClick={handleExportMembersCSV}
+                className="px-4 py-3 border-2 border-indigo-200 text-indigo-800 text-sm font-normal rounded-lg hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200 text-left"
+              >
+                <div className="font-semibold mb-1">Members</div>
+                <div className="text-xs text-indigo-600">Export member list</div>
+              </button>
+              <button
+                onClick={handleExportPenaltiesCSV}
+                className="px-4 py-3 border-2 border-indigo-200 text-indigo-800 text-sm font-normal rounded-lg hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200 text-left"
+              >
+                <div className="font-semibold mb-1">Penalties</div>
+                <div className="text-xs text-indigo-600">Export penalty records</div>
+              </button>
+            </div>
+          </div>
+
+          {/* Financial Reports */}
+          <div>
+            <h3 className="text-xs uppercase tracking-wider text-emerald-600 font-semibold mb-3">
+              Financial Reports
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button
+                onClick={handleExportFinancialSummaryCSV}
+                className="px-4 py-3 border-2 border-emerald-200 bg-emerald-50 text-emerald-800 text-sm font-normal rounded-lg hover:bg-emerald-100 hover:border-emerald-300 transition-all duration-200 text-left"
+              >
+                <div className="font-semibold mb-1">Financial Summary (CSV)</div>
+                <div className="text-xs text-emerald-700">Overview of all financial metrics</div>
+              </button>
+              <button
+                onClick={handleExportComprehensiveReport}
+                className="px-4 py-3 border-2 border-purple-200 bg-purple-50 text-purple-800 text-sm font-normal rounded-lg hover:bg-purple-100 hover:border-purple-300 transition-all duration-200 text-left"
+              >
+                <div className="font-semibold mb-1">Comprehensive Report (JSON)</div>
+                <div className="text-xs text-purple-700">Complete financial report with details</div>
+              </button>
+            </div>
+          </div>
+
+          {/* JSON Exports / Backups */}
+          <div>
+            <h3 className="text-xs uppercase tracking-wider text-indigo-600 font-semibold mb-3">
+              Backups (JSON)
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button
+                onClick={handleExportFullBackup}
+                className="px-4 py-3 border-2 border-indigo-400 bg-indigo-300 text-indigo-900 text-sm font-semibold rounded-lg hover:bg-indigo-400 hover:border-indigo-500 transition-all duration-200 text-left shadow-sm"
+              >
+                <div className="font-semibold mb-1">Full State Backup</div>
+                <div className="text-xs text-indigo-800">Complete system backup (can restore)</div>
+              </button>
+              <button
+                onClick={handleExportCollectionsJSON}
+                className="px-4 py-3 border-2 border-indigo-200 text-indigo-800 text-sm font-normal rounded-lg hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200 text-left"
+              >
+                <div className="font-semibold mb-1">Collections (JSON)</div>
+                <div className="text-xs text-indigo-600">Export collections data</div>
+              </button>
+              <button
+                onClick={handleExportLoansJSON}
+                className="px-4 py-3 border-2 border-indigo-200 text-indigo-800 text-sm font-normal rounded-lg hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200 text-left"
+              >
+                <div className="font-semibold mb-1">Loans (JSON)</div>
+                <div className="text-xs text-indigo-600">Export loans data</div>
+              </button>
+              <button
+                onClick={handleExportArchivesJSON}
+                className="px-4 py-3 border-2 border-indigo-200 text-indigo-800 text-sm font-normal rounded-lg hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200 text-left"
+              >
+                <div className="font-semibold mb-1">Archives (JSON)</div>
+                <div className="text-xs text-indigo-600">Export archived years</div>
+              </button>
+            </div>
+          </div>
+
+          <div className="pt-4 border-t-2 border-indigo-200">
+            <Button variant="secondary" onClick={() => setShowExportModal(false)}>
+              Close
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Import Modal */}
+      <Modal
+        isOpen={showImportModal}
+        onClose={() => {
+          setShowImportModal(false);
+          setImportFile(null);
+          setImportError("");
+        }}
+        title="Import State from Backup"
+      >
+        <div className="space-y-4">
+          <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-5">
+            <p className="text-sm text-amber-800 font-semibold mb-2">
+              ⚠️ Warning: Importing will replace your current data
+            </p>
+            <p className="text-xs text-amber-700">
+              Make sure to export your current state as a backup before importing.
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-indigo-900 mb-2">
+              Select Backup File (JSON)
+            </label>
+            <input
+              type="file"
+              accept=".json,application/json"
+              onChange={(e) => {
+                setImportFile(e.target.files?.[0] || null);
+                setImportError("");
+              }}
+              className="block w-full text-sm text-indigo-900 border-2 border-indigo-200 rounded-lg cursor-pointer bg-white focus:outline-none focus:ring-2 focus:ring-indigo-300"
+            />
+          </div>
+
+          {importError && (
+            <div className="bg-rose-50 border-2 border-rose-200 rounded-lg p-4">
+              <p className="text-sm text-rose-800 font-semibold">{importError}</p>
+            </div>
+          )}
+
+          <div className="flex flex-col sm:flex-row justify-end gap-3 pt-2">
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setShowImportModal(false);
+                setImportFile(null);
+                setImportError("");
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleImportState}
+              disabled={!importFile}
+              variant="primary"
+            >
+              Import Backup
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Payment Management Modal */}
+      <Modal
+        isOpen={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        title={currentPeriod ? `Manage Payments - ${format(new Date(currentPeriod.date), "MMMM d, yyyy")}` : "Manage Payments"}
+        size="lg"
+      >
+        {currentPeriod && (
+          <div className="space-y-6">
+            {/* Period Summary */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+              <div className="bg-indigo-50 border-2 border-indigo-200 rounded-lg p-4">
+                <p className="text-xs uppercase tracking-wider text-indigo-600 font-normal mb-2">
+                  Total Collected
+                </p>
+                <p className="text-xl sm:text-2xl font-semibold text-indigo-900">
+                  ₱{currentPeriod.totalCollected.toLocaleString()}
+                </p>
+              </div>
+              <div className="bg-emerald-50 border-2 border-emerald-200 rounded-lg p-4">
+                <p className="text-xs uppercase tracking-wider text-emerald-600 font-normal mb-2">
+                  Paid
+                </p>
+                <p className="text-xl sm:text-2xl font-semibold text-emerald-900">
+                  {currentPeriod.payments.length}/{state.members.length}
+                </p>
+              </div>
+              <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-4 col-span-2 sm:col-span-1">
+                <p className="text-xs uppercase tracking-wider text-amber-600 font-normal mb-2">
+                  Unpaid
+                </p>
+                <p className="text-xl sm:text-2xl font-semibold text-amber-900">
+                  {state.members.length - currentPeriod.payments.length}
+                </p>
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+              <button
+                onClick={() => markAllPayments(true)}
+                className="px-5 py-2.5 bg-emerald-200 text-emerald-800 text-sm font-normal rounded-md hover:bg-emerald-300 shadow-sm transition-all duration-200 min-h-[44px]"
+              >
+                Mark All Paid
+              </button>
+              <button
+                onClick={() => markAllPayments(false)}
+                className="px-5 py-2.5 border-2 border-indigo-200 text-indigo-800 text-sm font-normal rounded-md hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200 min-h-[44px]"
+              >
+                Clear All Payments
+              </button>
+            </div>
+
+            {/* Members List */}
+            <div className="border-2 border-indigo-200 rounded-lg overflow-hidden max-h-[400px] overflow-y-auto">
+              <div className="divide-y-2 divide-indigo-100">
+                {state.members.map((member) => {
+                  const isPaid = getIsPaid(member.id);
+                  const payment = currentPeriod.payments.find(
+                    (p) => p.memberId === member.id
+                  );
+
+                  return (
+                    <div
+                      key={member.id}
+                      className="bg-white hover:bg-indigo-50/50 transition-colors p-4"
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        {/* Member Info */}
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-indigo-400 rounded-full flex items-center justify-center flex-shrink-0">
+                            <span className="text-white font-normal text-base">
+                              {member.name[0]?.toUpperCase() || "?"}
+                            </span>
+                          </div>
+                          <div>
+                            <h3 className="font-normal text-indigo-900 text-base">
+                              {member.name}
+                            </h3>
+                            <p className="text-xs text-indigo-600">ID: {member.id}</p>
+                          </div>
+                        </div>
+
+                        {/* Payment Actions */}
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+                          {isPaid ? (
+                            <>
+                              <div className="flex items-center gap-2 sm:gap-3">
+                                <span className="px-3 py-1 bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-full text-xs font-normal">
+                                  Paid
+                                </span>
+                                <span className="font-normal text-indigo-900">
+                                  ₱{payment?.amount?.toLocaleString() || 0}
+                                </span>
+                              </div>
+                              <button
+                                onClick={() => clearPayment(member.id)}
+                                className="px-4 py-2 border-2 border-indigo-200 text-indigo-800 text-sm font-normal rounded-md hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200 min-h-[44px]"
+                              >
+                                Clear
+                              </button>
+                            </>
+                          ) : (
+                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+                              <span className="px-3 py-1 bg-amber-100 text-amber-800 border border-amber-200 rounded-full text-xs font-normal self-start sm:self-center">
+                                Unpaid
+                              </span>
+                              <Input
+                                type="number"
+                                placeholder={
+                                  currentPeriod.defaultContribution?.toString() || "Amount"
+                                }
+                                value={amounts[member.id] || ""}
+                                onChange={(e) =>
+                                  setAmounts((prev) => ({
+                                    ...prev,
+                                    [member.id]: e.target.value,
+                                  }))
+                                }
+                                className="w-full sm:w-32 text-sm"
+                              />
+                              <button
+                                onClick={() => savePayment(member.id)}
+                                className="px-4 py-2 bg-indigo-300 text-indigo-900 text-sm font-normal rounded-md hover:bg-indigo-400 shadow-sm transition-all duration-200 min-h-[44px] whitespace-nowrap"
+                              >
+                                Record Payment
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Close Button */}
+            <div className="flex justify-end">
+              <Button onClick={() => setShowPaymentModal(false)}>
+                Done
+              </Button>
+            </div>
+          </div>
+        )}
       </Modal>
     </div>
   );

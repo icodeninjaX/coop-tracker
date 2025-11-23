@@ -165,6 +165,15 @@ const LoansPage = () => {
       0
     );
 
+  // Calculate total interest earned from approved and paid loans
+  const totalInterestEarned = loans
+    .filter((l) => l.status === "APPROVED" || l.status === "PAID")
+    .reduce((sum, l) => {
+      const totalDue = calculateTotalDue(l);
+      const interest = totalDue - l.amount; // Total due - Principal = Interest
+      return sum + interest;
+    }, 0);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
       <div className="container mx-auto max-w-7xl px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
@@ -196,7 +205,7 @@ const LoansPage = () => {
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 lg:mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-6 mb-6 lg:mb-8">
           <div className="bg-white/80 backdrop-blur-sm border-2 border-indigo-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-indigo-300">
             <p className="text-xs uppercase tracking-wider text-indigo-600 font-normal mb-2">
               Total Loans
@@ -230,6 +239,15 @@ const LoansPage = () => {
             </p>
             <p className="text-2xl sm:text-3xl font-semibold text-purple-900">
               ₱{totalOutstanding.toLocaleString()}
+            </p>
+          </div>
+
+          <div className="bg-white/80 backdrop-blur-sm border-2 border-rose-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-rose-300">
+            <p className="text-xs uppercase tracking-wider text-rose-600 font-normal mb-2">
+              Interest Earned
+            </p>
+            <p className="text-2xl sm:text-3xl font-semibold text-rose-900">
+              ₱{totalInterestEarned.toLocaleString()}
             </p>
           </div>
         </div>
@@ -363,6 +381,7 @@ const LoansPage = () => {
                   loan.interestRate ||
                   (loan.repaymentPlan === "MONTHLY" ? 0.04 : 0.03);
                 const termCount = loan.termCount || 5;
+                const interestAmount = totalDue - loan.amount; // Interest earned from this loan
 
                 const periodsCount = loan.termCount
                   ? loan.repaymentPlan === "CUT_OFF"
@@ -429,9 +448,15 @@ const LoansPage = () => {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm sm:text-base">
                         <div className="space-y-2 sm:space-y-3">
                           <div className="flex justify-between">
-                            <span className="text-indigo-600 font-light">Amount:</span>
+                            <span className="text-indigo-600 font-light">Principal:</span>
                             <span className="font-normal text-indigo-900">
                               ₱{loan.amount.toLocaleString()}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-indigo-600 font-light">Interest:</span>
+                            <span className="font-normal text-rose-700">
+                              ₱{interestAmount.toLocaleString()}
                             </span>
                           </div>
                           <div className="flex justify-between">

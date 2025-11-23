@@ -5,6 +5,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import AuthenticatedCoopProvider from "@/components/AuthenticatedCoopProvider";
 import AppNavigation from "@/components/AppNavigation";
 import SupabaseErrorBoundary from "@/components/SupabaseErrorBoundary";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -24,14 +25,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={poppins.className}>
-        <SupabaseErrorBoundary>
-          <AuthProvider>
-            <AuthenticatedCoopProvider>
-              <AppNavigation />
-              {children}
-            </AuthenticatedCoopProvider>
-          </AuthProvider>
-        </SupabaseErrorBoundary>
+        <ErrorBoundary>
+          <SupabaseErrorBoundary>
+            <AuthProvider>
+              <AuthenticatedCoopProvider>
+                <AppNavigation />
+                {children}
+              </AuthenticatedCoopProvider>
+            </AuthProvider>
+          </SupabaseErrorBoundary>
+        </ErrorBoundary>
       </body>
     </html>
   );
