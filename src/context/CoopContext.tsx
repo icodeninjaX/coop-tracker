@@ -120,6 +120,11 @@ type CoopAction =
     }
   | { type: "UPDATE_BALANCE"; payload: number }
   | { type: "ADD_COLLECTION_PERIOD"; payload: CollectionPeriod }
+  | { type: "DELETE_COLLECTION_PERIOD"; payload: { periodId: string } }
+  | {
+      type: "UPDATE_COLLECTION_PERIOD";
+      payload: { periodId: string; date: string; defaultContribution?: number };
+    }
   | {
       type: "REMOVE_PAYMENT";
       payload: { memberId: number; collectionPeriod: string };
@@ -471,6 +476,117 @@ function coopReducer(state: CoopState, action: CoopAction): CoopState {
         ...state,
         collections: [...state.collections, action.payload],
       };
+
+    case "DELETE_COLLECTION_PERIOD": {
+      const periodToDelete = state.collections.find(
+        (c) => c.id === action.payload.periodId
+      );
+      if (!periodToDelete) return state;
+
+      // Remove the period
+      const updatedCollections = state.collections.filter(
+        (c) => c.id !== action.payload.periodId
+      );
+
+      // Remove all payments from this period
+      const updatedPayments = updatedCollections.map((c) => ({
+        ...c,
+        payments: c.payments.filter(
+          (p) => p.collectionPeriod !== action.payload.periodId
+        ),
+      }));
+
+      // Remove any repayments linked to this period
+      const updatedRepayments = state.repayments.filter(
+        (r) => r.periodId !== action.payload.periodId
+      );
+
+      // Remove any penalties linked to this period
+      const updatedPenalties = state.penalties.filter(
+        (p) => p.periodId !== action.payload.periodId
+      );
+
+      // Remove any loans disbursed in this period
+      const updatedLoans = state.loans.map((loan) =>
+        loan.disbursementPeriodId === action.payload.periodId
+          ? { ...loan, disbursementPeriodId: undefined }
+          : loan
+      );
+
+      // If the deleted period was selected, select the first remaining period or clear
+      let newSelectedPeriod = state.selectedPeriod;
+      if (state.selectedPeriod === action.payload.periodId) {
+        newSelectedPeriod = updatedCollections.length > 0 ? updatedCollections[0].id : "";
+      }
+
+      return {
+        ...state,
+        collections: updatedPayments,
+        repayments: updatedRepayments,
+        penalties: updatedPenalties,
+        loans: updatedLoans,
+        selectedPeriod: newSelectedPeriod,
+      };
+    }
+
+    case "UPDATE_COLLECTION_PERIOD": {
+      const { periodId, date, defaultContribution } = action.payload;
+      const periodToUpdate = state.collections.find((c) => c.id === periodId);
+      if (!periodToUpdate) return state;
+
+      // Update the period with new values
+      const updatedCollections = state.collections.map((c) => {
+        if (c.id !== periodId) return c;
+
+        // If date changed, update the ID as well (since ID is based on date)
+        const newId = date !== c.date ? date : c.id;
+
+        // Update all payments to reference the new period ID
+        const updatedPayments = c.payments.map((p) => ({
+          ...p,
+          collectionPeriod: newId,
+        }));
+
+        return {
+          ...c,
+          id: newId,
+          date: date,
+          defaultContribution:
+            defaultContribution !== undefined ? defaultContribution : c.defaultContribution,
+          payments: updatedPayments,
+        };
+      });
+
+      // If the date changed, update references in repayments, penalties, and loans
+      const newPeriodId = date !== periodToUpdate.date ? date : periodId;
+
+      const updatedRepayments = state.repayments.map((r) =>
+        r.periodId === periodId ? { ...r, periodId: newPeriodId } : r
+      );
+
+      const updatedPenalties = state.penalties.map((p) =>
+        p.periodId === periodId ? { ...p, periodId: newPeriodId } : p
+      );
+
+      const updatedLoans = state.loans.map((l) =>
+        l.disbursementPeriodId === periodId
+          ? { ...l, disbursementPeriodId: newPeriodId }
+          : l
+      );
+
+      // Update selected period if it was the one being edited
+      const newSelectedPeriod =
+        state.selectedPeriod === periodId ? newPeriodId : state.selectedPeriod;
+
+      return {
+        ...state,
+        collections: updatedCollections,
+        repayments: updatedRepayments,
+        penalties: updatedPenalties,
+        loans: updatedLoans,
+        selectedPeriod: newSelectedPeriod,
+      };
+    }
 
     case "LOAD_STATE": {
       type RawLoan = Partial<Loan> & {

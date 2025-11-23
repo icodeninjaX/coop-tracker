@@ -46,6 +46,12 @@ function HomeContent() {
   const [importFile, setImportFile] = useState<File | null>(null);
   const [importError, setImportError] = useState<string>("");
   const [amounts, setAmounts] = useState<Record<number, string>>({});
+  const [showEditPeriodModal, setShowEditPeriodModal] = useState(false);
+  const [showDeletePeriodModal, setShowDeletePeriodModal] = useState(false);
+  const [editingPeriodId, setEditingPeriodId] = useState<string>("");
+  const [editPeriodDate, setEditPeriodDate] = useState<string>("");
+  const [editPeriodDefaultContribution, setEditPeriodDefaultContribution] = useState<string>("");
+  const [deletingPeriodId, setDeletingPeriodId] = useState<string>("");
 
   const createLoan = () => {
     if (!newLoanMemberId || !newLoanAmount) return;
@@ -152,6 +158,55 @@ function HomeContent() {
   const handleResetPeriods = () => {
     dispatch({ type: "RESET_PERIODS" });
     setShowResetModal(false);
+  };
+
+  // Handle editing a collection period
+  const openEditPeriodModal = (periodId: string) => {
+    const period = state.collections.find((c) => c.id === periodId);
+    if (!period) return;
+
+    setEditingPeriodId(periodId);
+    setEditPeriodDate(period.date);
+    setEditPeriodDefaultContribution(period.defaultContribution?.toString() || "");
+    setShowEditPeriodModal(true);
+  };
+
+  const handleEditPeriod = () => {
+    if (!editPeriodDate || !editingPeriodId) return;
+
+    dispatch({
+      type: "UPDATE_COLLECTION_PERIOD",
+      payload: {
+        periodId: editingPeriodId,
+        date: editPeriodDate,
+        defaultContribution: editPeriodDefaultContribution
+          ? parseFloat(editPeriodDefaultContribution)
+          : undefined,
+      },
+    });
+
+    setShowEditPeriodModal(false);
+    setEditingPeriodId("");
+    setEditPeriodDate("");
+    setEditPeriodDefaultContribution("");
+  };
+
+  // Handle deleting a collection period
+  const openDeletePeriodModal = (periodId: string) => {
+    setDeletingPeriodId(periodId);
+    setShowDeletePeriodModal(true);
+  };
+
+  const handleDeletePeriod = () => {
+    if (!deletingPeriodId) return;
+
+    dispatch({
+      type: "DELETE_COLLECTION_PERIOD",
+      payload: { periodId: deletingPeriodId },
+    });
+
+    setShowDeletePeriodModal(false);
+    setDeletingPeriodId("");
   };
 
   // Export handlers
@@ -393,31 +448,63 @@ function HomeContent() {
               <div className="md:hidden overflow-x-auto -mx-3 px-3 pb-2">
                 <div className="flex gap-3 min-w-min">
                   {state.collections.map((period) => (
-                    <button
+                    <div
                       key={period.id}
-                      onClick={() => handlePeriodClick(period.id)}
-                      className={`p-4 rounded-xl border-2 text-left transition-all duration-200 min-w-[160px] flex-shrink-0 ${
+                      className={`relative p-4 pb-3 rounded-xl border-2 transition-all duration-200 min-w-[160px] flex-shrink-0 ${
                         selectedPeriod === period.id
                           ? "border-indigo-400 bg-indigo-300 text-indigo-900 shadow-md"
                           : "border-indigo-200 bg-white/80 hover:border-indigo-300 hover:shadow-sm"
                       }`}
                     >
-                      <p className={`text-xs uppercase tracking-wider font-normal mb-2 ${
-                        selectedPeriod === period.id ? "text-indigo-700" : "text-indigo-600"
-                      }`}>
-                        {format(new Date(period.date), "MMM d, yyyy")}
-                      </p>
-                      <p className={`text-xl font-semibold mb-1 ${
-                        selectedPeriod === period.id ? "text-indigo-900" : "text-indigo-900"
-                      }`}>
-                        ₱{period.totalCollected.toLocaleString()}
-                      </p>
-                      <p className={`text-xs font-light ${
-                        selectedPeriod === period.id ? "text-indigo-700" : "text-indigo-600"
-                      }`}>
-                        {period.payments.length} {period.payments.length === 1 ? 'payment' : 'payments'}
-                      </p>
-                    </button>
+                      {/* Edit/Delete Actions - Top Right */}
+                      <div className="absolute top-2 right-2 flex gap-1">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openEditPeriodModal(period.id);
+                          }}
+                          className="p-1.5 bg-white/90 backdrop-blur-sm text-indigo-700 rounded-md hover:bg-indigo-100 transition-all duration-200 shadow-sm border border-indigo-200/50"
+                          title="Edit period"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openDeletePeriodModal(period.id);
+                          }}
+                          className="p-1.5 bg-white/90 backdrop-blur-sm text-rose-700 rounded-md hover:bg-rose-100 transition-all duration-200 shadow-sm border border-rose-200/50"
+                          title="Delete period"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                          </svg>
+                        </button>
+                      </div>
+
+                      <div
+                        onClick={() => handlePeriodClick(period.id)}
+                        className="cursor-pointer pr-16"
+                      >
+                        <p className={`text-xs uppercase tracking-wider font-normal mb-2 ${
+                          selectedPeriod === period.id ? "text-indigo-700" : "text-indigo-600"
+                        }`}>
+                          {format(new Date(period.date), "MMM d, yyyy")}
+                        </p>
+                        <p className={`text-xl font-semibold mb-1 ${
+                          selectedPeriod === period.id ? "text-indigo-900" : "text-indigo-900"
+                        }`}>
+                          ₱{period.totalCollected.toLocaleString()}
+                        </p>
+                        <p className={`text-xs font-light ${
+                          selectedPeriod === period.id ? "text-indigo-700" : "text-indigo-600"
+                        }`}>
+                          {period.payments.length} {period.payments.length === 1 ? 'payment' : 'payments'}
+                        </p>
+                      </div>
+                    </div>
                   ))}
 
                   <button
@@ -433,31 +520,63 @@ function HomeContent() {
               {/* Desktop: Grid */}
               <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {state.collections.map((period) => (
-                  <button
+                  <div
                     key={period.id}
-                    onClick={() => handlePeriodClick(period.id)}
-                    className={`p-5 rounded-xl border-2 text-left transition-all duration-200 ${
+                    className={`relative p-5 pb-4 rounded-xl border-2 transition-all duration-200 ${
                       selectedPeriod === period.id
                         ? "border-indigo-400 bg-indigo-300 text-indigo-900 shadow-md"
                         : "border-indigo-200 bg-white/80 hover:border-indigo-300 hover:shadow-sm"
                     }`}
                   >
-                    <p className={`text-xs uppercase tracking-wider font-normal mb-3 ${
-                      selectedPeriod === period.id ? "text-indigo-700" : "text-indigo-600"
-                    }`}>
-                      {format(new Date(period.date), "MMM d, yyyy")}
-                    </p>
-                    <p className={`text-2xl font-semibold mb-2 ${
-                      selectedPeriod === period.id ? "text-indigo-900" : "text-indigo-900"
-                    }`}>
-                      ₱{period.totalCollected.toLocaleString()}
-                    </p>
-                    <p className={`text-xs font-light ${
-                      selectedPeriod === period.id ? "text-indigo-700" : "text-indigo-600"
-                    }`}>
-                      {period.payments.length} {period.payments.length === 1 ? 'payment' : 'payments'}
-                    </p>
-                  </button>
+                    {/* Edit/Delete Actions - Top Right */}
+                    <div className="absolute top-3 right-3 flex gap-1.5">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openEditPeriodModal(period.id);
+                        }}
+                        className="p-2 bg-white/90 backdrop-blur-sm text-indigo-700 rounded-md hover:bg-indigo-100 transition-all duration-200 shadow-sm border border-indigo-200/50"
+                        title="Edit period"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openDeletePeriodModal(period.id);
+                        }}
+                        className="p-2 bg-white/90 backdrop-blur-sm text-rose-700 rounded-md hover:bg-rose-100 transition-all duration-200 shadow-sm border border-rose-200/50"
+                        title="Delete period"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                        </svg>
+                      </button>
+                    </div>
+
+                    <div
+                      onClick={() => handlePeriodClick(period.id)}
+                      className="cursor-pointer pr-20"
+                    >
+                      <p className={`text-xs uppercase tracking-wider font-normal mb-3 ${
+                        selectedPeriod === period.id ? "text-indigo-700" : "text-indigo-600"
+                      }`}>
+                        {format(new Date(period.date), "MMM d, yyyy")}
+                      </p>
+                      <p className={`text-2xl font-semibold mb-2 ${
+                        selectedPeriod === period.id ? "text-indigo-900" : "text-indigo-900"
+                      }`}>
+                        ₱{period.totalCollected.toLocaleString()}
+                      </p>
+                      <p className={`text-xs font-light ${
+                        selectedPeriod === period.id ? "text-indigo-700" : "text-indigo-600"
+                      }`}>
+                        {period.payments.length} {period.payments.length === 1 ? 'payment' : 'payments'}
+                      </p>
+                    </div>
+                  </div>
                 ))}
 
                 <button
@@ -883,6 +1002,127 @@ function HomeContent() {
             >
               Import Backup
             </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Edit Collection Period Modal */}
+      <Modal
+        isOpen={showEditPeriodModal}
+        onClose={() => {
+          setShowEditPeriodModal(false);
+          setEditingPeriodId("");
+          setEditPeriodDate("");
+          setEditPeriodDefaultContribution("");
+        }}
+        title="Edit Collection Period"
+      >
+        <div className="space-y-4">
+          <Input
+            type="date"
+            label="Period Date"
+            value={editPeriodDate}
+            onChange={(e) => setEditPeriodDate(e.target.value)}
+          />
+          <Input
+            type="number"
+            label="Default Contribution (₱)"
+            value={editPeriodDefaultContribution}
+            onChange={(e) => setEditPeriodDefaultContribution(e.target.value)}
+            placeholder="Optional - default amount per member"
+          />
+          <div className="bg-indigo-50 border-2 border-indigo-200 rounded-lg p-4">
+            <p className="text-xs text-indigo-700 font-light">
+              <strong className="font-normal">Note:</strong> Changing the date will update the period ID. All payments, repayments, and loan disbursements linked to this period will be updated automatically.
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row justify-end gap-3">
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setShowEditPeriodModal(false);
+                setEditingPeriodId("");
+                setEditPeriodDate("");
+                setEditPeriodDefaultContribution("");
+              }}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleEditPeriod}>Save Changes</Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Delete Collection Period Modal */}
+      <Modal
+        isOpen={showDeletePeriodModal}
+        onClose={() => {
+          setShowDeletePeriodModal(false);
+          setDeletingPeriodId("");
+        }}
+        title="Delete Collection Period"
+      >
+        <div className="space-y-6">
+          <div className="bg-rose-50 border-2 border-rose-200 rounded-lg p-5">
+            <p className="text-xs uppercase tracking-wider text-rose-700 font-normal mb-3">
+              Warning
+            </p>
+            <p className="text-sm text-rose-900 font-light mb-4">
+              This will permanently delete this collection period and:
+            </p>
+            <ul className="space-y-2 text-sm text-rose-800 font-light">
+              <li className="flex items-start">
+                <span className="text-rose-400 mr-2">•</span>
+                <span>All payments recorded in this period</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-rose-400 mr-2">•</span>
+                <span>All loan repayments made in this period</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-rose-400 mr-2">•</span>
+                <span>All penalties assessed in this period</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-rose-400 mr-2">•</span>
+                <span>Loan disbursement references to this period</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-rose-400 mr-2">•</span>
+                <span className="font-normal">This action cannot be undone</span>
+              </li>
+            </ul>
+          </div>
+
+          {deletingPeriodId && state.collections.find(c => c.id === deletingPeriodId) && (
+            <div className="bg-indigo-50 border-2 border-indigo-200 rounded-lg p-4">
+              <p className="text-sm text-indigo-900 font-normal mb-2">
+                Period Details:
+              </p>
+              <div className="text-sm text-indigo-700 font-light space-y-1">
+                <p>Date: {format(new Date(state.collections.find(c => c.id === deletingPeriodId)!.date), "MMMM d, yyyy")}</p>
+                <p>Total Collected: ₱{state.collections.find(c => c.id === deletingPeriodId)!.totalCollected.toLocaleString()}</p>
+                <p>Payments: {state.collections.find(c => c.id === deletingPeriodId)!.payments.length}</p>
+              </div>
+            </div>
+          )}
+
+          <div className="flex flex-col sm:flex-row justify-end gap-3 pt-2">
+            <button
+              onClick={() => {
+                setShowDeletePeriodModal(false);
+                setDeletingPeriodId("");
+              }}
+              className="px-5 py-2.5 border-2 border-indigo-200 text-indigo-800 text-sm font-normal rounded-md hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200 min-h-[44px]"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleDeletePeriod}
+              className="px-5 py-2.5 bg-rose-300 text-rose-900 text-sm font-normal rounded-md hover:bg-rose-400 shadow-sm transition-all duration-200 min-h-[44px]"
+            >
+              Confirm Delete
+            </button>
           </div>
         </div>
       </Modal>
