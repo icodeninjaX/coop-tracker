@@ -1,6 +1,10 @@
 export interface Member {
   id: number;
   name: string;
+  committedShares: number; // Fixed share commitment (manually set by admin)
+  forfeited?: boolean; // If member forfeited interest
+  forfeitureDate?: string; // When they forfeited (ISO date)
+  forfeitedInterest?: number; // Amount forfeited
 }
 
 export interface Payment {
@@ -44,6 +48,32 @@ export interface Penalty {
   reason?: string;
 }
 
+export interface MemberShareHistory {
+  memberId: number;
+  date: string; // When admin changed their shares
+  previousShares: number; // Shares before change
+  newShares: number; // Shares after change
+  changedBy?: string; // Optional: admin who made the change
+  reason?: string; // Optional: reason for change
+}
+
+export interface MemberDividend {
+  memberId: number;
+  shares: number; // Shares at time of distribution
+  dividendAmount: number; // Amount received
+  forfeited: boolean; // If forfeited
+}
+
+export interface DividendDistribution {
+  id: string;
+  date: string; // When dividend was distributed (ISO date)
+  totalInterestPool: number; // Total interest to distribute
+  totalShares: number; // Total shares across all members
+  perShareDividend: number; // Amount per share
+  distributions: MemberDividend[]; // Per-member dividends
+  periodsCovered: string[]; // Which periods this covers
+}
+
 export interface CollectionPeriod {
   id: string;
   date: string;
@@ -63,11 +93,15 @@ export interface YearlyArchive {
     endingBalance: number;
     activeMembers: number;
     totalLoansIssued: number;
+    totalShares?: number; // Total shares at time of archive
+    totalDividendsDistributed?: number; // Total dividends paid
   };
   collections: CollectionPeriod[];
   loans: Loan[];
   repayments: Repayment[];
   penalties: Penalty[];
+  shareHistory?: MemberShareHistory[]; // Share transactions for the year
+  dividendDistributions?: DividendDistribution[]; // Dividend distributions for the year
 }
 
 export interface CoopState {
@@ -80,4 +114,9 @@ export interface CoopState {
   penalties: Penalty[];
   selectedPeriod: string; // Currently selected period ID
   archives: YearlyArchive[]; // Archived yearly data
+  // Share system fields
+  sharePrice: number; // Price per share (default: 500)
+  totalInterestPool: number; // Total interest earned from loans
+  dividendDistributions: DividendDistribution[]; // Dividend distribution history
+  shareHistory: MemberShareHistory[]; // Historical share transactions
 }

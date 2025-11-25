@@ -14,6 +14,7 @@ import {
   EmptyState,
   Modal,
 } from "@/components/UI";
+import { calculateExpectedContribution } from "@/lib/shareCalculations";
 
 function MembersContent() {
   const { state, dispatch } = useCoop();
@@ -492,9 +493,17 @@ function MembersContent() {
                                 <h3 className="font-normal text-indigo-900 text-base md:text-lg truncate">
                                   {member.name}
                                 </h3>
-                                <div className="flex items-center gap-2 mt-1">
+                                <div className="flex items-center gap-2 mt-1 flex-wrap">
                                   <p className="text-xs md:text-sm text-indigo-600">
                                     ID: {member.id}
+                                  </p>
+                                  <span className="text-neutral-300">•</span>
+                                  <p className="text-xs md:text-sm text-purple-600 font-medium">
+                                    {(member.committedShares || 0).toFixed(2)} shares
+                                  </p>
+                                  <span className="text-neutral-300">•</span>
+                                  <p className="text-xs md:text-sm text-emerald-600">
+                                    Expected: ₱{calculateExpectedContribution(member.committedShares || 0, state.sharePrice || 500).toLocaleString()}
                                   </p>
                                   {selectedPeriod && isPaid && (
                                     <>

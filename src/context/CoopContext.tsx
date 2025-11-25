@@ -19,6 +19,16 @@ import {
 } from "../types";
 import { loadRemoteState, saveRemoteState } from "@/lib/remoteState";
 import { useAuth } from "./AuthContext";
+import {
+  calculateSharesFromContribution,
+  calculateInterestEarned,
+  calculateDividendDistribution,
+  calculateTotalShares,
+} from "@/lib/shareCalculations";
+import {
+  needsShareMigration,
+  migrateToShareSystem,
+} from "@/lib/dataMigration";
 
 // ---- Schedule utilities (module scope for stable references) ----
 // Utilities to compute due schedules
@@ -88,6 +98,8 @@ const initialState: CoopState = {
   members: Array.from({ length: 20 }, (_, i) => ({
     id: i + 1,
     name: `Member ${i + 1}`,
+    committedShares: 0,
+    forfeited: false,
   })),
   collections: [],
   loans: [],
@@ -95,6 +107,11 @@ const initialState: CoopState = {
   penalties: [],
   selectedPeriod: "",
   archives: [],
+  // Share system fields
+  sharePrice: 500, // Default: ₱500 per share
+  totalInterestPool: 0,
+  dividendDistributions: [],
+  shareHistory: [],
 };
 
 type CoopAction =
@@ -146,7 +163,14 @@ type CoopAction =
   | { type: "SET_SELECTED_PERIOD"; payload: { periodId: string } }
   | { type: "LOAD_STATE"; payload: CoopState }
   | { type: "ARCHIVE_YEAR"; payload: { year: number } }
-  | { type: "RESET_PERIODS" };
+  | { type: "RESET_PERIODS" }
+  // Share system actions
+  | { type: "DISTRIBUTE_DIVIDENDS"; payload: { date: string } }
+  | { type: "FORFEIT_INTEREST"; payload: { memberId: number; date: string } }
+  | { type: "RESTORE_MEMBER_INTEREST"; payload: { memberId: number } }
+  | { type: "UPDATE_SHARE_PRICE"; payload: { sharePrice: number } }
+  | { type: "UPDATE_MEMBER_SHARES"; payload: { memberId: number; shares: number } }
+  | { type: "BULK_UPDATE_SHARES"; payload: { updates: Array<{ memberId: number; shares: number }> } };
 
 function coopReducer(state: CoopState, action: CoopAction): CoopState {
   switch (action.type) {
@@ -209,6 +233,8 @@ function coopReducer(state: CoopState, action: CoopAction): CoopState {
           {
             id: newMemberId,
             name: action.payload.name,
+            committedShares: 0,
+            forfeited: false,
           },
         ],
       };
@@ -357,7 +383,12 @@ function coopReducer(state: CoopState, action: CoopAction): CoopState {
       return { ...state, repayments, loans };
     }
 
-    case "UPDATE_LOAN_STATUS":
+    case "UPDATE_LOAN_STATUS": {
+      // Find the loan being updated
+      const loanToUpdate = state.loans.find((l) => l.id === action.payload.loanId);
+      const wasAlreadyPaid = loanToUpdate?.status === "PAID";
+      const isBecomingPaid = action.payload.status === "PAID" && !wasAlreadyPaid;
+
       const updatedLoans = state.loans.map((loan) =>
         loan.id === action.payload.loanId
           ? {
@@ -372,13 +403,27 @@ function coopReducer(state: CoopState, action: CoopAction): CoopState {
                   ? action.payload.disbursementPeriodId ??
                     loan.disbursementPeriodId
                   : loan.disbursementPeriodId,
+              dateClosed:
+                action.payload.status === "PAID"
+                  ? new Date().toISOString()
+                  : loan.dateClosed,
             }
           : loan
       );
+
+      // Add interest to pool when loan becomes PAID
+      let newInterestPool = state.totalInterestPool;
+      if (isBecomingPaid && loanToUpdate) {
+        const interestEarned = calculateInterestEarned(loanToUpdate);
+        newInterestPool += interestEarned;
+      }
+
       return {
         ...state,
         loans: updatedLoans,
+        totalInterestPool: newInterestPool,
       };
+    }
 
     case "UPDATE_BALANCE":
       return {
@@ -394,6 +439,7 @@ function coopReducer(state: CoopState, action: CoopAction): CoopState {
       const period = collectionsCopy.find(
         (c) => c.id === action.payload.collectionPeriod
       );
+
       if (period) {
         const removed = period.payments.filter(
           (p) => p.memberId === action.payload.memberId
@@ -412,6 +458,8 @@ function coopReducer(state: CoopState, action: CoopAction): CoopState {
           );
         }
       }
+
+      // SIMPLIFIED: Just update collections, no share changes
       return { ...state, collections: collectionsCopy };
     }
 
@@ -423,9 +471,11 @@ function coopReducer(state: CoopState, action: CoopAction): CoopState {
         payments: [...c.payments],
       }));
       const period = collectionsCopy.find((c) => c.id === collectionPeriod);
+
       if (period) {
         const idx = period.payments.findIndex((p) => p.memberId === memberId);
         if (idx >= 0) {
+          // Update existing payment
           const prev = period.payments[idx];
           const delta = amt - (prev.amount || 0);
           period.payments[idx] = {
@@ -435,15 +485,19 @@ function coopReducer(state: CoopState, action: CoopAction): CoopState {
           };
           period.totalCollected = (period.totalCollected || 0) + delta;
         } else {
+          // New payment
+          const paymentDate = action.payload.date ?? new Date().toISOString();
           period.payments.push({
             memberId,
             amount: amt,
-            date: action.payload.date ?? new Date().toISOString(),
+            date: paymentDate,
             collectionPeriod,
           });
           period.totalCollected = (period.totalCollected || 0) + amt;
         }
       }
+
+      // SIMPLIFIED: Just update collections, no share changes
       return { ...state, collections: collectionsCopy };
     }
 
@@ -798,6 +852,145 @@ function coopReducer(state: CoopState, action: CoopAction): CoopState {
       };
     }
 
+    case "DISTRIBUTE_DIVIDENDS": {
+      const { date } = action.payload;
+
+      // Get all period IDs
+      const periodsCovered = state.collections.map((c) => c.id);
+
+      // Calculate dividend distribution
+      const distribution = calculateDividendDistribution(
+        state.totalInterestPool,
+        state.members,
+        date,
+        periodsCovered
+      );
+
+      return {
+        ...state,
+        dividendDistributions: [...state.dividendDistributions, distribution],
+        totalInterestPool: 0, // Reset pool after distribution
+      };
+    }
+
+    case "FORFEIT_INTEREST": {
+      const { memberId, date } = action.payload;
+
+      // Calculate potential dividend to track forfeited amount
+      const totalShares = calculateTotalShares(state.members);
+      const perShareDividend = totalShares > 0 ? state.totalInterestPool / totalShares : 0;
+      const member = state.members.find((m) => m.id === memberId);
+      const forfeitedAmount = member ? (member.committedShares || 0) * perShareDividend : 0;
+
+      return {
+        ...state,
+        members: state.members.map((m) =>
+          m.id === memberId
+            ? {
+                ...m,
+                forfeited: true,
+                forfeitureDate: date,
+                forfeitedInterest: forfeitedAmount,
+              }
+            : m
+        ),
+      };
+    }
+
+    case "RESTORE_MEMBER_INTEREST": {
+      const { memberId } = action.payload;
+      return {
+        ...state,
+        members: state.members.map((m) =>
+          m.id === memberId
+            ? {
+                ...m,
+                forfeited: false,
+                forfeitureDate: undefined,
+                forfeitedInterest: undefined,
+              }
+            : m
+        ),
+      };
+    }
+
+    case "UPDATE_SHARE_PRICE": {
+      const { sharePrice } = action.payload;
+      return {
+        ...state,
+        sharePrice: sharePrice > 0 ? sharePrice : state.sharePrice,
+      };
+    }
+
+    case "UPDATE_MEMBER_SHARES": {
+      const { memberId, shares } = action.payload;
+      const member = state.members.find((m) => m.id === memberId);
+
+      if (!member) return state;
+
+      const previousShares = member.committedShares || 0;
+      const newShares = Math.max(0, shares); // Ensure non-negative
+
+      // Update member shares
+      const updatedMembers = state.members.map((m) =>
+        m.id === memberId
+          ? { ...m, committedShares: newShares }
+          : m
+      );
+
+      // Add to history if shares changed
+      if (previousShares !== newShares) {
+        const historyEntry = {
+          memberId,
+          date: new Date().toISOString(),
+          previousShares,
+          newShares,
+        };
+
+        return {
+          ...state,
+          members: updatedMembers,
+          shareHistory: [...state.shareHistory, historyEntry],
+        };
+      }
+
+      return {
+        ...state,
+        members: updatedMembers,
+      };
+    }
+
+    case "BULK_UPDATE_SHARES": {
+      const { updates } = action.payload;
+      const historyEntries: { memberId: number; date: string; previousShares: number; newShares: number }[] = [];
+
+      const updatedMembers = state.members.map((member) => {
+        const update = updates.find((u) => u.memberId === member.id);
+        if (update) {
+          const previousShares = member.committedShares || 0;
+          const newShares = Math.max(0, update.shares);
+
+          if (previousShares !== newShares) {
+            historyEntries.push({
+              memberId: member.id,
+              date: new Date().toISOString(),
+              previousShares,
+              newShares,
+            });
+          }
+
+          return { ...member, committedShares: newShares };
+        }
+        return member;
+      });
+
+      return {
+        ...state,
+        members: updatedMembers,
+        shareHistory: [...state.shareHistory, ...historyEntries],
+      };
+    }
+
     default:
       return state;
   }
@@ -831,7 +1024,19 @@ export function CoopProvider({ children }: { children: ReactNode }) {
         const remote = await loadRemoteState(user.id);
         if (remote) {
           console.log("CoopContext: Loaded remote state", remote);
-          dispatch({ type: "LOAD_STATE", payload: remote });
+
+          // Check if share system migration is needed
+          if (needsShareMigration(remote)) {
+            console.log("CoopContext: Running share system migration...");
+            const migratedState = migrateToShareSystem(remote);
+            dispatch({ type: "LOAD_STATE", payload: migratedState });
+
+            // Save migrated state immediately
+            await saveRemoteState(migratedState, user.id);
+            console.log("CoopContext: Migration completed and saved");
+          } else {
+            dispatch({ type: "LOAD_STATE", payload: remote });
+          }
 
           // Auto-select latest period if none is selected
           if (

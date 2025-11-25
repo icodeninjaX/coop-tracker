@@ -25,6 +25,7 @@ import {
   exportComprehensiveReport,
   importStateFromJSON,
 } from "@/lib/exportUtils";
+import { calculateTotalShares } from "@/lib/shareCalculations";
 
 function HomeContent() {
   const { state, dispatch } = useCoop();
@@ -389,6 +390,10 @@ function HomeContent() {
   const activeLoans = state.loans.filter((l) => l.status === "APPROVED").length;
   const pendingLoans = state.loans.filter((l) => l.status === "PENDING").length;
 
+  // Share system data
+  const totalShares = calculateTotalShares(state.members);
+  const totalInterestPool = state.totalInterestPool || 0;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
       <div className="container mx-auto max-w-7xl px-3 sm:px-6 py-6 sm:py-8">
@@ -439,7 +444,7 @@ function HomeContent() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-8 sm:mb-12">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 mb-8 sm:mb-12">
           <div className="bg-white/80 backdrop-blur-sm border-2 border-indigo-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-indigo-300">
             <p className="text-xs uppercase tracking-wider text-indigo-600 font-normal mb-2">
               Total Balance
@@ -469,10 +474,28 @@ function HomeContent() {
 
           <div className="bg-white/80 backdrop-blur-sm border-2 border-amber-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-amber-300">
             <p className="text-xs uppercase tracking-wider text-amber-600 font-normal mb-2">
-              Pending
+              Pending Loans
             </p>
             <p className="text-2xl sm:text-3xl font-semibold text-amber-900">
               {pendingLoans}
+            </p>
+          </div>
+
+          <div className="bg-white/80 backdrop-blur-sm border-2 border-rose-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-rose-300">
+            <p className="text-xs uppercase tracking-wider text-rose-600 font-normal mb-2">
+              Committed Shares
+            </p>
+            <p className="text-2xl sm:text-3xl font-semibold text-rose-900">
+              {totalShares.toFixed(2)}
+            </p>
+          </div>
+
+          <div className="bg-white/80 backdrop-blur-sm border-2 border-cyan-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-cyan-300">
+            <p className="text-xs uppercase tracking-wider text-cyan-600 font-normal mb-2">
+              Interest Pool
+            </p>
+            <p className="text-2xl sm:text-3xl font-semibold text-cyan-900">
+              ₱{totalInterestPool.toLocaleString()}
             </p>
           </div>
         </div>

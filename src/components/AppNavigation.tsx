@@ -38,6 +38,7 @@ export default function AppNavigation() {
     { href: "/", label: "Dashboard" },
     { href: "/members", label: "Members" },
     { href: "/loans", label: "Loans" },
+    { href: "/shares", label: "Shares" },
     { href: "/ledger", label: "Ledger" },
     { href: "/archives", label: "Archives" },
   ];
