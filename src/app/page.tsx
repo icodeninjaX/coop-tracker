@@ -321,26 +321,66 @@ function HomeContent() {
   const markAllPayments = (paid: boolean) => {
     if (!selectedPeriod || !currentPeriod) return;
     const paidSet = new Set(currentPeriod.payments.map((p) => p.memberId));
-    state.members.forEach((m) => {
-      const isPaid = paidSet.has(m.id);
-      if (paid && !isPaid) {
-        const amt = currentPeriod.defaultContribution ?? 0;
+
+    if (paid) {
+      // Get all unpaid members
+      const unpaidMembers = state.members.filter((m) => !paidSet.has(m.id));
+      const membersWithoutDefault: string[] = [];
+
+      // First pass: Check if all unpaid members have a payment history
+      unpaidMembers.forEach((member) => {
+        // Get member's payment history from all periods
+        const memberPayments = state.collections
+          .flatMap((c) => c.payments)
+          .filter((p) => p.memberId === member.id);
+
+        // If no payment history and no period default, add to list
+        if (memberPayments.length === 0 && !currentPeriod.defaultContribution) {
+          membersWithoutDefault.push(member.name);
+        }
+      });
+
+      // If any member doesn't have a default, show error and abort
+      if (membersWithoutDefault.length > 0) {
+        alert(
+          `Cannot mark all as paid.\n\nThe following members have no payment history:\n${membersWithoutDefault.join(", ")}\n\nPlease either:\n1. Record their first payment manually, or\n2. Set a default contribution for this period using the Edit button`
+        );
+        return;
+      }
+
+      // Second pass: Add payments using each member's default
+      unpaidMembers.forEach((member) => {
+        // Get member's most recent payment amount
+        const memberPayments = state.collections
+          .flatMap((c) => c.payments)
+          .filter((p) => p.memberId === member.id)
+          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+        // Use member's most recent payment, or period default, or 0
+        const defaultAmount = memberPayments[0]?.amount || currentPeriod.defaultContribution || 0;
+
         dispatch({
           type: "ADD_PAYMENT",
           payload: {
-            memberId: m.id,
-            amount: amt,
+            memberId: member.id,
+            amount: defaultAmount,
             date: new Date().toISOString(),
             collectionPeriod: selectedPeriod,
           },
         });
-      } else if (!paid && isPaid) {
-        dispatch({
-          type: "REMOVE_PAYMENT",
-          payload: { memberId: m.id, collectionPeriod: selectedPeriod },
-        });
-      }
-    });
+      });
+    } else {
+      // Clear all payments (existing logic)
+      state.members.forEach((m) => {
+        const isPaid = paidSet.has(m.id);
+        if (isPaid) {
+          dispatch({
+            type: "REMOVE_PAYMENT",
+            payload: { memberId: m.id, collectionPeriod: selectedPeriod },
+          });
+        }
+      });
+    }
   };
 
   // Get current period data
