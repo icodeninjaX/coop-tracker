@@ -20,6 +20,15 @@ function SharesPage() {
   const perShareDividend = totalShares > 0 ? totalInterestPool / totalShares : 0;
   const sharePrice = state.sharePrice || 500;
 
+  // Calculate total contributions per member
+  const memberContributions = new Map<number, number>();
+  state.collections.forEach((period) => {
+    period.payments.forEach((payment) => {
+      const current = memberContributions.get(payment.memberId) || 0;
+      memberContributions.set(payment.memberId, current + payment.amount);
+    });
+  });
+
   // Get all members (sorted by committed shares descending)
   const sortedMembers = [...state.members].sort(
     (a, b) => (b.committedShares || 0) - (a.committedShares || 0)
@@ -225,6 +234,9 @@ function SharesPage() {
                   Expected Contribution
                 </th>
                 <th className="text-right py-3 px-4 text-xs uppercase tracking-wider text-indigo-600 font-normal">
+                  Total Contributions
+                </th>
+                <th className="text-right py-3 px-4 text-xs uppercase tracking-wider text-indigo-600 font-normal">
                   Potential Dividend
                 </th>
                 <th className="text-center py-3 px-4 text-xs uppercase tracking-wider text-indigo-600 font-normal">
@@ -239,6 +251,7 @@ function SharesPage() {
               {sortedMembers.map((member) => {
                 const shares = member.committedShares || 0;
                 const expectedContribution = calculateExpectedContribution(shares, sharePrice);
+                const totalContributions = memberContributions.get(member.id) || 0;
                 const potentialDividend = shares * perShareDividend;
                 const isForfeited = member.forfeited || false;
                 const isEditing = editingMemberId === member.id;
@@ -268,6 +281,9 @@ function SharesPage() {
                     </td>
                     <td className="py-3 px-4 text-sm text-indigo-600 text-right">
                       ₱{expectedContribution.toLocaleString()}
+                    </td>
+                    <td className="py-3 px-4 text-sm text-emerald-900 text-right font-medium">
+                      ₱{totalContributions.toLocaleString()}
                     </td>
                     <td className="py-3 px-4 text-sm text-indigo-900 text-right">
                       {isForfeited ? (
@@ -352,6 +368,7 @@ function SharesPage() {
           {sortedMembers.map((member) => {
             const shares = member.committedShares || 0;
             const expectedContribution = calculateExpectedContribution(shares, sharePrice);
+            const totalContributions = memberContributions.get(member.id) || 0;
             const potentialDividend = shares * perShareDividend;
             const isForfeited = member.forfeited || false;
             const isEditing = editingMemberId === member.id;
@@ -398,25 +415,35 @@ function SharesPage() {
                   </div>
                 )}
 
-                <div className="grid grid-cols-2 gap-3 mb-3">
-                  <div>
-                    <p className="text-xs text-indigo-500 mb-1">
-                      Expected Contribution
-                    </p>
-                    <p className="text-sm text-indigo-900">
-                      ₱{expectedContribution.toLocaleString()}
-                    </p>
+                <div className="space-y-3 mb-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <p className="text-xs text-indigo-500 mb-1">
+                        Expected Contribution
+                      </p>
+                      <p className="text-sm text-indigo-900">
+                        ₱{expectedContribution.toLocaleString()}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-indigo-500 mb-1">
+                        Potential Dividend
+                      </p>
+                      <p className="text-sm text-indigo-900">
+                        {isForfeited ? (
+                          <span className="text-rose-600">₱0.00</span>
+                        ) : (
+                          `₱${potentialDividend.toLocaleString()}`
+                        )}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-xs text-indigo-500 mb-1">
-                      Potential Dividend
+                  <div className="pt-2 border-t border-indigo-200">
+                    <p className="text-xs text-emerald-600 mb-1 font-medium uppercase tracking-wider">
+                      Total Contributions
                     </p>
-                    <p className="text-sm text-indigo-900">
-                      {isForfeited ? (
-                        <span className="text-rose-600">₱0.00</span>
-                      ) : (
-                        `₱${potentialDividend.toLocaleString()}`
-                      )}
+                    <p className="text-base text-emerald-900 font-medium">
+                      ₱{totalContributions.toLocaleString()}
                     </p>
                   </div>
                 </div>

@@ -196,13 +196,40 @@ function coopReducer(state: CoopState, action: CoopAction): CoopState {
         collections: newCollections,
       };
 
-    case "ADD_LOAN":
+    case "ADD_LOAN": {
+      // If loan is added with APPROVED or PAID status, add its interest to pool
+      let newInterestPool = state.totalInterestPool;
+      if (action.payload.status === "APPROVED" || action.payload.status === "PAID") {
+        const interestEarned = calculateInterestEarned(action.payload);
+        newInterestPool += interestEarned;
+      }
+
       return {
         ...state,
         loans: [...state.loans, action.payload],
+        totalInterestPool: newInterestPool,
       };
+    }
 
-    case "UPDATE_LOAN":
+    case "UPDATE_LOAN": {
+      // If status is being changed, update interest pool
+      const oldLoan = state.loans.find((loan) => loan.id === action.payload.loanId);
+      let newInterestPool = state.totalInterestPool;
+
+      if (oldLoan && action.payload.loan.status && action.payload.loan.status !== oldLoan.status) {
+        const oldStatusIncludesInterest = oldLoan.status === "APPROVED" || oldLoan.status === "PAID";
+        const newStatusIncludesInterest = action.payload.loan.status === "APPROVED" || action.payload.loan.status === "PAID";
+        const interestEarned = calculateInterestEarned(oldLoan);
+
+        if (!oldStatusIncludesInterest && newStatusIncludesInterest) {
+          // Adding interest
+          newInterestPool += interestEarned;
+        } else if (oldStatusIncludesInterest && !newStatusIncludesInterest) {
+          // Removing interest
+          newInterestPool = Math.max(0, newInterestPool - interestEarned);
+        }
+      }
+
       return {
         ...state,
         loans: state.loans.map((loan) =>
@@ -210,9 +237,20 @@ function coopReducer(state: CoopState, action: CoopAction): CoopState {
             ? { ...loan, ...action.payload.loan }
             : loan
         ),
+        totalInterestPool: newInterestPool,
       };
+    }
 
-    case "DELETE_LOAN":
+    case "DELETE_LOAN": {
+      // If deleting an APPROVED or PAID loan, remove its interest from pool
+      const loanToDelete = state.loans.find((loan) => loan.id === action.payload.loanId);
+      let newInterestPool = state.totalInterestPool;
+
+      if (loanToDelete && (loanToDelete.status === "APPROVED" || loanToDelete.status === "PAID")) {
+        const interestEarned = calculateInterestEarned(loanToDelete);
+        newInterestPool = Math.max(0, newInterestPool - interestEarned);
+      }
+
       return {
         ...state,
         loans: state.loans.filter((loan) => loan.id !== action.payload.loanId),
@@ -222,7 +260,9 @@ function coopReducer(state: CoopState, action: CoopAction): CoopState {
         penalties: state.penalties.filter(
           (penalty) => penalty.loanId !== action.payload.loanId
         ),
+        totalInterestPool: newInterestPool,
       };
+    }
 
     case "ADD_MEMBER": {
       const newMemberId = Math.max(...state.members.map((m) => m.id), 0) + 1;
@@ -386,8 +426,10 @@ function coopReducer(state: CoopState, action: CoopAction): CoopState {
     case "UPDATE_LOAN_STATUS": {
       // Find the loan being updated
       const loanToUpdate = state.loans.find((l) => l.id === action.payload.loanId);
-      const wasAlreadyPaid = loanToUpdate?.status === "PAID";
-      const isBecomingPaid = action.payload.status === "PAID" && !wasAlreadyPaid;
+      if (!loanToUpdate) return state;
+
+      const oldStatus = loanToUpdate.status;
+      const newStatus = action.payload.status;
 
       const updatedLoans = state.loans.map((loan) =>
         loan.id === action.payload.loanId
@@ -411,12 +453,25 @@ function coopReducer(state: CoopState, action: CoopAction): CoopState {
           : loan
       );
 
-      // Add interest to pool when loan becomes PAID
+      // Update interest pool based on status transitions
       let newInterestPool = state.totalInterestPool;
-      if (isBecomingPaid && loanToUpdate) {
-        const interestEarned = calculateInterestEarned(loanToUpdate);
+      const interestEarned = calculateInterestEarned(loanToUpdate);
+
+      // Status transition logic:
+      // Add interest when loan becomes APPROVED or PAID (from PENDING or REJECTED)
+      // Remove interest when loan moves back to PENDING or REJECTED (from APPROVED or PAID)
+
+      const oldStatusIncludesInterest = oldStatus === "APPROVED" || oldStatus === "PAID";
+      const newStatusIncludesInterest = newStatus === "APPROVED" || newStatus === "PAID";
+
+      if (!oldStatusIncludesInterest && newStatusIncludesInterest) {
+        // Adding interest: PENDING/REJECTED → APPROVED/PAID
         newInterestPool += interestEarned;
+      } else if (oldStatusIncludesInterest && !newStatusIncludesInterest) {
+        // Removing interest: APPROVED/PAID → PENDING/REJECTED
+        newInterestPool = Math.max(0, newInterestPool - interestEarned);
       }
+      // If both old and new status include interest (APPROVED ↔ PAID), no change needed
 
       return {
         ...state,
@@ -732,6 +787,11 @@ function coopReducer(state: CoopState, action: CoopAction): CoopState {
         }
         return loan;
       });
+      // Recalculate total interest pool from all APPROVED and PAID loans
+      const recalculatedInterestPool = loans
+        .filter((loan) => loan.status === "APPROVED" || loan.status === "PAID")
+        .reduce((sum, loan) => sum + calculateInterestEarned(loan), 0);
+
       return {
         ...action.payload,
         loans,
@@ -742,6 +802,8 @@ function coopReducer(state: CoopState, action: CoopAction): CoopState {
         // Preserve the current selected period if it exists and is valid
         selectedPeriod:
           action.payload.selectedPeriod || state.selectedPeriod || "",
+        // Use recalculated interest pool to ensure accuracy
+        totalInterestPool: recalculatedInterestPool,
       };
     }
 
