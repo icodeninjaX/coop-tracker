@@ -46,6 +46,22 @@ const MemberDetailPage = () => {
     return totalPeriods > 0 ? (paidPeriods / totalPeriods) * 100 : 0;
   }, [paymentHistory]);
 
+  // Calculate total dividends received
+  const totalDividendsReceived = useMemo(() => {
+    if (!state) return 0;
+    return state.dividendDistributions.reduce((sum, distribution) => {
+      const memberDividend = distribution.distributions.find(
+        (d) => d.memberId === memberId && !d.forfeited
+      );
+      return sum + (memberDividend?.dividendAmount || 0);
+    }, 0);
+  }, [state?.dividendDistributions, memberId]);
+
+  // Calculate total member equity (contributions + dividends)
+  const totalMemberEquity = useMemo(() => {
+    return totalContributions + totalDividendsReceived;
+  }, [totalContributions, totalDividendsReceived]);
+
   // Get member's loans
   const memberLoans = useMemo(() => {
     if (!state) return [];
@@ -154,38 +170,28 @@ const MemberDetailPage = () => {
 
           <div className="bg-white/80 backdrop-blur-sm border-2 border-purple-200 rounded-xl p-3 sm:p-4 lg:p-6 transition-all duration-200 hover:shadow-md hover:border-purple-300">
             <p className="text-xs uppercase tracking-wider text-purple-600 font-normal mb-1 sm:mb-2">
-              Total Borrowed
+              Total Dividends
             </p>
             <p className="text-base sm:text-xl lg:text-2xl xl:text-3xl font-semibold text-purple-900 break-all">
-              ₱{loanTotals.totalBorrowed.toLocaleString()}
+              ₱{totalDividendsReceived.toLocaleString()}
             </p>
           </div>
 
           <div className="bg-white/80 backdrop-blur-sm border-2 border-emerald-200 rounded-xl p-3 sm:p-4 lg:p-6 transition-all duration-200 hover:shadow-md hover:border-emerald-300">
             <p className="text-xs uppercase tracking-wider text-emerald-600 font-normal mb-1 sm:mb-2">
-              Payment Compliance
+              Total Member Equity
             </p>
-            <p className="text-base sm:text-xl lg:text-2xl xl:text-3xl font-semibold text-emerald-900">
-              {complianceRate.toFixed(0)}%
+            <p className="text-base sm:text-xl lg:text-2xl xl:text-3xl font-semibold text-emerald-900 break-all">
+              ₱{totalMemberEquity.toLocaleString()}
             </p>
           </div>
 
-          <div
-            className={`bg-white/80 backdrop-blur-sm border-2 ${
-              netPosition >= 0 ? "border-emerald-200" : "border-rose-200"
-            } rounded-xl p-3 sm:p-4 lg:p-6 transition-all duration-200 hover:shadow-md ${
-              netPosition >= 0 ? "hover:border-emerald-300" : "hover:border-rose-300"
-            }`}
-          >
-            <p className="text-xs uppercase tracking-wider text-indigo-600 font-normal mb-1 sm:mb-2">
-              Net Position
+          <div className="bg-white/80 backdrop-blur-sm border-2 border-amber-200 rounded-xl p-3 sm:p-4 lg:p-6 transition-all duration-200 hover:shadow-md hover:border-amber-300">
+            <p className="text-xs uppercase tracking-wider text-amber-600 font-normal mb-1 sm:mb-2">
+              Payment Compliance
             </p>
-            <p
-              className={`text-base sm:text-xl lg:text-2xl xl:text-3xl font-semibold ${
-                netPosition >= 0 ? "text-emerald-900" : "text-rose-900"
-              } break-all`}
-            >
-              ₱{netPosition.toLocaleString()}
+            <p className="text-base sm:text-xl lg:text-2xl xl:text-3xl font-semibold text-amber-900">
+              {complianceRate.toFixed(0)}%
             </p>
           </div>
         </div>
@@ -390,7 +396,7 @@ const MemberDetailPage = () => {
             </p>
           </div>
           <div className="p-4 sm:p-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="p-4 bg-indigo-50 border-2 border-indigo-200 rounded-lg">
                 <p className="text-xs uppercase tracking-wider text-indigo-600 font-normal mb-2">
                   Total Contributed
@@ -402,9 +408,27 @@ const MemberDetailPage = () => {
 
               <div className="p-4 bg-purple-50 border-2 border-purple-200 rounded-lg">
                 <p className="text-xs uppercase tracking-wider text-purple-600 font-normal mb-2">
-                  Total Borrowed
+                  Total Dividends
                 </p>
                 <p className="text-lg sm:text-xl font-semibold text-purple-900">
+                  ₱{totalDividendsReceived.toLocaleString()}
+                </p>
+              </div>
+
+              <div className="p-4 bg-emerald-50 border-2 border-emerald-200 rounded-lg">
+                <p className="text-xs uppercase tracking-wider text-emerald-600 font-normal mb-2">
+                  Total Member Equity
+                </p>
+                <p className="text-lg sm:text-xl font-semibold text-emerald-900">
+                  ₱{totalMemberEquity.toLocaleString()}
+                </p>
+              </div>
+
+              <div className="p-4 bg-amber-50 border-2 border-amber-200 rounded-lg">
+                <p className="text-xs uppercase tracking-wider text-amber-600 font-normal mb-2">
+                  Total Borrowed
+                </p>
+                <p className="text-lg sm:text-xl font-semibold text-amber-900">
                   ₱{loanTotals.totalBorrowed.toLocaleString()}
                 </p>
               </div>
@@ -429,8 +453,17 @@ const MemberDetailPage = () => {
             </div>
 
             <div className="mt-6 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-300 rounded-lg">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
+                  <p className="text-sm text-indigo-600 font-light mb-1">Total Member Equity</p>
+                  <p className="text-2xl sm:text-3xl font-semibold text-emerald-900">
+                    ₱{totalMemberEquity.toLocaleString()}
+                  </p>
+                  <p className="text-xs text-indigo-500 font-light mt-1">
+                    Contributions + Dividends
+                  </p>
+                </div>
+                <div className="text-right">
                   <p className="text-sm text-indigo-600 font-light mb-1">Net Position</p>
                   <p
                     className={`text-2xl sm:text-3xl font-semibold ${
@@ -438,11 +471,6 @@ const MemberDetailPage = () => {
                     }`}
                   >
                     {netPosition >= 0 ? "+" : ""}₱{netPosition.toLocaleString()}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-xs text-indigo-600 font-light">
-                    {netPosition >= 0 ? "Positive Standing" : "Negative Standing"}
                   </p>
                   <p className="text-xs text-indigo-500 font-light mt-1">
                     Contributions - Borrowed
