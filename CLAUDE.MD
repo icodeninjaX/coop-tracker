@@ -821,7 +821,7 @@ lg:     ≥ 1024px  (Desktops, large tablets)
 
 2. **Grid Layouts**
 
-   - Stats: `grid-cols-2 lg:grid-cols-4` (2 columns mobile, 4 desktop)
+   - Dashboard Stats: `grid-cols-2 lg:grid-cols-3` (2 columns mobile, 3 desktop for 6 total stats)
    - Collection Periods: Horizontal scroll on mobile, grid on desktop
    - Loan Cards: `grid-cols-1 sm:grid-cols-2 lg:grid-cols-4`
    - Member Cards: Single column mobile, multi-column desktop
@@ -880,6 +880,10 @@ lg:     ≥ 1024px  (Desktops, large tablets)
 
    - **Floating Action Button (FAB)**: `fixed bottom-20 right-4`
    - **Bottom Action Bar**: `fixed bottom-0 inset-x-0`
+   - **Dropdown Menus**: Single button with expandable action menu (e.g., Quick Actions on Dashboard)
+     - Uses `absolute` positioning with backdrop overlay
+     - Auto-closes on action selection or outside click
+     - Color-coded icons with titles and descriptions
    - **Collapsible Menus**: Expandable member/loan actions
    - **Sticky Headers**: Search and filter bars
 
@@ -894,8 +898,12 @@ lg:     ≥ 1024px  (Desktops, large tablets)
 
 **Dashboard (page.tsx):**
 
-- Header actions stack on mobile
-- 2-column stats grid on mobile, 4 on desktop
+- **Quick Actions Menu**: Single dropdown button consolidates Export, Import, New Period, New Loan, and Reset actions
+  - Button positioned right-aligned next to Dashboard heading on all screen sizes
+  - Dropdown menu with icons, titles, and descriptions for each action
+  - Color-coded icons matching action types (emerald for export, purple for import, etc.)
+  - Auto-closes after action selection or clicking outside
+- 2-column stats grid on mobile, 3 on desktop (Total Balance, Members, Active Loans, Pending Loans, Committed Shares, Interest Pool)
 - Collection periods: Horizontal scroll (mobile) vs Grid (desktop)
 - All modals have responsive button layouts
 
@@ -1529,6 +1537,7 @@ import { Button, Input, Modal, Badge } from "@/components/UI";
 - ✅ Individual member detail pages
 - ✅ Data migration system
 - ✅ Enhanced error handling and recovery
+- ✅ Quick Actions dropdown menu on Dashboard for improved mobile UX
 
 ### v0.1.0
 - Basic cooperative management (members, collections, loans)

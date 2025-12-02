@@ -53,6 +53,7 @@ function HomeContent() {
   const [editPeriodDate, setEditPeriodDate] = useState<string>("");
   const [editPeriodDefaultContribution, setEditPeriodDefaultContribution] = useState<string>("");
   const [deletingPeriodId, setDeletingPeriodId] = useState<string>("");
+  const [showQuickActionsMenu, setShowQuickActionsMenu] = useState(false);
 
   const createLoan = () => {
     if (!newLoanMemberId || !newLoanAmount) return;
@@ -398,49 +399,137 @@ function HomeContent() {
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
       <div className="container mx-auto max-w-7xl px-3 sm:px-6 py-6 sm:py-8">
         {/* Header + Actions */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0 mb-6 sm:mb-10 pb-6 border-b-2 border-indigo-200">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-semibold text-indigo-900 tracking-tight mb-1">
+        <div className="mb-6 sm:mb-10 pb-6 border-b-2 border-indigo-200">
+          <div className="flex items-start justify-between mb-1">
+            <h1 className="text-2xl sm:text-3xl font-semibold text-indigo-900 tracking-tight">
               Dashboard
             </h1>
-            <p className="text-sm text-indigo-600 font-light">
-              {format(new Date(), "MMMM d, yyyy")} · {state.collections.length} {state.collections.length === 1 ? 'period' : 'periods'}
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-            <button
-              onClick={() => setShowExportModal(true)}
-              className="px-5 py-2.5 bg-emerald-300 text-emerald-900 text-sm font-normal rounded-md hover:bg-emerald-400 transition-all duration-200 min-h-[44px] shadow-sm"
-            >
-              Export
-            </button>
-            <button
-              onClick={() => setShowImportModal(true)}
-              className="px-5 py-2.5 bg-purple-300 text-purple-900 text-sm font-normal rounded-md hover:bg-purple-400 transition-all duration-200 min-h-[44px] shadow-sm"
-            >
-              Import
-            </button>
-            <button
-              onClick={() => setShowNewPeriodModal(true)}
-              className="px-5 py-2.5 bg-indigo-300 !text-indigo-900 text-sm font-normal rounded-md hover:bg-indigo-400 transition-all duration-200 min-h-[44px] shadow-sm"
-            >
-              New Period
-            </button>
-            <button
-              onClick={() => setShowNewLoanModal(true)}
-              className="px-5 py-2.5 border-2 border-indigo-200 text-indigo-800 text-sm font-normal rounded-md hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200 min-h-[44px]"
-            >
-              New Loan
-            </button>
-            {state.collections.length > 0 && (
+            <div className="relative">
               <button
-                onClick={() => setShowResetModal(true)}
-                className="px-5 py-2.5 border-2 border-rose-200 text-rose-700 text-sm font-normal rounded-md hover:border-rose-300 hover:bg-rose-50 transition-all duration-200 min-h-[44px]"
+                onClick={() => setShowQuickActionsMenu(!showQuickActionsMenu)}
+                className="flex items-center justify-center gap-2 px-4 h-11 sm:h-12 bg-indigo-300 text-indigo-900 rounded-md hover:bg-indigo-400 transition-all duration-200 shadow-sm"
+                title="Quick actions"
+                aria-label="Quick actions menu"
               >
-                Reset
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+                </svg>
+                <span className="text-sm font-normal">Actions</span>
               </button>
+
+            {/* Dropdown Menu */}
+            {showQuickActionsMenu && (
+              <>
+                {/* Backdrop */}
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setShowQuickActionsMenu(false)}
+                />
+
+                {/* Menu */}
+                <div className="absolute right-0 mt-2 w-56 bg-white border-2 border-indigo-200 rounded-xl shadow-lg z-20 overflow-hidden">
+                  <div className="py-2">
+                    <button
+                      onClick={() => {
+                        setShowExportModal(true);
+                        setShowQuickActionsMenu(false);
+                      }}
+                      className="w-full px-4 py-3 text-left hover:bg-emerald-50 transition-colors flex items-center gap-3 border-b border-indigo-100"
+                    >
+                      <div className="flex items-center justify-center w-9 h-9 bg-emerald-300 text-emerald-900 rounded-md flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <div>
+                        <div className="text-sm font-normal text-indigo-900">Export Data</div>
+                        <div className="text-xs text-indigo-600">Download reports</div>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setShowImportModal(true);
+                        setShowQuickActionsMenu(false);
+                      }}
+                      className="w-full px-4 py-3 text-left hover:bg-purple-50 transition-colors flex items-center gap-3 border-b border-indigo-100"
+                    >
+                      <div className="flex items-center justify-center w-9 h-9 bg-purple-300 text-purple-900 rounded-md flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <div>
+                        <div className="text-sm font-normal text-indigo-900">Import Data</div>
+                        <div className="text-xs text-indigo-600">Restore backup</div>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setShowNewPeriodModal(true);
+                        setShowQuickActionsMenu(false);
+                      }}
+                      className="w-full px-4 py-3 text-left hover:bg-indigo-50 transition-colors flex items-center gap-3 border-b border-indigo-100"
+                    >
+                      <div className="flex items-center justify-center w-9 h-9 bg-indigo-300 text-indigo-900 rounded-md flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <div>
+                        <div className="text-sm font-normal text-indigo-900">New Period</div>
+                        <div className="text-xs text-indigo-600">Add collection period</div>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setShowNewLoanModal(true);
+                        setShowQuickActionsMenu(false);
+                      }}
+                      className="w-full px-4 py-3 text-left hover:bg-indigo-50 transition-colors flex items-center gap-3 border-b border-indigo-100"
+                    >
+                      <div className="flex items-center justify-center w-9 h-9 border-2 border-indigo-200 text-indigo-800 rounded-md flex-shrink-0 bg-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <div>
+                        <div className="text-sm font-normal text-indigo-900">New Loan</div>
+                        <div className="text-xs text-indigo-600">Create loan request</div>
+                      </div>
+                    </button>
+
+                    {state.collections.length > 0 && (
+                      <button
+                        onClick={() => {
+                          setShowResetModal(true);
+                          setShowQuickActionsMenu(false);
+                        }}
+                        className="w-full px-4 py-3 text-left hover:bg-rose-50 transition-colors flex items-center gap-3"
+                      >
+                        <div className="flex items-center justify-center w-9 h-9 border-2 border-rose-200 text-rose-700 rounded-md flex-shrink-0 bg-white">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                        <div>
+                          <div className="text-sm font-normal text-indigo-900">Reset Periods</div>
+                          <div className="text-xs text-rose-600">Clear all data</div>
+                        </div>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </>
             )}
+            </div>
           </div>
+          <p className="text-sm text-indigo-600 font-light">
+            {format(new Date(), "MMMM d, yyyy")} · {state.collections.length} {state.collections.length === 1 ? 'period' : 'periods'}
+          </p>
         </div>
 
         {/* Stats Grid */}
