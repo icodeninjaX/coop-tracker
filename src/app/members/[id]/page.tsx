@@ -55,7 +55,7 @@ const MemberDetailPage = () => {
       );
       return sum + (memberDividend?.dividendAmount || 0);
     }, 0);
-  }, [state?.dividendDistributions, memberId]);
+  }, [state, memberId]);
 
   // Calculate total member equity (contributions + dividends)
   const totalMemberEquity = useMemo(() => {
@@ -68,7 +68,7 @@ const MemberDetailPage = () => {
     return state.loans
       .filter((loan) => loan.memberId === memberId)
       .sort((a, b) => new Date(b.dateIssued).getTime() - new Date(a.dateIssued).getTime());
-  }, [state?.loans, memberId]);
+  }, [state, memberId]);
 
   // Calculate loan totals
   const loanTotals = useMemo(() => {
