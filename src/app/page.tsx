@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import { useCoop } from "@/context/CoopContext";
 import { useState } from "react";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import Link from "next/link";
 import {
   Button,
   Input,
@@ -534,59 +535,59 @@ function HomeContent() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 mb-8 sm:mb-12">
-          <div className="bg-white/80 backdrop-blur-sm border-2 border-indigo-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-indigo-300">
+          <Link href="/ledger" className="bg-white/80 backdrop-blur-sm border-2 border-indigo-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-indigo-300 cursor-pointer">
             <p className="text-xs uppercase tracking-wider text-indigo-600 font-normal mb-2">
               Total Balance
             </p>
             <p className="text-2xl sm:text-3xl font-semibold text-indigo-900">
               ₱{totalBalance.toLocaleString()}
             </p>
-          </div>
+          </Link>
 
-          <div className="bg-white/80 backdrop-blur-sm border-2 border-purple-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-purple-300">
+          <Link href="/members" className="bg-white/80 backdrop-blur-sm border-2 border-purple-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-purple-300 cursor-pointer">
             <p className="text-xs uppercase tracking-wider text-purple-600 font-normal mb-2">
               Members
             </p>
             <p className="text-2xl sm:text-3xl font-semibold text-purple-900">
               {totalMembers}
             </p>
-          </div>
+          </Link>
 
-          <div className="bg-white/80 backdrop-blur-sm border-2 border-emerald-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-emerald-300">
+          <Link href="/loans" className="bg-white/80 backdrop-blur-sm border-2 border-emerald-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-emerald-300 cursor-pointer">
             <p className="text-xs uppercase tracking-wider text-emerald-600 font-normal mb-2">
               Active Loans
             </p>
             <p className="text-2xl sm:text-3xl font-semibold text-emerald-900">
               {activeLoans}
             </p>
-          </div>
+          </Link>
 
-          <div className="bg-white/80 backdrop-blur-sm border-2 border-amber-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-amber-300">
+          <Link href="/loans" className="bg-white/80 backdrop-blur-sm border-2 border-amber-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-amber-300 cursor-pointer">
             <p className="text-xs uppercase tracking-wider text-amber-600 font-normal mb-2">
               Pending Loans
             </p>
             <p className="text-2xl sm:text-3xl font-semibold text-amber-900">
               {pendingLoans}
             </p>
-          </div>
+          </Link>
 
-          <div className="bg-white/80 backdrop-blur-sm border-2 border-rose-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-rose-300">
+          <Link href="/shares" className="bg-white/80 backdrop-blur-sm border-2 border-rose-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-rose-300 cursor-pointer">
             <p className="text-xs uppercase tracking-wider text-rose-600 font-normal mb-2">
               Committed Shares
             </p>
             <p className="text-2xl sm:text-3xl font-semibold text-rose-900">
               {totalShares.toFixed(2)}
             </p>
-          </div>
+          </Link>
 
-          <div className="bg-white/80 backdrop-blur-sm border-2 border-cyan-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-cyan-300">
+          <Link href="/shares" className="bg-white/80 backdrop-blur-sm border-2 border-cyan-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-cyan-300 cursor-pointer">
             <p className="text-xs uppercase tracking-wider text-cyan-600 font-normal mb-2">
               Interest Pool
             </p>
             <p className="text-2xl sm:text-3xl font-semibold text-cyan-900">
               ₱{totalInterestPool.toLocaleString()}
             </p>
-          </div>
+          </Link>
         </div>
 
         {/* Collection Periods */}
