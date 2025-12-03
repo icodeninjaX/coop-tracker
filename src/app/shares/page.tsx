@@ -64,16 +64,20 @@ function SharesPage() {
   // Handle edit shares
   const handleEditShares = (memberId: number, currentShares: number) => {
     setEditingMemberId(memberId);
-    setEditSharesValue(String(currentShares));
+    // Set the amount (shares × sharePrice) instead of just shares
+    setEditSharesValue(String(currentShares * sharePrice));
   };
 
   const handleSaveShares = (memberId: number) => {
-    const shares = parseFloat(editSharesValue);
+    const amount = parseFloat(editSharesValue);
 
-    if (isNaN(shares) || shares < 0) {
-      alert("Please enter a valid non-negative number");
+    if (isNaN(amount) || amount < 0) {
+      alert("Please enter a valid non-negative amount");
       return;
     }
+
+    // Calculate shares from amount (amount ÷ sharePrice)
+    const shares = amount / sharePrice;
 
     dispatch({
       type: "UPDATE_MEMBER_SHARES",
@@ -266,15 +270,24 @@ function SharesPage() {
                     </td>
                     <td className="py-3 px-4 text-sm text-indigo-900 text-right">
                       {isEditing ? (
-                        <input
-                          type="number"
-                          min="0"
-                          step="0.5"
-                          value={editSharesValue}
-                          onChange={(e) => setEditSharesValue(e.target.value)}
-                          className="w-24 px-2 py-1 border-2 border-indigo-300 rounded text-right"
-                          autoFocus
-                        />
+                        <div className="flex flex-col items-end gap-1">
+                          <div className="flex items-center gap-1">
+                            <span className="text-indigo-600 text-xs">₱</span>
+                            <input
+                              type="number"
+                              min="0"
+                              step="100"
+                              value={editSharesValue}
+                              onChange={(e) => setEditSharesValue(e.target.value)}
+                              className="w-28 px-2 py-1 border-2 border-indigo-300 rounded text-right"
+                              placeholder="Amount"
+                              autoFocus
+                            />
+                          </div>
+                          <span className="text-xs text-indigo-500 font-light">
+                            = {(parseFloat(editSharesValue) / sharePrice || 0).toFixed(2)} shares
+                          </span>
+                        </div>
                       ) : (
                         shares.toFixed(2)
                       )}
@@ -401,17 +414,24 @@ function SharesPage() {
                 {isEditing && (
                   <div className="mb-3">
                     <label className="text-xs text-indigo-600 mb-1 block">
-                      Committed Shares
+                      Contribution Amount
                     </label>
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.5"
-                      value={editSharesValue}
-                      onChange={(e) => setEditSharesValue(e.target.value)}
-                      className="w-full px-3 py-2 border-2 border-indigo-300 rounded"
-                      autoFocus
-                    />
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-indigo-600 text-sm">₱</span>
+                      <input
+                        type="number"
+                        min="0"
+                        step="100"
+                        value={editSharesValue}
+                        onChange={(e) => setEditSharesValue(e.target.value)}
+                        className="w-full px-3 py-2 border-2 border-indigo-300 rounded"
+                        placeholder="Enter amount"
+                        autoFocus
+                      />
+                    </div>
+                    <p className="text-xs text-indigo-500 font-light">
+                      = {(parseFloat(editSharesValue) / sharePrice || 0).toFixed(2)} shares at ₱{sharePrice.toLocaleString()}/share
+                    </p>
                   </div>
                 )}
 
