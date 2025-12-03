@@ -21,9 +21,9 @@ export function getSupabaseClient() {
     try {
       _supabaseClient = createClient(url, key, {
         auth: {
-          persistSession: false, // Disable session persistence to avoid refresh token issues
-          autoRefreshToken: false, // Disable auto refresh to prevent network errors
-          detectSessionInUrl: false, // Disable URL session detection
+          persistSession: true, // Enable session persistence to maintain login across page navigations
+          autoRefreshToken: true, // Enable auto refresh to keep sessions alive
+          detectSessionInUrl: true, // Enable URL session detection for auth flows
         },
         global: {
           headers: {
