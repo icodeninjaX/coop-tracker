@@ -201,37 +201,37 @@ function MembersContent() {
         {/* Horizontal Scrollable Stats - Mobile */}
         <div className="md:hidden px-4 py-4 overflow-x-auto">
           <div className="flex gap-3 pb-2">
-            <div className="min-w-[140px] bg-white/80 backdrop-blur-sm border-2 border-indigo-200 rounded-xl p-4 transition-all duration-200 hover:shadow-md">
-              <p className="text-xs uppercase tracking-wider text-indigo-600 font-normal mb-2">
+            <div className="min-w-[140px] bg-white/80 backdrop-blur-sm border-2 border-indigo-200 rounded-xl p-3 transition-all duration-200 hover:shadow-md">
+              <p className="text-xs uppercase tracking-wider text-indigo-600 font-normal mb-1">
                 Members
               </p>
-              <p className="text-2xl font-semibold text-indigo-900">{totalMembers}</p>
+              <p className="text-base font-semibold text-indigo-900 break-all">{totalMembers}</p>
             </div>
 
-            <div className="min-w-[140px] bg-white/80 backdrop-blur-sm border-2 border-emerald-200 rounded-xl p-4 transition-all duration-200 hover:shadow-md">
-              <p className="text-xs uppercase tracking-wider text-emerald-600 font-normal mb-2">
+            <div className="min-w-[140px] bg-white/80 backdrop-blur-sm border-2 border-emerald-200 rounded-xl p-3 transition-all duration-200 hover:shadow-md">
+              <p className="text-xs uppercase tracking-wider text-emerald-600 font-normal mb-1">
                 Paid
               </p>
-              <p className="text-2xl font-semibold text-emerald-900">
+              <p className="text-base font-semibold text-emerald-900 break-all">
                 {totalPaid}/{totalMembers}
               </p>
             </div>
 
-            <div className="min-w-[140px] bg-white/80 backdrop-blur-sm border-2 border-purple-200 rounded-xl p-4 transition-all duration-200 hover:shadow-md">
-              <p className="text-xs uppercase tracking-wider text-purple-600 font-normal mb-2">
+            <div className="min-w-[140px] bg-white/80 backdrop-blur-sm border-2 border-purple-200 rounded-xl p-3 transition-all duration-200 hover:shadow-md">
+              <p className="text-xs uppercase tracking-wider text-purple-600 font-normal mb-1">
                 Collected
               </p>
-              <p className="text-2xl font-semibold text-purple-900">
+              <p className="text-base font-semibold text-purple-900 break-all">
                 ₱{totalCollected.toLocaleString()}
               </p>
             </div>
 
             {selectedPeriod && (
-              <div className="min-w-[140px] bg-white/80 backdrop-blur-sm border-2 border-amber-200 rounded-xl p-4 transition-all duration-200 hover:shadow-md">
-                <p className="text-xs uppercase tracking-wider text-amber-600 font-normal mb-2">
+              <div className="min-w-[140px] bg-white/80 backdrop-blur-sm border-2 border-amber-200 rounded-xl p-3 transition-all duration-200 hover:shadow-md">
+                <p className="text-xs uppercase tracking-wider text-amber-600 font-normal mb-1">
                   Progress
                 </p>
-                <p className="text-2xl font-semibold text-amber-900">
+                <p className="text-base font-semibold text-amber-900 break-all">
                   {Math.round(paymentProgress)}%
                 </p>
               </div>
@@ -241,29 +241,29 @@ function MembersContent() {
 
         {/* Desktop Stats Grid */}
         <div className="hidden md:grid md:grid-cols-3 gap-6 mb-8 px-6">
-          <div className="bg-white/80 backdrop-blur-sm border-2 border-indigo-200 rounded-xl p-6 transition-all duration-200 hover:shadow-md hover:border-indigo-300">
-            <p className="text-xs uppercase tracking-wider text-indigo-600 font-normal mb-2">
+          <div className="bg-white/80 backdrop-blur-sm border-2 border-indigo-200 rounded-xl p-3 sm:p-4 lg:p-6 transition-all duration-200 hover:shadow-md hover:border-indigo-300">
+            <p className="text-xs uppercase tracking-wider text-indigo-600 font-normal mb-1 sm:mb-2">
               Total Members
             </p>
-            <p className="text-3xl font-semibold text-indigo-900">
+            <p className="text-base sm:text-xl lg:text-2xl xl:text-3xl font-semibold text-indigo-900 break-all">
               {totalMembers}
             </p>
           </div>
 
-          <div className="bg-white/80 backdrop-blur-sm border-2 border-emerald-200 rounded-xl p-6 transition-all duration-200 hover:shadow-md hover:border-emerald-300">
-            <p className="text-xs uppercase tracking-wider text-emerald-600 font-normal mb-2">
+          <div className="bg-white/80 backdrop-blur-sm border-2 border-emerald-200 rounded-xl p-3 sm:p-4 lg:p-6 transition-all duration-200 hover:shadow-md hover:border-emerald-300">
+            <p className="text-xs uppercase tracking-wider text-emerald-600 font-normal mb-1 sm:mb-2">
               Payments Made
             </p>
-            <p className="text-3xl font-semibold text-emerald-900">
+            <p className="text-base sm:text-xl lg:text-2xl xl:text-3xl font-semibold text-emerald-900 break-all">
               {totalPaid} / {totalMembers}
             </p>
           </div>
 
-          <div className="bg-white/80 backdrop-blur-sm border-2 border-purple-200 rounded-xl p-6 transition-all duration-200 hover:shadow-md hover:border-purple-300">
-            <p className="text-xs uppercase tracking-wider text-purple-600 font-normal mb-2">
+          <div className="bg-white/80 backdrop-blur-sm border-2 border-purple-200 rounded-xl p-3 sm:p-4 lg:p-6 transition-all duration-200 hover:shadow-md hover:border-purple-300">
+            <p className="text-xs uppercase tracking-wider text-purple-600 font-normal mb-1 sm:mb-2">
               Total Collected
             </p>
-            <p className="text-3xl font-semibold text-purple-900">
+            <p className="text-base sm:text-xl lg:text-2xl xl:text-3xl font-semibold text-purple-900 break-all">
               ₱{totalCollected.toLocaleString()}
             </p>
           </div>

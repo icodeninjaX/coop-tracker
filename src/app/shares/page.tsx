@@ -145,56 +145,56 @@ function SharesPage() {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
         {/* Total Shares */}
-        <Card elevated>
-          <p className="text-xs uppercase tracking-wider text-indigo-600 mb-2 font-normal">
+        <div className="bg-white/80 backdrop-blur-sm border-2 border-indigo-200 rounded-xl p-3 sm:p-4 lg:p-6 transition-all duration-200 hover:shadow-md hover:border-indigo-300">
+          <p className="text-xs uppercase tracking-wider text-indigo-600 mb-1 sm:mb-2 font-normal">
             Total Committed Shares
           </p>
-          <p className="text-xl sm:text-2xl lg:text-3xl text-indigo-900 mb-1">
+          <p className="text-base sm:text-xl lg:text-2xl xl:text-3xl text-indigo-900 mb-1 font-semibold break-all">
             {totalShares.toFixed(2)}
           </p>
           <p className="text-xs text-indigo-500 font-light">
             {sortedMembers.filter((m) => (m.committedShares || 0) > 0).length} members
           </p>
-        </Card>
+        </div>
 
         {/* Interest Pool */}
-        <Card elevated>
-          <p className="text-xs uppercase tracking-wider text-emerald-600 mb-2 font-normal">
+        <div className="bg-white/80 backdrop-blur-sm border-2 border-emerald-200 rounded-xl p-3 sm:p-4 lg:p-6 transition-all duration-200 hover:shadow-md hover:border-emerald-300">
+          <p className="text-xs uppercase tracking-wider text-emerald-600 mb-1 sm:mb-2 font-normal">
             Interest Pool
           </p>
-          <p className="text-xl sm:text-2xl lg:text-3xl text-emerald-900 mb-1">
+          <p className="text-base sm:text-xl lg:text-2xl xl:text-3xl text-emerald-900 mb-1 font-semibold break-all">
             ₱{totalInterestPool.toLocaleString()}
           </p>
           <p className="text-xs text-emerald-500 font-light">
             Available to distribute
           </p>
-        </Card>
+        </div>
 
         {/* Per Share Dividend */}
-        <Card elevated>
-          <p className="text-xs uppercase tracking-wider text-purple-600 mb-2 font-normal">
+        <div className="bg-white/80 backdrop-blur-sm border-2 border-purple-200 rounded-xl p-3 sm:p-4 lg:p-6 transition-all duration-200 hover:shadow-md hover:border-purple-300">
+          <p className="text-xs uppercase tracking-wider text-purple-600 mb-1 sm:mb-2 font-normal">
             Per Share Dividend
           </p>
-          <p className="text-xl sm:text-2xl lg:text-3xl text-purple-900 mb-1">
+          <p className="text-base sm:text-xl lg:text-2xl xl:text-3xl text-purple-900 mb-1 font-semibold break-all">
             ₱{perShareDividend.toLocaleString()}
           </p>
           <p className="text-xs text-purple-500 font-light">
             Current value
           </p>
-        </Card>
+        </div>
 
         {/* Share Price */}
-        <Card elevated>
-          <p className="text-xs uppercase tracking-wider text-amber-600 mb-2 font-normal">
+        <div className="bg-white/80 backdrop-blur-sm border-2 border-amber-200 rounded-xl p-3 sm:p-4 lg:p-6 transition-all duration-200 hover:shadow-md hover:border-amber-300">
+          <p className="text-xs uppercase tracking-wider text-amber-600 mb-1 sm:mb-2 font-normal">
             Share Price
           </p>
-          <p className="text-xl sm:text-2xl lg:text-3xl text-amber-900 mb-1">
+          <p className="text-base sm:text-xl lg:text-2xl xl:text-3xl text-amber-900 mb-1 font-semibold break-all">
             ₱{sharePrice.toLocaleString()}
           </p>
           <p className="text-xs text-amber-500 font-light">
             Per share
           </p>
-        </Card>
+        </div>
       </div>
 
       {/* Action Buttons */}

@@ -206,47 +206,47 @@ const LoansPage = () => {
 
         {/* Stats Overview */}
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-6 mb-6 lg:mb-8">
-          <div className="bg-white/80 backdrop-blur-sm border-2 border-indigo-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-indigo-300">
-            <p className="text-xs uppercase tracking-wider text-indigo-600 font-normal mb-2">
+          <div className="bg-white/80 backdrop-blur-sm border-2 border-indigo-200 rounded-xl p-3 sm:p-4 lg:p-6 transition-all duration-200 hover:shadow-md hover:border-indigo-300">
+            <p className="text-xs uppercase tracking-wider text-indigo-600 font-normal mb-1 sm:mb-2">
               Total Loans
             </p>
-            <p className="text-2xl sm:text-3xl font-semibold text-indigo-900">
+            <p className="text-base sm:text-xl lg:text-2xl xl:text-3xl font-semibold text-indigo-900 break-all">
               {totalLoans}
             </p>
           </div>
 
-          <div className="bg-white/80 backdrop-blur-sm border-2 border-amber-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-amber-300">
-            <p className="text-xs uppercase tracking-wider text-amber-600 font-normal mb-2">
+          <div className="bg-white/80 backdrop-blur-sm border-2 border-amber-200 rounded-xl p-3 sm:p-4 lg:p-6 transition-all duration-200 hover:shadow-md hover:border-amber-300">
+            <p className="text-xs uppercase tracking-wider text-amber-600 font-normal mb-1 sm:mb-2">
               Pending
             </p>
-            <p className="text-2xl sm:text-3xl font-semibold text-amber-900">
+            <p className="text-base sm:text-xl lg:text-2xl xl:text-3xl font-semibold text-amber-900 break-all">
               {pendingLoans}
             </p>
           </div>
 
-          <div className="bg-white/80 backdrop-blur-sm border-2 border-emerald-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-emerald-300">
-            <p className="text-xs uppercase tracking-wider text-emerald-600 font-normal mb-2">
+          <div className="bg-white/80 backdrop-blur-sm border-2 border-emerald-200 rounded-xl p-3 sm:p-4 lg:p-6 transition-all duration-200 hover:shadow-md hover:border-emerald-300">
+            <p className="text-xs uppercase tracking-wider text-emerald-600 font-normal mb-1 sm:mb-2">
               Approved
             </p>
-            <p className="text-2xl sm:text-3xl font-semibold text-emerald-900">
+            <p className="text-base sm:text-xl lg:text-2xl xl:text-3xl font-semibold text-emerald-900 break-all">
               {approvedLoans}
             </p>
           </div>
 
-          <div className="bg-white/80 backdrop-blur-sm border-2 border-purple-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-purple-300">
-            <p className="text-xs uppercase tracking-wider text-purple-600 font-normal mb-2">
+          <div className="bg-white/80 backdrop-blur-sm border-2 border-purple-200 rounded-xl p-3 sm:p-4 lg:p-6 transition-all duration-200 hover:shadow-md hover:border-purple-300">
+            <p className="text-xs uppercase tracking-wider text-purple-600 font-normal mb-1 sm:mb-2">
               Outstanding
             </p>
-            <p className="text-2xl sm:text-3xl font-semibold text-purple-900">
+            <p className="text-base sm:text-xl lg:text-2xl xl:text-3xl font-semibold text-purple-900 break-all">
               ₱{totalOutstanding.toLocaleString()}
             </p>
           </div>
 
-          <div className="bg-white/80 backdrop-blur-sm border-2 border-rose-200 rounded-xl p-4 sm:p-6 transition-all duration-200 hover:shadow-md hover:border-rose-300">
-            <p className="text-xs uppercase tracking-wider text-rose-600 font-normal mb-2">
+          <div className="bg-white/80 backdrop-blur-sm border-2 border-rose-200 rounded-xl p-3 sm:p-4 lg:p-6 transition-all duration-200 hover:shadow-md hover:border-rose-300">
+            <p className="text-xs uppercase tracking-wider text-rose-600 font-normal mb-1 sm:mb-2">
               Interest Earned
             </p>
-            <p className="text-2xl sm:text-3xl font-semibold text-rose-900">
+            <p className="text-base sm:text-xl lg:text-2xl xl:text-3xl font-semibold text-rose-900 break-all">
               ₱{totalInterestEarned.toLocaleString()}
             </p>
           </div>
