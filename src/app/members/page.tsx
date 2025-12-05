@@ -198,44 +198,33 @@ function MembersContent() {
           </div>
         </div>
 
-        {/* Horizontal Scrollable Stats - Mobile */}
-        <div className="md:hidden px-4 py-4 overflow-x-auto">
-          <div className="flex gap-3 pb-2">
-            <div className="min-w-[140px] bg-white/80 backdrop-blur-sm border-2 border-indigo-200 rounded-xl p-3 transition-all duration-200 hover:shadow-md">
+        {/* Stats Grid - Mobile (Fixed 3 Columns) */}
+        <div className="md:hidden px-4 py-4">
+          <div className="grid grid-cols-3 gap-2">
+            <div className="bg-white/80 backdrop-blur-sm border-2 border-indigo-200 rounded-xl p-3 transition-all duration-200 hover:shadow-md">
               <p className="text-xs uppercase tracking-wider text-indigo-600 font-normal mb-1">
                 Members
               </p>
-              <p className="text-base font-semibold text-indigo-900 break-all">{totalMembers}</p>
+              <p className="text-base font-semibold text-indigo-900">{totalMembers}</p>
             </div>
 
-            <div className="min-w-[140px] bg-white/80 backdrop-blur-sm border-2 border-emerald-200 rounded-xl p-3 transition-all duration-200 hover:shadow-md">
+            <div className="bg-white/80 backdrop-blur-sm border-2 border-emerald-200 rounded-xl p-3 transition-all duration-200 hover:shadow-md">
               <p className="text-xs uppercase tracking-wider text-emerald-600 font-normal mb-1">
                 Paid
               </p>
-              <p className="text-base font-semibold text-emerald-900 break-all">
+              <p className="text-base font-semibold text-emerald-900">
                 {totalPaid}/{totalMembers}
               </p>
             </div>
 
-            <div className="min-w-[140px] bg-white/80 backdrop-blur-sm border-2 border-purple-200 rounded-xl p-3 transition-all duration-200 hover:shadow-md">
+            <div className="bg-white/80 backdrop-blur-sm border-2 border-purple-200 rounded-xl p-3 transition-all duration-200 hover:shadow-md">
               <p className="text-xs uppercase tracking-wider text-purple-600 font-normal mb-1">
                 Collected
               </p>
-              <p className="text-base font-semibold text-purple-900 break-all">
+              <p className="text-base font-semibold text-purple-900">
                 ₱{totalCollected.toLocaleString()}
               </p>
             </div>
-
-            {selectedPeriod && (
-              <div className="min-w-[140px] bg-white/80 backdrop-blur-sm border-2 border-amber-200 rounded-xl p-3 transition-all duration-200 hover:shadow-md">
-                <p className="text-xs uppercase tracking-wider text-amber-600 font-normal mb-1">
-                  Progress
-                </p>
-                <p className="text-base font-semibold text-amber-900 break-all">
-                  {Math.round(paymentProgress)}%
-                </p>
-              </div>
-            )}
           </div>
         </div>
 
