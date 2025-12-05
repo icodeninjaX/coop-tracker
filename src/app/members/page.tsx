@@ -9,12 +9,10 @@ import {
   Button,
   Card,
   Input,
-  Select,
   Badge,
   EmptyState,
   Modal,
 } from "@/components/UI";
-import { calculateExpectedContribution } from "@/lib/shareCalculations";
 
 function MembersContent() {
   const { state, dispatch } = useCoop();
@@ -30,6 +28,8 @@ function MembersContent() {
     name: string;
   } | null>(null);
   const [showAddMember, setShowAddMember] = useState<boolean>(false);
+  const [showPeriodBrowser, setShowPeriodBrowser] = useState<boolean>(false);
+  const [periodSearchQuery, setPeriodSearchQuery] = useState<string>("");
 
   const period = useMemo(
     () => state.collections.find((c) => c.id === selectedPeriod),
@@ -41,6 +41,24 @@ function MembersContent() {
     if (!q) return state.members;
     return state.members.filter((m) => m.name.toLowerCase().includes(q));
   }, [state.members, query]);
+
+  // Filter periods based on search query
+  const filteredPeriods = useMemo(() => {
+    const q = periodSearchQuery.trim().toLowerCase();
+    if (!q) return state.collections;
+    return state.collections.filter((p) => {
+      const dateStr = format(new Date(p.date), "MMMM d, yyyy").toLowerCase();
+      const amountStr = p.totalCollected.toString();
+      return dateStr.includes(q) || amountStr.includes(q);
+    });
+  }, [state.collections, periodSearchQuery]);
+
+  // Helper function to select period and close modal
+  const selectPeriod = (periodId: string) => {
+    setSelectedPeriod(periodId);
+    setShowPeriodBrowser(false);
+    setPeriodSearchQuery("");
+  };
 
   // Initialize per-member amount inputs when period changes
   useEffect(() => {
@@ -258,20 +276,57 @@ function MembersContent() {
           </div>
         </div>
 
-        {/* Mobile Period Selector */}
+        {/* Mobile Period Selector Button */}
         <div className="md:hidden px-4 mb-4">
-          <Select
-            value={selectedPeriod}
-            onChange={(e) => setSelectedPeriod(e.target.value)}
-            options={[
-              { value: "", label: "Select Period" },
-              ...state.collections.map((p) => ({
-                value: p.id,
-                label: `${format(new Date(p.date), "MMM d, yyyy")} - ₱${p.totalCollected.toLocaleString()}`,
-              })),
-            ]}
-            className="text-sm"
-          />
+          <button
+            onClick={() => setShowPeriodBrowser(true)}
+            className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border-2 border-indigo-200 rounded-lg hover:border-indigo-300 hover:bg-white transition-all duration-200 flex items-center justify-between min-h-[52px]"
+          >
+            <div className="flex items-center gap-3">
+              <svg
+                className="w-5 h-5 text-indigo-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+              <div className="text-left">
+                {period ? (
+                  <>
+                    <p className="text-sm font-semibold text-indigo-900">
+                      {format(new Date(period.date), "MMMM d, yyyy")}
+                    </p>
+                    <p className="text-xs text-indigo-600">
+                      ₱{period.totalCollected.toLocaleString()} collected
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-sm text-indigo-600 font-normal">
+                    Select Collection Period
+                  </p>
+                )}
+              </div>
+            </div>
+            <svg
+              className="w-5 h-5 text-indigo-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
         </div>
 
         {/* Desktop Controls Section */}
@@ -281,20 +336,53 @@ function MembersContent() {
             <h3 className="text-lg font-normal text-indigo-900 mb-4">
               Collection Period
             </h3>
-            <Select
-              value={selectedPeriod}
-              onChange={(e) => setSelectedPeriod(e.target.value)}
-              options={[
-                { value: "", label: "Select Period" },
-                ...state.collections.map((p) => ({
-                  value: p.id,
-                  label: `${format(
-                    new Date(p.date),
-                    "MMM d, yyyy"
-                  )} - ₱${p.totalCollected.toLocaleString()}`,
-                })),
-              ]}
-            />
+            <button
+              onClick={() => setShowPeriodBrowser(true)}
+              className="w-full px-4 py-3 bg-white border-2 border-indigo-200 rounded-lg hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200 flex items-center justify-between min-h-[52px]"
+            >
+              <div className="flex items-center gap-3">
+                <svg
+                  className="w-5 h-5 text-indigo-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+                <div className="text-left">
+                  {period ? (
+                    <>
+                      <p className="text-sm font-semibold text-indigo-900">
+                        {format(new Date(period.date), "MMMM d, yyyy")}
+                      </p>
+                      <p className="text-xs text-indigo-600">
+                        ₱{period.totalCollected.toLocaleString()}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-sm text-indigo-600">Browse Periods</p>
+                  )}
+                </div>
+              </div>
+              <svg
+                className="w-5 h-5 text-indigo-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </button>
           </Card>
 
           {/* Search */}
@@ -482,6 +570,7 @@ function MembersContent() {
                                 <h3 className="font-normal text-indigo-900 text-base md:text-lg truncate">
                                   {member.name}
                                 </h3>
+                                {/* ID, Shares, and Paid Status */}
                                 <div className="flex items-center gap-2 mt-1 flex-wrap">
                                   <p className="text-xs md:text-sm text-indigo-600">
                                     ID: {member.id}
@@ -490,16 +579,18 @@ function MembersContent() {
                                   <p className="text-xs md:text-sm text-purple-600 font-medium">
                                     {(member.committedShares || 0).toFixed(2)} shares
                                   </p>
-                                  <span className="text-neutral-300">•</span>
-                                  <p className="text-xs md:text-sm text-emerald-600">
-                                    Expected: ₱{calculateExpectedContribution(member.committedShares || 0, state.sharePrice || 500).toLocaleString()}
-                                  </p>
-                                  {selectedPeriod && isPaid && (
+                                  {selectedPeriod && (
                                     <>
                                       <span className="text-neutral-300">•</span>
-                                      <Badge variant="neutral" className="md:hidden">
-                                        Paid
-                                      </Badge>
+                                      {isPaid ? (
+                                        <p className="text-xs md:text-sm text-emerald-600 font-medium md:hidden">
+                                          Paid
+                                        </p>
+                                      ) : (
+                                        <p className="text-xs md:text-sm text-rose-400 font-medium md:hidden">
+                                          Unpaid
+                                        </p>
+                                      )}
                                     </>
                                   )}
                                 </div>
@@ -580,7 +671,7 @@ function MembersContent() {
 
                             {/* Mobile Menu Button */}
                             <button
-                              className="md:hidden p-2 hover:bg-indigo-100 rounded-lg transition-colors flex-shrink-0"
+                              className="md:hidden px-3 py-2 bg-indigo-100 hover:bg-indigo-200 rounded-lg transition-all duration-200 flex-shrink-0 active:scale-95"
                               onClick={() => {
                                 // Toggle mobile actions menu
                                 const menu = document.getElementById(
@@ -590,19 +681,14 @@ function MembersContent() {
                                   menu.classList.toggle("hidden");
                                 }
                               }}
+                              aria-label="More actions"
                             >
                               <svg
-                                className="w-5 h-5 text-indigo-600"
-                                fill="none"
-                                stroke="currentColor"
+                                className="w-5 h-5 text-indigo-700"
+                                fill="currentColor"
                                 viewBox="0 0 24 24"
                               >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
-                                />
+                                <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
                               </svg>
                             </button>
                           </div>
@@ -617,8 +703,8 @@ function MembersContent() {
                                 {isPaid ? (
                                   <div className="flex items-center justify-between p-3 bg-emerald-50 rounded-lg border border-emerald-200">
                                     <div className="flex items-center gap-2">
-                                      <Badge variant="success">Paid</Badge>
-                                      <span className="font-normal text-indigo-900">
+                                      <p className="text-sm text-emerald-700 font-medium">Paid:</p>
+                                      <span className="font-semibold text-emerald-900">
                                         ₱{payment?.amount?.toLocaleString() || 0}
                                       </span>
                                     </div>
@@ -632,9 +718,6 @@ function MembersContent() {
                                   </div>
                                 ) : (
                                   <div className="space-y-2">
-                                    <div className="flex items-center gap-2">
-                                      <Badge variant="warning">Unpaid</Badge>
-                                    </div>
                                     <div className="flex gap-2">
                                       <Input
                                         type="number"
@@ -653,7 +736,7 @@ function MembersContent() {
                                       />
                                       <button
                                         onClick={() => saveAmount(member.id)}
-                                        className="px-6 h-11 bg-indigo-300 text-indigo-900 text-sm font-normal rounded-md hover:bg-indigo-400 shadow-sm transition-all duration-200"
+                                        className="px-6 h-11 bg-emerald-200 text-emerald-800 text-sm font-normal rounded-md hover:bg-emerald-300 shadow-sm transition-all duration-200"
                                       >
                                         Pay
                                       </button>
@@ -773,6 +856,166 @@ function MembersContent() {
               className="w-full md:w-auto h-12 md:h-auto"
             >
               Add Member
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Period Browser Modal */}
+      <Modal
+        isOpen={showPeriodBrowser}
+        onClose={() => {
+          setShowPeriodBrowser(false);
+          setPeriodSearchQuery("");
+        }}
+        title="Select Collection Period"
+        size="lg"
+      >
+        <div className="space-y-4">
+          {/* Search Bar */}
+          <Input
+            type="text"
+            placeholder="Search by date or amount..."
+            value={periodSearchQuery}
+            onChange={(e) => setPeriodSearchQuery(e.target.value)}
+            icon={
+              <svg
+                className="h-4 w-4 text-indigo-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            }
+          />
+
+          {/* Period Count */}
+          <div className="flex items-center justify-between text-sm">
+            <p className="text-indigo-600 font-light">
+              {filteredPeriods.length} period{filteredPeriods.length !== 1 ? "s" : ""} available
+            </p>
+            {selectedPeriod && (
+              <button
+                onClick={() => selectPeriod("")}
+                className="text-rose-600 hover:text-rose-700 font-normal"
+              >
+                Clear Selection
+              </button>
+            )}
+          </div>
+
+          {/* Periods Grid */}
+          <div className="max-h-[60vh] overflow-y-auto">
+            {filteredPeriods.length === 0 ? (
+              <EmptyState
+                title="No Periods Found"
+                description={
+                  periodSearchQuery
+                    ? "No periods match your search"
+                    : "No collection periods available"
+                }
+              />
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {filteredPeriods
+                  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                  .map((p) => {
+                    const isSelected = p.id === selectedPeriod;
+                    const paymentCount = p.payments.length;
+                    const progress = totalMembers > 0 ? (paymentCount / totalMembers) * 100 : 0;
+
+                    return (
+                      <button
+                        key={p.id}
+                        onClick={() => selectPeriod(p.id)}
+                        className={`relative p-4 rounded-xl border-2 transition-all duration-200 text-left hover:shadow-md ${
+                          isSelected
+                            ? "border-indigo-400 bg-indigo-50 shadow-md"
+                            : "border-indigo-200 bg-white hover:border-indigo-300"
+                        }`}
+                      >
+                        {/* Selected Checkmark */}
+                        {isSelected && (
+                          <div className="absolute top-3 right-3">
+                            <svg
+                              className="w-6 h-6 text-indigo-600"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </div>
+                        )}
+
+                        {/* Date */}
+                        <div className="mb-3 pr-8">
+                          <p className="text-base font-semibold text-indigo-900">
+                            {format(new Date(p.date), "MMMM d, yyyy")}
+                          </p>
+                          <p className="text-xs text-indigo-600 mt-1">
+                            {format(new Date(p.date), "EEEE")}
+                          </p>
+                        </div>
+
+                        {/* Stats */}
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-indigo-600 font-light">Total Collected</span>
+                            <span className="font-semibold text-indigo-900">
+                              ₱{p.totalCollected.toLocaleString()}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-indigo-600 font-light">Payments Made</span>
+                            <span className="font-semibold text-indigo-900">
+                              {paymentCount} / {totalMembers}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Progress Bar */}
+                        <div className="mt-3">
+                          <div className="flex items-center justify-between text-xs text-indigo-600 mb-1">
+                            <span>Progress</span>
+                            <span>{Math.round(progress)}%</span>
+                          </div>
+                          <div className="w-full bg-indigo-100 rounded-full h-2">
+                            <div
+                              className={`h-2 rounded-full transition-all duration-300 ${
+                                isSelected ? "bg-indigo-500" : "bg-indigo-300"
+                              }`}
+                              style={{ width: `${progress}%` }}
+                            />
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+              </div>
+            )}
+          </div>
+
+          {/* Footer Actions */}
+          <div className="flex justify-end gap-3 pt-4 border-t border-indigo-200">
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setShowPeriodBrowser(false);
+                setPeriodSearchQuery("");
+              }}
+              className="w-full sm:w-auto"
+            >
+              Close
             </Button>
           </div>
         </div>
