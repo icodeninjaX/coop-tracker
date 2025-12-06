@@ -160,6 +160,7 @@ interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
   error?: string;
   options: { value: string; label: string }[];
+  compact?: boolean;
 }
 
 export const Select: React.FC<SelectProps> = ({
@@ -167,6 +168,7 @@ export const Select: React.FC<SelectProps> = ({
   error,
   options,
   className,
+  compact = false,
   ...props
 }) => {
   return (
@@ -178,10 +180,17 @@ export const Select: React.FC<SelectProps> = ({
       )}
       <select
         className={clsx(
-          "block w-full px-4 py-3 border-2 border-indigo-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 transition-all duration-200 bg-white",
+          "block w-full border-2 border-indigo-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 transition-all duration-200 bg-white appearance-none cursor-pointer",
+          compact ? "px-3 py-2 text-sm pr-8" : "px-4 py-3 pr-10",
           error && "border-rose-300 focus:ring-rose-300",
           className
         )}
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236366f1' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+          backgroundPosition: 'right 0.5rem center',
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: '1.25em 1.25em',
+        }}
         {...props}
       >
         {options.map((option) => (
@@ -199,12 +208,14 @@ export const Select: React.FC<SelectProps> = ({
 interface BadgeProps {
   children: React.ReactNode;
   variant?: "success" | "warning" | "error" | "neutral" | "info";
+  size?: "sm" | "md";
   className?: string;
 }
 
 export const Badge: React.FC<BadgeProps> = ({
   children,
   variant = "neutral",
+  size = "md",
   className,
 }) => {
   const variants = {
@@ -215,11 +226,17 @@ export const Badge: React.FC<BadgeProps> = ({
     info: "bg-indigo-100 text-indigo-800 border border-indigo-200",
   };
 
+  const sizes = {
+    sm: "px-1.5 py-0.5 text-[10px] font-medium",
+    md: "px-3 py-1 text-sm font-medium",
+  };
+
   return (
     <span
       className={clsx(
-        "inline-flex items-center px-3 py-1 rounded-full text-sm font-medium",
+        "inline-flex items-center rounded-full",
         variants[variant],
+        sizes[size],
         className
       )}
     >

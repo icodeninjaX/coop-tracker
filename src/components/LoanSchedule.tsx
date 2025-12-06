@@ -3,6 +3,7 @@
 import { Loan, Repayment } from "@/types";
 import { format, isBefore, startOfDay } from "date-fns";
 import { Badge } from "./UI";
+import { useState } from "react";
 
 // Helper functions (same as CoopContext)
 function nextCutoffOnOrAfter(base: Date): Date {
@@ -61,9 +62,12 @@ function generateMonthlySchedule(start: Date, count: number): Date[] {
 interface LoanScheduleProps {
   loan: Loan;
   repayments: Repayment[];
+  compact?: boolean;
 }
 
-export default function LoanSchedule({ loan, repayments }: LoanScheduleProps) {
+export default function LoanSchedule({ loan, repayments, compact = false }: LoanScheduleProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   // Only show schedule for approved loans with repayment plans
   if (loan.status !== "APPROVED" && loan.status !== "PAID") {
     return null;
@@ -118,6 +122,101 @@ export default function LoanSchedule({ loan, repayments }: LoanScheduleProps) {
     };
   });
 
+  // Summary stats
+  const paidCount = scheduleItems.filter(i => i.isPaid).length;
+  const overdueCount = scheduleItems.filter(i => i.isOverdue).length;
+  const nextDue = scheduleItems.find(i => !i.isPaid);
+
+  // Compact mode - collapsible
+  if (compact) {
+    return (
+      <div className="border-t border-indigo-100 pt-3 mt-3">
+        {/* Compact Header */}
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="w-full flex items-center justify-between text-left"
+        >
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-medium text-indigo-900 uppercase tracking-wider">
+              Schedule
+            </span>
+            <div className="flex items-center gap-2 text-xs">
+              <span className="text-emerald-600">{paidCount} paid</span>
+              {overdueCount > 0 && (
+                <span className="text-rose-600">{overdueCount} overdue</span>
+              )}
+              <span className="text-indigo-500">
+                {scheduleItems.length - paidCount - overdueCount} upcoming
+              </span>
+            </div>
+          </div>
+          <svg
+            className={`w-4 h-4 text-indigo-400 transition-transform ${
+              isExpanded ? "rotate-180" : ""
+            }`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </button>
+
+        {/* Next Due Quick View */}
+        {!isExpanded && nextDue && (
+          <div className="mt-2 flex items-center justify-between text-xs bg-indigo-50 rounded px-2 py-1.5">
+            <span className="text-indigo-600">
+              Next: {format(nextDue.dueDate, "MMM d")}
+            </span>
+            <span className="font-medium text-indigo-900">
+              ₱{nextDue.amount.toFixed(0)}
+            </span>
+          </div>
+        )}
+
+        {/* Expanded Schedule */}
+        {isExpanded && (
+          <div className="mt-3 space-y-1.5 max-h-48 overflow-y-auto">
+            {scheduleItems.map((item) => (
+              <div
+                key={item.installmentNumber}
+                className={`flex items-center justify-between px-2 py-1.5 rounded text-xs ${
+                  item.isPaid
+                    ? "bg-emerald-50 text-emerald-700"
+                    : item.isOverdue
+                    ? "bg-rose-50 text-rose-700"
+                    : "bg-white text-indigo-700"
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <span className="w-5 text-center font-medium">
+                    {item.installmentNumber}
+                  </span>
+                  <span>{format(item.dueDate, "MMM d, yyyy")}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-medium">₱{item.amount.toFixed(0)}</span>
+                  {item.isPaid && (
+                    <span className="text-emerald-600">✓</span>
+                  )}
+                  {item.isOverdue && (
+                    <span className="text-rose-600">!</span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Full mode (original layout)
   return (
     <div className="mt-4 border-t-2 border-indigo-200 pt-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
