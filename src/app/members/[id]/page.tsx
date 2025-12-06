@@ -14,9 +14,9 @@ const MemberDetailPage = () => {
   const memberId = parseInt(params.id as string);
 
   // Collapsible state
-  const [isContributionHistoryExpanded, setIsContributionHistoryExpanded] = useState(true);
-  const [isLoanHistoryExpanded, setIsLoanHistoryExpanded] = useState(true);
-  const [isCurrentStandingExpanded, setIsCurrentStandingExpanded] = useState(true);
+  const [isContributionHistoryExpanded, setIsContributionHistoryExpanded] = useState(false);
+  const [isLoanHistoryExpanded, setIsLoanHistoryExpanded] = useState(false);
+  const [isCurrentStandingExpanded, setIsCurrentStandingExpanded] = useState(false);
 
   const member = useMemo(
     () => state?.members.find((m) => m.id === memberId),
