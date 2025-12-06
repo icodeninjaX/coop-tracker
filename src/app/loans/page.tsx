@@ -195,36 +195,43 @@ const LoansPage = () => {
       <div className="container mx-auto max-w-7xl px-3 sm:px-4 lg:px-6 py-4 sm:py-6">
         {/* Header with Stats */}
         <div className="mb-4">
-          <div className="flex items-center justify-between mb-3">
-            <h1 className="text-xl sm:text-2xl font-semibold text-indigo-900">
+          <div className="flex items-center justify-between mb-2 sm:mb-3">
+            <h1 className="text-lg sm:text-2xl font-semibold text-indigo-900">
               Loans
             </h1>
-            <Button onClick={() => setShowAddLoan(true)} size="sm">
-              + New Loan
-            </Button>
+            <button
+              onClick={() => setShowAddLoan(true)}
+              className="px-2.5 py-1.5 sm:px-4 sm:py-2 bg-indigo-300 text-indigo-900 text-xs sm:text-sm font-normal rounded-md hover:bg-indigo-400 transition-colors"
+            >
+              + New
+            </button>
           </div>
 
-          {/* Compact Stats Row */}
-          <div className="flex flex-wrap gap-2 sm:gap-4 text-xs sm:text-sm">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/80 border border-indigo-200 rounded-full">
-              <span className="text-indigo-600">Total:</span>
-              <span className="font-semibold text-indigo-900">{totalLoans}</span>
+          {/* Stats Cards - Compact on mobile */}
+          <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-5 gap-1.5 sm:gap-3">
+            <div className="bg-white/80 backdrop-blur-sm border border-indigo-200 rounded-lg p-2 sm:p-4 hover:shadow-md hover:border-indigo-300 transition-all duration-200">
+              <p className="text-[10px] sm:text-xs uppercase tracking-wider text-indigo-600">Total</p>
+              <p className="text-base sm:text-2xl font-semibold text-indigo-900">{totalLoans}</p>
             </div>
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-full">
-              <span className="text-amber-600">Pending:</span>
-              <span className="font-semibold text-amber-900">{pendingLoans}</span>
+            <div className="bg-white/80 backdrop-blur-sm border border-amber-200 rounded-lg p-2 sm:p-4 hover:shadow-md hover:border-amber-300 transition-all duration-200">
+              <p className="text-[10px] sm:text-xs uppercase tracking-wider text-amber-600">Pending</p>
+              <p className="text-base sm:text-2xl font-semibold text-amber-900">{pendingLoans}</p>
             </div>
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-full">
-              <span className="text-emerald-600">Active:</span>
-              <span className="font-semibold text-emerald-900">{approvedLoans}</span>
+            <div className="bg-white/80 backdrop-blur-sm border border-emerald-200 rounded-lg p-2 sm:p-4 hover:shadow-md hover:border-emerald-300 transition-all duration-200">
+              <p className="text-[10px] sm:text-xs uppercase tracking-wider text-emerald-600">Active</p>
+              <p className="text-base sm:text-2xl font-semibold text-emerald-900">{approvedLoans}</p>
             </div>
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 border border-purple-200 rounded-full">
-              <span className="text-purple-600">Outstanding:</span>
-              <span className="font-semibold text-purple-900">₱{totalOutstanding.toLocaleString()}</span>
+            <div className="bg-white/80 backdrop-blur-sm border border-purple-200 rounded-lg p-2 sm:p-4 hover:shadow-md hover:border-purple-300 transition-all duration-200 col-span-3 sm:col-span-1 lg:col-span-1">
+              <div className="flex sm:block items-center justify-between">
+                <p className="text-[10px] sm:text-xs uppercase tracking-wider text-purple-600">Outstanding</p>
+                <p className="text-sm sm:text-xl font-semibold text-purple-900">₱{totalOutstanding.toLocaleString()}</p>
+              </div>
             </div>
-            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-rose-50 border border-rose-200 rounded-full">
-              <span className="text-rose-600">Interest:</span>
-              <span className="font-semibold text-rose-900">₱{totalInterestEarned.toLocaleString()}</span>
+            <div className="bg-white/80 backdrop-blur-sm border border-rose-200 rounded-lg p-2 sm:p-4 hover:shadow-md hover:border-rose-300 transition-all duration-200 col-span-3 sm:col-span-2 lg:col-span-1">
+              <div className="flex sm:block items-center justify-between">
+                <p className="text-[10px] sm:text-xs uppercase tracking-wider text-rose-600">Interest Earned</p>
+                <p className="text-sm sm:text-xl font-semibold text-rose-900">₱{totalInterestEarned.toLocaleString()}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -412,11 +419,17 @@ const LoansPage = () => {
                   {isExpanded && (
                     <div className="border-t border-indigo-100 p-3 sm:p-4 bg-indigo-50/30">
                       {/* Loan Details Grid */}
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm mb-3">
+                      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-sm mb-3">
                         <div>
                           <span className="text-xs text-indigo-500">Principal</span>
                           <div className="font-medium text-indigo-900">
                             ₱{loan.amount.toLocaleString()}
+                          </div>
+                        </div>
+                        <div>
+                          <span className="text-xs text-indigo-500">Interest</span>
+                          <div className="font-medium text-rose-700">
+                            ₱{(totalDue - loan.amount).toLocaleString()}
                           </div>
                         </div>
                         <div>

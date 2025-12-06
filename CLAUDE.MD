@@ -305,16 +305,19 @@ APPROVED → (repayments tracked) → PAID (when fully repaid)
 The system automatically calculates penalties for missed loan payments based on the repayment schedule.
 
 **Cut-off Plan (bi-monthly):**
+
 - Expected payments on 10th and 25th of each month
 - If payment is missed, penalty = (installment amount × penalty rate)
 - Default penalty rate: 3%
 
 **Monthly Plan:**
+
 - Expected payment on the approval date anniversary each month
 - If payment is missed after due date, penalty = (total due × penalty rate)
 - Default penalty rate: 3%
 
 **Auto-creation:** Penalties are automatically created when:
+
 1. A collection period ends
 2. A loan has missed installments based on its schedule
 3. The loan status is APPROVED (not PENDING or PAID)
@@ -324,27 +327,32 @@ The system automatically calculates penalties for missed loan payments based on 
 The share system manages member share commitments and dividend distributions.
 
 **Share Model (Fixed Commitment):**
+
 - Each member has a fixed number of committed shares (set by admin)
 - Shares DO NOT accumulate automatically with payments
 - Admin manually updates member shares via the Shares page
 - Share price: ₱500 per share (configurable via `sharePrice` state)
 
 **Expected Contribution:**
+
 ```
 Expected Contribution = committedShares × sharePrice
 ```
 
 **Interest Pool:**
+
 ```
 totalInterestPool = SUM(all interest from APPROVED/PAID loans)
 ```
 
 Interest is calculated as:
+
 ```
 Loan Interest = Principal × Interest Rate × Term Count
 ```
 
 **Dividend Distribution:**
+
 ```
 Total Active Shares = SUM(shares of non-forfeited members)
 Per Share Dividend = Total Interest Pool ÷ Total Active Shares
@@ -352,6 +360,7 @@ Member Dividend = Member Shares × Per Share Dividend (if not forfeited)
 ```
 
 **Forfeiture:**
+
 - Members can be marked as "forfeited" by admin
 - Forfeited members:
   - Keep their committed shares
@@ -362,17 +371,19 @@ Member Dividend = Member Shares × Per Share Dividend (if not forfeited)
 **Share System Actions:**
 
 **Update Member Shares:**
+
 ```typescript
 dispatch({
   type: "UPDATE_MEMBER_SHARES",
   payload: {
     memberId: 5,
-    shares: 10  // New share commitment
-  }
+    shares: 10, // New share commitment
+  },
 });
 ```
 
 **Bulk Update Shares:**
+
 ```typescript
 dispatch({
   type: "BULK_UPDATE_SHARES",
@@ -380,48 +391,52 @@ dispatch({
     { memberId: 1, shares: 10 },
     { memberId: 2, shares: 15 },
     // ...
-  ]
+  ],
 });
 ```
 
 **Distribute Dividends:**
+
 ```typescript
 dispatch({
   type: "DISTRIBUTE_DIVIDENDS",
   payload: {
-    periodsCovered: ["period-id-1", "period-id-2"]
-  }
+    periodsCovered: ["period-id-1", "period-id-2"],
+  },
 });
 ```
 
 **Forfeit Member Interest:**
+
 ```typescript
 dispatch({
   type: "FORFEIT_INTEREST",
   payload: {
     memberId: 5,
-    reason: "Non-compliance with payment schedule"
-  }
+    reason: "Non-compliance with payment schedule",
+  },
 });
 ```
 
 **Restore Member:**
+
 ```typescript
 dispatch({
   type: "RESTORE_MEMBER_INTEREST",
   payload: {
-    memberId: 5
-  }
+    memberId: 5,
+  },
 });
 ```
 
 **Update Share Price:**
+
 ```typescript
 dispatch({
   type: "UPDATE_SHARE_PRICE",
   payload: {
-    newPrice: 600
-  }
+    newPrice: 600,
+  },
 });
 ```
 
@@ -430,6 +445,7 @@ dispatch({
 The Ledger page provides a comprehensive period-by-period financial statement.
 
 **Features:**
+
 - Shows all collection periods in chronological order
 - Each period displays:
   - Opening balance (ending balance of previous period)
@@ -450,6 +466,7 @@ Navigate to `/ledger` or use "Ledger" in the main navigation.
 The Archives system allows storing historical year data separately from active data.
 
 **Features:**
+
 - Archive entire year's data (all periods, loans, repayments from that year)
 - Summary statistics per archived year
 - Expandable year details to view archived data
@@ -458,6 +475,7 @@ The Archives system allows storing historical year data separately from active d
 
 **Archive Structure:**
 Each archive contains:
+
 - Year number
 - Archive date
 - Summary statistics (collections, disbursements, loans, members, etc.)
@@ -469,23 +487,26 @@ Each archive contains:
 - Dividend distributions (if applicable)
 
 **Archive Year:**
+
 ```typescript
 dispatch({
   type: "ARCHIVE_YEAR",
   payload: {
-    year: 2024
-  }
+    year: 2024,
+  },
 });
 ```
 
 **Reset Periods (after archiving):**
+
 ```typescript
 dispatch({
-  type: "RESET_PERIODS"
+  type: "RESET_PERIODS",
 });
 ```
 
 This clears all collection periods, pending loans, and resets the system for the new year while preserving:
+
 - Member information (names, shares)
 - Current balance
 - Approved loans (continued from previous year)
@@ -495,6 +516,7 @@ This clears all collection periods, pending loans, and resets the system for the
 Comprehensive data export and import capabilities for backup, reporting, and data portability.
 
 **CSV Exports Available:**
+
 - Collections (all periods with summary)
 - Payments (per-member payment history)
 - Loans (all loans with details)
@@ -504,27 +526,33 @@ Comprehensive data export and import capabilities for backup, reporting, and dat
 - Financial Summary (key statistics)
 
 **JSON Exports Available:**
+
 - Full State (complete CoopState object)
 - Collections (structured collection data)
 - Loans (structured loan data)
 - Archives (archived year data)
 
 **Import:**
+
 - Import from JSON (full state or partial data)
 - Validates data before import using Zod schemas
 - Preserves data integrity
 
 **Usage Example:**
+
 ```typescript
-import { exportToCSV, exportToJSON, importFromJSON } from '@/lib/exportUtils';
+import { exportToCSV, exportToJSON, importFromJSON } from "@/lib/exportUtils";
 
 // Export collections to CSV
-const collectionsCSV = exportToCSV.collections(state.collections, state.members);
-downloadFile(collectionsCSV, 'collections.csv', 'text/csv');
+const collectionsCSV = exportToCSV.collections(
+  state.collections,
+  state.members
+);
+downloadFile(collectionsCSV, "collections.csv", "text/csv");
 
 // Export full state to JSON
 const fullStateJSON = exportToJSON.fullState(state);
-downloadFile(fullStateJSON, 'coop-state-backup.json', 'application/json');
+downloadFile(fullStateJSON, "coop-state-backup.json", "application/json");
 
 // Import from JSON
 const importedState = importFromJSON(jsonString);
@@ -535,12 +563,14 @@ const importedState = importFromJSON(jsonString);
 Runtime type validation ensures data integrity and catches errors early.
 
 **Features:**
+
 - Zod v3 schemas for all data types
 - Runtime validation on data import
 - Safe validation helpers with error handling
 - Type inference from schemas
 
 **Available Schemas:**
+
 - `MemberSchema`
 - `PaymentSchema`
 - `CollectionPeriodSchema`
@@ -553,8 +583,9 @@ Runtime type validation ensures data integrity and catches errors early.
 - `CoopStateSchema`
 
 **Usage:**
+
 ```typescript
-import { validateData, safeValidate } from '@/lib/validation';
+import { validateData, safeValidate } from "@/lib/validation";
 
 // Validate data (throws on error)
 const validMember = validateData(MemberSchema, memberData);
@@ -562,9 +593,9 @@ const validMember = validateData(MemberSchema, memberData);
 // Safe validation (returns result object)
 const result = safeValidate(LoanSchema, loanData);
 if (result.success) {
-  console.log('Valid loan:', result.data);
+  console.log("Valid loan:", result.data);
 } else {
-  console.error('Validation errors:', result.errors);
+  console.error("Validation errors:", result.errors);
 }
 ```
 
@@ -573,11 +604,13 @@ if (result.success) {
 Jest and React Testing Library are configured for unit and integration testing.
 
 **Test Configuration:**
+
 - Jest config: `jest.config.js`
 - Setup file: `jest.setup.js`
 - Test files: `**/__tests__/**/*.test.ts(x)`
 
 **Running Tests:**
+
 ```bash
 npm test              # Run all tests
 npm run test:watch    # Watch mode
@@ -585,6 +618,7 @@ npm run test:coverage # Coverage report
 ```
 
 **Example Tests:**
+
 - Context tests: `src/context/__tests__/CoopContext.test.tsx`
 - Validation tests: `src/lib/__tests__/validation.test.ts`
 
@@ -615,6 +649,7 @@ Handles automatic migration of data to new schema versions:
 Comprehensive export and import functionality:
 
 **CSV Exports:**
+
 - `exportToCSV.collections(collections, members)` - Export collections
 - `exportToCSV.payments(collections, members)` - Export payment history
 - `exportToCSV.loans(loans, members)` - Export loan data
@@ -624,15 +659,18 @@ Comprehensive export and import functionality:
 - `exportToCSV.financialSummary(state)` - Export financial summary
 
 **JSON Exports:**
+
 - `exportToJSON.fullState(state)` - Export entire state
 - `exportToJSON.collections(collections)` - Export collections only
 - `exportToJSON.loans(loans)` - Export loans only
 - `exportToJSON.archives(archives)` - Export archives
 
 **Import:**
+
 - `importFromJSON(jsonString)` - Import and validate JSON data
 
 **Helpers:**
+
 - `downloadFile(content, filename, mimeType)` - Trigger file download
 
 ### Validation (`src/lib/validation.ts`)
@@ -685,6 +723,7 @@ Network error detection and handling:
    - Use `validateData` or `safeValidate` to validate user input
 
 5. **Test Supabase Sync**
+
    - Changes auto-save via `remoteState.ts`
    - Test multi-device sync by opening app in two browsers
 
@@ -924,9 +963,12 @@ lg:     ≥ 1024px  (Desktops, large tablets)
 
 **Loans Page (loans/page.tsx):**
 
-- Responsive loan cards
+- **Stats Cards**: 5 card-based stats (Total Loans, Pending, Active, Outstanding, Interest Earned)
+  - Grid layout: 2 columns mobile, 3 tablet, 5 desktop
+  - Color-coded cards: indigo (total), amber (pending), emerald (active), purple (outstanding), rose (interest)
+- Responsive loan cards with expandable details
+- **Loan Detail Grid**: Shows Principal, Interest, Total Due, Paid, Date (5 columns on desktop)
 - Stacked approve/reject buttons on mobile
-- 2-column grid on mobile, 4 on desktop for stats
 - Full-width forms on mobile
 - LoanSchedule component with responsive table/card view
 
@@ -983,6 +1025,7 @@ lg:     ≥ 1024px  (Desktops, large tablets)
 The application has the following main pages accessible via the navigation bar:
 
 **Main Pages:**
+
 1. **Dashboard** (`/`) - Home page with collection periods and quick stats
 2. **Members** (`/members`) - Member management and payment tracking
 3. **Loans** (`/loans`) - Loan application, approval, and repayment tracking
@@ -991,6 +1034,7 @@ The application has the following main pages accessible via the navigation bar:
 6. **Archives** (`/archives`) - Yearly archive management
 
 **Additional Pages:**
+
 - **Individual Member** (`/members/[id]`) - Detailed member view (accessible via Members page)
 - **Login** (`/auth/login`) - Authentication page
 - **Password Reset** (`/auth/reset-password`) - Password recovery
@@ -998,6 +1042,7 @@ The application has the following main pages accessible via the navigation bar:
 - **Connection Debug** (`/debug/connection`) - Supabase connection testing
 
 **Navigation Behavior:**
+
 - Mobile (< 768px): Hamburger menu with slide-down overlay
 - Desktop (≥ 768px): Horizontal navigation bar with all links visible
 - Active page highlighted with different background color
@@ -1486,6 +1531,7 @@ import { Button, Input, Modal, Badge } from "@/components/UI";
 ## Future Enhancement Ideas
 
 **Already Implemented:**
+
 - ✅ Export financial reports (CSV/JSON)
 - ✅ Penalty calculation automation (auto-penalty system)
 - ✅ Share system with dividend distribution
@@ -1494,6 +1540,7 @@ import { Button, Input, Modal, Badge } from "@/components/UI";
 - ✅ Testing infrastructure
 
 **Potential Future Enhancements:**
+
 - PDF export for reports
 - Email notifications for loan approvals and payment reminders
 - Analytics dashboard with interactive charts
@@ -1526,6 +1573,7 @@ import { Button, Input, Modal, Badge } from "@/components/UI";
 ## Major Version History
 
 ### v0.2.0 (Current)
+
 - ✅ Complete share system with fixed commitment model
 - ✅ Dividend distribution functionality
 - ✅ Automatic penalty assessment for missed payments
@@ -1540,6 +1588,7 @@ import { Button, Input, Modal, Badge } from "@/components/UI";
 - ✅ Quick Actions dropdown menu on Dashboard for improved mobile UX
 
 ### v0.1.0
+
 - Basic cooperative management (members, collections, loans)
 - Multi-user authentication
 - Financial ledger calculations
