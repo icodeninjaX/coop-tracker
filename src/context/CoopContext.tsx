@@ -20,7 +20,6 @@ import {
 import { loadRemoteState, saveRemoteState } from "@/lib/remoteState";
 import { useAuth } from "./AuthContext";
 import {
-  calculateSharesFromContribution,
   calculateInterestEarned,
   calculateDividendDistribution,
   calculateTotalShares,

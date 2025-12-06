@@ -2,7 +2,7 @@ import { renderHook, act } from "@testing-library/react";
 import { ReactNode } from "react";
 import { CoopProvider, useCoop } from "../CoopContext";
 import { AuthProvider } from "../AuthContext";
-import type { CollectionPeriod, Loan, Member, Payment, Repayment, Penalty, CoopState } from "@/types";
+import type { CollectionPeriod, Loan, Payment, Repayment, Penalty, CoopState } from "@/types";
 
 // Mock the remote state module
 jest.mock("@/lib/remoteState", () => ({

@@ -5,7 +5,6 @@ import { useState } from "react";
 import { format } from "date-fns";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { Card, Badge, EmptyState } from "@/components/UI";
-import { YearlyArchive } from "@/types";
 
 const ArchivesPage = () => {
   const { state } = useCoop();

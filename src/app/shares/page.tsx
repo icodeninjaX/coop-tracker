@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useCoop } from "@/context/CoopContext";
-import { Button, Card, Input } from "@/components/UI";
+import { Button, Card } from "@/components/UI";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { format } from "date-fns";
 import { calculateTotalShares, calculateExpectedContribution } from "@/lib/shareCalculations";

@@ -121,10 +121,8 @@ export function calculateDividendDistribution(
  * Shares are now manually set by admin, not calculated from payments.
  * @deprecated
  */
-export function calculateMemberShareHistory(
-  payments: Payment[],
-  sharePrice: number = 500
-): MemberShareHistory[] {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function calculateMemberShareHistory(_payments: Payment[]): MemberShareHistory[] {
   console.log("calculateMemberShareHistory is deprecated - shares are now manually set");
   return [];
 }
@@ -161,8 +159,10 @@ export function calculateForfeitedInterest(
  * @deprecated
  */
 export function getMemberTotalShares(
-  shareHistory: MemberShareHistory[],
-  memberId: number
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _shareHistory: MemberShareHistory[],
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _memberId: number
 ): number {
   console.log("getMemberTotalShares is deprecated - use member.committedShares instead");
   return 0;

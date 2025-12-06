@@ -5,7 +5,6 @@ import type {
   Loan,
   Repayment,
   Member,
-  Payment,
   Penalty,
   YearlyArchive,
 } from "@/types";
